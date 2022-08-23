@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/caritas/static/css/main.aa27b9c2.css",
+    "main.js": "/caritas/static/js/main.b536ca8c.js",
+    "static/media/database-icon-adv.png": "/caritas/static/media/database-icon-adv.d6b3a3bd41834822be13.png",
+    "index.html": "/caritas/index.html",
+    "main.aa27b9c2.css.map": "/caritas/static/css/main.aa27b9c2.css.map",
+    "main.b536ca8c.js.map": "/caritas/static/js/main.b536ca8c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.aa27b9c2.css",
+    "static/js/main.b536ca8c.js"
+  ]
+}

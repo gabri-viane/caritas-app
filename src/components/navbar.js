@@ -1,40 +1,44 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Logo from "../components/logo.js";
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 
-class Navbar extends Component{
 
-    render(){
+import usericon from "../resources/images/user.png";
+
+class ProgrammNavbar extends Component {
+
+    render() {
         return (
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                <div className="container-fluid">
-                    <a className="navbar-brand" href="#">
-                       <Logo />
-                        Caritas Grumello
-                    </a>
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div className="collapse navbar-collapse" id="navbarNav">
-                        <ul className="navbar-nav">
-                            <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" href="#">Home</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="#">Features</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" onClick={this.props.handleLogin}>Login</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link disabled">Disabled</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+            <>
+                <Navbar bg="dark" expand="lg" variant="dark" sticky="top">
+                    <Container>
+                        <Navbar.Brand href="#">
+                            <Logo />
+                            <span className="ms-2">Caritas Grumello</span>
+                        </Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                        <Navbar.Collapse id="basic-navbar-nav">
+                            <Nav className="me-auto">
+                                <Nav.Link onClick={() => this.props.home()} href="#home">Home</Nav.Link>
+                                <Nav.Link href="#famiglie">Famiglie</Nav.Link>
+                                <Nav.Link href="#borse">Borse</Nav.Link>
+                            </Nav>
+                            <Nav>
+                                <NavDropdown title={<><img alt="Logo Caritas DB App" src={usericon} /> {this.props.username} </>} id="basic-nav-dropdown">
+                                    <NavDropdown.Item onClick={() => this.props.handleUser("handle")} href="#user/handle">Gestisci</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => this.props.handleUser("disconnect")} href="#user/disconnect">Disconnettiti</NavDropdown.Item>
+                                </NavDropdown>
+                            </Nav>
+                        </Navbar.Collapse>
+                    </Container>
+                </Navbar>
+            </>
         );
     }
 
 }
 
-export default Navbar;
+export default ProgrammNavbar;
