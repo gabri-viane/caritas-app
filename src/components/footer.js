@@ -6,7 +6,7 @@ class Footer extends Component {
 
     render() {
         return <>
-            <Container variant="secondary">
+            <Container className="bg-dark">
                 <Row id="bottom" className="text-center fixed-bottom">
                     <div className="col-4">
                         <span>Connesso come: <span className="fw-bold">{this.props.username}</span></span>

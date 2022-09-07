@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import ProgrammNavbar from './navbar';
 import Home from './body/home';
 import LoginModule from "./login";
-import datax from "../contents/data.js";
+import { datax, handleDisconnect } from "../contents/data.js";
 import Logo from "./logo";
 import axios from "axios";
 import Footer from "./footer";
-import User from "./extra/user";
+
+import { handleUserAction } from '../contents/functions/UserHandlers.js';
 
 import Container from "react-bootstrap/esm/Container";
 import Row from "react-bootstrap/esm/Row";
@@ -21,7 +22,8 @@ class LoadApp extends Component {
         showLogin: false,
         navbar: <></>,
         body: <></>,
-        footer: <></>
+        footer: <></>,
+        user_page: <></>
     };
 
     access_app = () => {
@@ -47,14 +49,6 @@ class LoadApp extends Component {
 
     //<button type="submit" className="btn btn-primary align-self-center " onClick={this.register}> Registrati App </button>
 
-    handleUserAction = (action) => {
-        datax.DataHandler.isLogged(() => {
-            this.setState({ showLogin: false, body: <User type={action} /> });
-        }, (error) => {
-            this.setState({ showLogin: true, body: this.generateLoginModule(error.msg) });
-        });
-    };
-
     handleOnSubmitAccess = () => {
         datax.DataHandler.isLogged(() => {
             this.setupPage(datax.DataHandler.access.username);
@@ -70,7 +64,7 @@ class LoadApp extends Component {
 
     setupPage = (username) => {
         this.setState({
-            navbar: <ProgrammNavbar username={username} handleUser={this.handleUserAction} home={this.setHome} />, footer: <Footer handleLogout={datax.DataHandler.releaseAccess} username={username} />
+            navbar: <ProgrammNavbar username={username} handleUser={() => { handleUserAction(this); }} home={this.setHome} handleDisconnect={() => { handleDisconnect(this) }} />, footer: <Footer handleLogout={datax.DataHandler.releaseAccess} username={username} />
         });
         this.setHome();
     }

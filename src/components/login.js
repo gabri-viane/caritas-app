@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Logo from "../components/logo.js";
-import datax from "../contents/data.js";
+import { datax } from "../contents/data.js";
 import axios from "axios";
 
 const API_PATH = 'http://localhost:80/caritas-api/index.php';
@@ -74,7 +74,7 @@ class LoginModule extends Component {
             headers: {
                 'content-type': 'application/json'
             },
-            data: { k: 'login', username: this.state.username, password: this.state.password }
+            data: { method: 'post', link: 'user', k: 'login', username: this.state.username, password: this.state.password }
         })
             .then(result => {
                 console.log("Response: " + JSON.stringify(result.data));

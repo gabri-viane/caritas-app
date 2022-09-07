@@ -28,8 +28,8 @@ class ProgrammNavbar extends Component {
                             </Nav>
                             <Nav>
                                 <NavDropdown title={<><img alt="Logo Caritas DB App" src={usericon} /> {this.props.username} </>} id="basic-nav-dropdown">
-                                    <NavDropdown.Item onClick={() => this.props.handleUser("handle")} href="#user/handle">Gestisci</NavDropdown.Item>
-                                    <NavDropdown.Item onClick={() => this.props.handleUser("disconnect")} href="#user/disconnect">Disconnettiti</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => this.props.handleUser("handle")} href="#user/handle" id="handBtnNav">Gestisci</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => this.props.handleDisconnect()} href="#disconnect" id="discBtnNav">Disconnettiti</NavDropdown.Item>
                                 </NavDropdown>
                             </Nav>
                         </Navbar.Collapse>

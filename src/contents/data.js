@@ -1,6 +1,11 @@
 import Cookies from 'js-cookie';
 import { verify } from './database/Connection';
-import { Component } from 'react';
+import React, { Component } from 'react';
+
+import Container from "react-bootstrap/esm/Container";
+import Row from "react-bootstrap/esm/Row";
+import Col from "react-bootstrap/esm/Col";
+import Button from "react-bootstrap/esm/Button";
 
 export class Data extends Component {
 
@@ -55,5 +60,25 @@ export class Data extends Component {
 
 }
 
-const datax = { DataHandler: new Data() };
-export default datax; 
+export const datax = { DataHandler: new Data() };
+
+export function handleDisconnect(instance) {
+    instance.setState({
+        body: <><Container fluid className="mt-5">
+            <Row md="auto">
+                <Container fluid md="auto" className="text-center">
+                    <Col md="auto" className="text-center">
+                        <Row md="auto">
+                            <span className="h5 lead">Stai per disconnetterti: dopo il loguot dovrai eseguire nuovamente l'accesso.</span>
+                        </Row>
+                        <Row md="auto" className="text-center">
+                            <Col md="auto" className="text-center">
+                                <Button onClick={datax.DataHandler.releaseAccess}>Disconnetti</Button>
+                            </Col>
+                        </Row>
+                    </Col>
+                </Container>
+            </Row>
+        </Container></>
+    });
+}
