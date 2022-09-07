@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import './App.css';
-import LoadApp from "./components/loadApp";
 import SSRProvider from "react-bootstrap/SSRProvider";
+import LoadApp from "./components/loadApp";
 
 class App extends Component {
-
   render() {
     return (
       <>

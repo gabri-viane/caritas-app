@@ -7,10 +7,17 @@ import Col from "react-bootstrap/esm/Col";
 import Form from "react-bootstrap/esm/Form";
 import { user } from "../../contents/database/Connection";
 import Button from "react-bootstrap/esm/Button";
-import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
-import Tooltip from "react-bootstrap/esm/Tooltip";
+import Modal from "react-bootstrap/esm/Modal";
 
 class User extends Component {
+
+    setShow(val) {
+        this.setState({ show: val });
+    }
+
+
+    handleClose = () => this.setShow(false);
+    handleShow = () => this.setShow(true);
 
     state = {
         username: '',
@@ -19,12 +26,13 @@ class User extends Component {
         auth: false,
         editing: false,
         modify_btn: 'Modifica',
+        show: false,
         save_btn: <></>,
         body: <></>
     }
 
     reloadComp() {
-        user({ ...{ method: 'get', k: 'retrive' }, ...datax.DataHandler.access },
+        user({ ...{ method: 'get', k: 'get' }, ...datax.DataHandler.access },
             (dt) => {
                 this.setState({
                     username: dt.username,
@@ -46,7 +54,7 @@ class User extends Component {
             modify_btn: editing ? 'Scarta' : 'Modifica',
             editing: editing,
             save_btn: editing ? <Col md="auto" >
-                <Button variant="success" onClick={() => { this.props.handleModify(this); this.edit(); }}>Salva</Button>
+                <Button variant="success" onClick={this.handleShow}>Salva</Button>
             </Col> : <></>
         });
         this.reloadComp();
@@ -64,6 +72,11 @@ class User extends Component {
     handleChangeEventUsername = (e) => {
         e.preventDefault();
         this.setState({ username: e.target.value });
+    };
+
+    handleChangeEventPassword = (e) => {
+        e.preventDefault();
+        this.setState({ password: e.target.value });
     };
 
     render() {
@@ -84,27 +97,44 @@ class User extends Component {
                     <span className="text-secondary">Con token: {datax.DataHandler.access.token}</span>
                     <span className="text-secondary">Scadenza: {this.state.expire}</span>
                 </Row>
-                <Row className="mt-2">
+                <Row className="mt-2" mx="auto">
                     {this.state.save_btn}
-                    <Col md="auto">
+                    <Col >
                         <Button variant="primary" onClick={this.edit}>{this.state.modify_btn}</Button>
                     </Col>
-                    <Col md="auto">
+                    <Col >
                         <Button variant="secondary" onClick={this.props.handleDisconnect} disabled={this.state.editing}>Disconnetti</Button>
                     </Col>
-                    <Col md="auto">
-                        <OverlayTrigger
-                            delay={{ hide: 450, show: 300 }}
-                            overlay={(props) => (
-                                <Tooltip {...props}>
-                                    Questa opzione non è reversibile.
-                                </Tooltip>
-                            )}
-                            placement="bottom">
-                            <Button variant="danger" disabled={!this.state.editing}>Elimina</Button>
-                        </OverlayTrigger>
+                    <Col >
+                        <Button variant="danger" disabled={!this.state.editing}>Elimina</Button>
                     </Col>
                 </Row>
+                <Modal show={this.state.show} onHide={this.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Conferma cambio dati</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <span>Dopo che avrai completato l'operazione dovrai eseguire nuovamente il login.</span>
+                        <Form>
+                            <Form.Group className="mb-3" controlId="passwordgroup">
+                                <Form.Label className="lead">Conferma password:</Form.Label>
+                                <Form.Control type="password" autoComplete="true" onChange={this.handleChangeEventPassword} />
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.handleClose}>
+                            Chiudi
+                        </Button>
+                        <Button variant="primary" onClick={() => {
+                            this.handleClose();
+                            this.props.handleModify({ newuser: this.state.username, password: this.state.password, newemail: this.state.email });
+                            this.edit();
+                        }}>
+                            Salva modifiche
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </Container>
         </>;
     }

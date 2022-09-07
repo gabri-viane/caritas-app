@@ -9,36 +9,42 @@ export const families_data = [
         id: 1,
         link: "addfam",
         btn: "Aggiungi",
+        action: () => { },
         icon: addicon,
         text: "Permette di registrare una nuova famiglia a cui assegnare borse."
     }, {
         id: 2,
         btn: "Gestisci",
         link: "handlefam",
+        action: () => { },
         icon: editicon,
         text: "Modifica i dati del dichiarante e della famiglia."
     }, {
         id: 3,
         btn: "Mostra",
         link: "showfam",
+        action: () => { },
         icon: showicon,
         text: "Mostra i dati del dichiarante e della famiglia."
     }, {
         id: 4,
         btn: "Aggiungi Componente",
         link: "addcomp",
+        action: () => { },
         icon: useraddicon,
         text: "Aggiungi un nuovo componente alla famiglia."
     }, {
         id: 5,
         btn: "Rimuovi Componente",
         link: "delcomp",
+        action: () => { },
         icon: deleteicon,
         text: "Rimuovi un componente da una famiglia."
     }, {
         id: 6,
         btn: "Gestisci Componente",
         link: "handlecomp",
+        action: () => { },
         icon: editicon,
         text: "Rimuovi un componente da una famiglia."
     }
@@ -49,24 +55,28 @@ export const bags_data = [
         id: 1,
         link: "addborsa",
         btn: "Aggiungi",
+        action: () => { },
         icon: addicon,
         text: "Permette di registrare una nuova borsa da assegnare a una famiglia."
     }, {
         id: 2,
         btn: "Gestisci",
         link: "handleborse",
+        action: () => { },
         icon: editicon,
         text: "Modifica i dati delle borse."
     }, {
         id: 3,
         btn: "Mostra",
         link: "showborse",
+        action: () => { },
         icon: showicon,
         text: "Mostra le borse registrate."
     }, {
         id: 4,
         btn: "Rimuovi",
         link: "delborsa",
+        action: () => { },
         icon: deleteicon,
         text: "Rimuovi una borsa da una famiglia."
     }

@@ -12,18 +12,18 @@ class Home extends Component {
         return <>
             <Container className="p-3" md="auto">
                 <Container md="auto">
-                    <Card className="p-1">
+                    <Card className="mt-2 p-1" md="auto">
                         <Card.Title className="m-1" id="famiglie">Famiglie</Card.Title>
                         <Row >
-                            {families_data.map(item => <HomeCard link={"fam/" + item.link} key={item.id} btntitle={item.btn} icon={item.icon} text={item.text} />)}
+                            {families_data.map(item => <HomeCard link={"fam/" + item.link} key={item.id} btntitle={item.btn} icon={item.icon} text={item.text} action={item.action} />)}
                         </Row>
                     </Card>
                 </Container>
-                <Container md="auto">
-                    <Card className="mt-1 p-1">
+                <Container md="auto" mx="auto" my="auto">
+                    <Card className="mt-2 p-1">
                         <Card.Title className="mt-1" id="borse">Borse</Card.Title>
                         <Row>
-                            {bags_data.map(item => <HomeCard link={"borse/" + item.link} key={item.id} btntitle={item.btn} icon={item.icon} text={item.text} />)}
+                            {bags_data.map(item => <HomeCard link={"borse/" + item.link} key={item.id} btntitle={item.btn} icon={item.icon} text={item.text} action={item.action} />)}
                         </Row>
                     </Card>
                 </Container>

@@ -14,10 +14,15 @@ export class Data extends Component {
         username: undefined
     };
 
+    dataSettings = {
+        light: false
+    };
+
     constructor(props) {
         super(props);
         this.initData();
     }
+
 
     initData() {
         //Leggo se ho eseguito il login
@@ -27,6 +32,22 @@ export class Data extends Component {
             this.access.token = tmp[1];
             this.access.username = tmp[0];
         }
+        tmp = Cookies.get('dataSettings');
+        if (!!tmp) {
+            this.dataSettings = JSON.parse(tmp);
+        } else {
+            this.setDataSettings(this.dataSettings);
+        }
+    }
+
+    setDataSettings(data) {
+        this.dataSettings = data;
+        console.log(this.dataSettings);
+        Cookies.set('dataSettings', JSON.stringify(this.dataSettings));
+    }
+
+    getDataSettings() {
+        return this.dataSettings;
     }
 
     setLoginAccessData(token, user) {

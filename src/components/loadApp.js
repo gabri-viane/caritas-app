@@ -13,8 +13,17 @@ import Container from "react-bootstrap/esm/Container";
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/esm/Col";
 import Button from "react-bootstrap/esm/Button";
+import { FamNavbar } from "./body/famiglia/FamNavbar";
+import SettingsPage from "./extra/settings";
 
 const API_PATH = 'http://localhost:80/caritas-api/index.php';
+
+/*eslint no-extend-native: ["error", { "exceptions": ["Date"] }]*/
+Date.prototype.toDateInputValue = (function() {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+});
 
 class LoadApp extends Component {
 
@@ -23,8 +32,17 @@ class LoadApp extends Component {
         navbar: <></>,
         body: <></>,
         footer: <></>,
-        user_page: <></>
+        user_page: <></>,
+        modal: <></>
     };
+
+    constructor(props) {
+        if (LoadApp._instance) {
+            return LoadApp._instance
+        }
+        super(props);
+        LoadApp._instance = this;
+    }
 
     access_app = () => {
         return <>
@@ -62,9 +80,28 @@ class LoadApp extends Component {
         this.setState({ body: <Home /> })
     }
 
+    setFams = () => {
+        this.setState({ body: <FamNavbar /> })
+    }
+
     setupPage = (username) => {
         this.setState({
-            navbar: <ProgrammNavbar username={username} handleUser={() => { handleUserAction(this); }} home={this.setHome} handleDisconnect={() => { handleDisconnect(this) }} />, footer: <Footer handleLogout={datax.DataHandler.releaseAccess} username={username} />
+            navbar: <ProgrammNavbar
+                username={username}
+                handleUser={() => { handleUserAction(this); }}
+                home={this.setHome}
+                fams={this.setFams}
+                handleSettings={() => this.setState({ body: <SettingsPage /> })}
+                handleDisconnect={() => { handleDisconnect(this) }} />,
+            footer: <Footer
+                handleLogout={datax.DataHandler.releaseAccess
+                   /*  () => {
+                        this.setState({
+                            modal: OkDialog("Errore generico", "Testo dell'errore generico", () => { this.setState({ modal: <></> }) }, true)
+                        });
+                    } */
+                }
+                username={username} />
         });
         this.setHome();
     }
@@ -87,8 +124,9 @@ class LoadApp extends Component {
             <Container fluid role="main" md="auto">
                 {this.state.body}
             </Container>
-            {this.state.footer}
+            {this.state.modal}
         </>
+        //{this.state.footer}
     };
 
     register(event) {
@@ -112,4 +150,4 @@ class LoadApp extends Component {
 
 }
 
-export default LoadApp; 
+export default LoadApp;

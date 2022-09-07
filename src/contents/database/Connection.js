@@ -1,50 +1,38 @@
 import axios from "axios";
+import { datax } from "../data";
 const API_PATH = 'http://localhost:80/caritas-api/index.php';
 
-export function verify(values, success_handler, error_handler) {
-    axios({
-        method: 'post',
-        url: API_PATH,
-        headers: {
-            'content-type': 'application/json'
-        },
-        data: { link: 'user', k: 'access', username: values.username, token: values.token }
-    })
-        .then(result => {
-            let dt = result.data;
-            //console.log("Response: " + JSON.stringify(dt));
-            if (dt.auth) {
-                success_handler(dt);
-            } else {
-                error_handler(dt);
-            }
-        })
-        .catch(error => error_handler(error));
-}
-
-export function user(values, success_handler, error_handler) {
+function conn(path, values, success_handler, error_handler) {
     if (values.method === 'post') {
-        axios({
-            method: 'post',
-            url: API_PATH,
+        axios.post(API_PATH + path,
+            values, {
             headers: {
-                'content-type': 'application/json'
-            },
-            data: values
+                'content-type': 'application/json',
+                'X-Auth-Username': datax.DataHandler.access.username,
+                'X-Auth-Token': datax.DataHandler.access.token
+            }
         }).then(result => {
             let dt = result.data;
-            if (dt.auth) {
+            //console.log("Response Post: " + JSON.stringify(dt));
+            if (dt.auth && dt.res.exec) {
                 success_handler(dt);
             } else {
                 error_handler(dt);
             }
         })
-            .catch(error => error_handler(error));
+            .catch(error => { error_handler(error); });
     } else if (values.method === 'get') {
         axios.get(
-            API_PATH + "/user", {
-            params: values
-        }).then(result => {
+            API_PATH + path,
+            {
+                params: values,
+                headers: {
+                    'content-type': 'application/json',
+                    'X-Auth-Username': datax.DataHandler.access.username,
+                    'X-Auth-Token': datax.DataHandler.access.token
+                }
+            }
+        ).then(result => {
             let dt = result.data;
             //console.log("Response Get: " + JSON.stringify(dt));
             if (dt.auth) {
@@ -56,17 +44,64 @@ export function user(values, success_handler, error_handler) {
             .catch(error => error_handler(error));
     } else if (values.method === 'put') {
         axios.put(
-            API_PATH, {
-            params: values
-        }).then(result => {
+            API_PATH + path,
+            values,
+            {
+                headers: {
+                    'content-type': 'application/json',
+                    'X-Auth-Username': datax.DataHandler.access.username,
+                    'X-Auth-Token': datax.DataHandler.access.token
+                }
+            }
+        ).then(result => {
             let dt = result.data;
-            console.log("Response Put: " + JSON.stringify(dt));
-            if (dt.auth) {
+            //console.log("Response Put: " + JSON.stringify(dt));
+            if (dt.auth && dt.res.exec) {
                 success_handler(dt);
             } else {
                 error_handler(dt);
             }
-        })
-            .catch(error => error_handler(error));
+        }).catch(error => error_handler(error.data));
+    } else if (values.method === 'delete') {
+        axios.delete(
+            API_PATH + path,
+            {
+                headers: {
+                    'content-type': 'application/json',
+                    'X-Auth-Username': datax.DataHandler.access.username,
+                    'X-Auth-Token': datax.DataHandler.access.token
+                }
+                /* ,
+                data: {
+                    'X-Auth-Username': values.username,
+                    'X-Auth-Token': values.token
+                } */
+            }
+        ).then(result => {
+            let dt = result.data;
+            //console.log("Response Delete: " + JSON.stringify(dt));
+            if (dt.auth && dt.res.exec) {
+                success_handler(dt);
+            } else {
+                error_handler(dt);
+            }
+        }).catch(error => error_handler(error.data));
     }
+}
+
+
+export function verify(values, success_handler, error_handler) {
+    user({ method: 'post', link: 'user', k: 'access', username: values.username, token: values.token }, success_handler, error_handler);
+}
+
+export function user(values, success_handler, error_handler) {
+    conn("/user/" + values['k'], values, success_handler, error_handler);
+}
+
+export function fam(values, success_handler, error_handler) {
+    conn("/fam/" + values['k'], values, success_handler, error_handler);
+}
+
+export function extra(values, success_handler, error_handler) {
+    conn("/extra/" + values['k'], values, success_handler, error_handler);
 }

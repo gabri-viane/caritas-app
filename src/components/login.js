@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import Logo from "../components/logo.js";
 import { datax } from "../contents/data.js";
-import axios from "axios";
-
-const API_PATH = 'http://localhost:80/caritas-api/index.php';
+import { user } from "../contents/database/Connection.js";
 
 class LoginModule extends Component {
 
@@ -22,7 +20,7 @@ class LoginModule extends Component {
     }
 
     render() {
-        return <div className='mt-5'  >
+        return <div className='mt-5'>
             <div className="container-fluid ">
                 <div className="row text-center">
                     <div className="col-6 container-fluid text-center">
@@ -67,33 +65,19 @@ class LoginModule extends Component {
 
     login(event) {
         event.preventDefault();
-
-        axios({
-            method: 'post',
-            url: API_PATH,
-            headers: {
-                'content-type': 'application/json'
-            },
-            data: { method: 'post', link: 'user', k: 'login', username: this.state.username, password: this.state.password }
-        })
-            .then(result => {
-                console.log("Response: " + JSON.stringify(result.data));
-                this.setState({
-                    auth: result.data.auth,
-                    token: result.data.token
-                }, () => {
-                    if (this.state.auth) {
-                        datax.DataHandler.setLoginAccessData(this.state.token, this.state.username);
-                        this.props.handleSuccess();
-                    } else {
-                        alert("Credenziali errate");
-                    }
-                });
-
-            })
-            .catch(error => this.setState({
-                error: error.message
-            }));
+        user({ method: 'post', k: 'login', username: this.state.username, password: this.state.password }, (dt) => {
+            this.setState({
+                auth: dt.auth,
+                token: dt.res.token
+            }, () => {
+                if (this.state.auth) {
+                    datax.DataHandler.setLoginAccessData(this.state.token, this.state.username);
+                    this.props.handleSuccess();
+                }
+            });
+        }, (dt) => {
+            alert(dt.res.msg);
+        });
     }
 
 }
