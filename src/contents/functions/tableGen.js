@@ -4,6 +4,7 @@ import Table from "react-bootstrap/esm/Table";
 import Form from "react-bootstrap/esm/Form";
 import Button from "react-bootstrap/esm/Button";
 import editicon from "../../resources/images/pencil.png";
+import regediticon from "../../resources/images/edit.png";
 import deleteicon from "../../resources/images/trash.png";
 import eyeicon from "../../resources/images/open-eye.png";
 
@@ -76,7 +77,7 @@ export function AutoFamFullTable(query, handleDelete, handleEdit) {
 }
 
 
-export function AutoMagazzinoTable(handleShow, handleEdit, handleDelete, query) {
+export function AutoMagazzinoTable(handleShow, handleEdit, handleDelete, handleEditQuantity, query) {
   const searchText = "Esegui ricerca: (Nome prodotto)";
   const filter = (item, value) => (
     (item['Nome']).toLocaleLowerCase().includes(value));
@@ -90,6 +91,17 @@ export function AutoMagazzinoTable(handleShow, handleEdit, handleDelete, query) 
     handleShow={handleShow}
     handleEdit={handleEdit}
     handleDelete={handleDelete}
+    dataFormatter={(column, data, row) => {
+      if (column === 'Totale') {
+        return <>
+          <span>{data}</span>
+          <Button className="center-text" variant="transparent" onClick={(e) => handleEditQuantity(e, row['IDProdotto'])}>
+            <img src={regediticon} alt="Modifica" style={{ width: 16, height: 16 }}></img>
+          </Button>
+        </>
+      }
+      return data;
+    }}
     heads={heads}
     handleParam={'IDProdotto'}
     datafilter={filter} />;
@@ -101,7 +113,7 @@ export function AutoProdottiTable(handleShow, handleEdit, handleDelete, query) {
     (item['Nome']).toLocaleLowerCase().includes(value)
     || (('' + value).toLowerCase() === 'extra' ? item['IsExtra'] === '1' : false)
     || (('' + value).toLowerCase() === 'igiene' ? item['IsIgiene'] === '1' : false));
-    
+
   const heads = {
     'Nome': 'Nome Prodotto',
     'IsMagazzino': 'A Magazzino',
@@ -208,7 +220,7 @@ export class AutoSearchTable extends Component {
               return <tr key={index}>
                 {Object.keys(this.props.heads).map((cl_id) => {
                   const tData = row[cl_id] ? row[cl_id] : "——";
-                  return <td key={index + "" + cl_id + "" + row[cl_id]}>{this.dataFormatter(cl_id, tData)}</td>
+                  return <td key={index + "" + cl_id + "" + row[cl_id]}>{this.dataFormatter(cl_id, tData, row)}</td>
                 })}
                 {this.state.options ?
                   <td key={index}>

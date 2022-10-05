@@ -19,8 +19,6 @@ import SettingsPage from "./extra/settings";
 
 const API_PATH = process.env.REACT_APP_API_PATH; //"http://localhost:80/caritas-api/index.php";//+process.env.REACT_APP_WEB_API_REF;
 
-console.log(process.env);
-
 /*eslint no-extend-native: ["error", { "exceptions": ["Date"] }]*/
 Date.prototype.toDateInputValue = (function () {
     var local = new Date(this);

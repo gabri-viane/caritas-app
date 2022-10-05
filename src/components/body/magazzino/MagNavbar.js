@@ -87,6 +87,7 @@ export class MagNavbar extends Component {
                 this.handleShow,
                 (e, idprod) => this.handleEdit(e, idprod, this.renderMag, 'all'),
                 this.handleDelete,
+                (e, idprod) => this.handleEdit(e, idprod, this.renderMag, 'all'),
                 dt.query)
         });
     }
