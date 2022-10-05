@@ -136,7 +136,7 @@ export class FamNavbar extends Component {
                 <Nav variant="pills" bg="dark" className="mt-2"
                     activeKey={this.state.key} onSelect={(selectedKey) => this.setState({ key: selectedKey })}>
                     <Nav.Item>
-                        <Nav.Link href="/"><img src={backicon} style={{ width: 16, height: 16 }} alt="Indietro" /> Home</Nav.Link>
+                        <Nav.Link href="#/" onClick={this.props.handleHome}><img src={backicon} style={{ width: 16, height: 16 }} alt="Indietro" /> Home</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
                         <Nav.Link href="#/fam/add" onClick={this.handleCreate}>Aggiungi Famiglia</Nav.Link>

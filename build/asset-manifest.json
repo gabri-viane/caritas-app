@@ -1,14 +1,16 @@
 {
-  "files": {
-    "main.css": "/caritas/static/css/main.aa27b9c2.css",
-    "main.js": "/caritas/static/js/main.b536ca8c.js",
-    "static/media/database-icon-adv.png": "/caritas/static/media/database-icon-adv.d6b3a3bd41834822be13.png",
-    "index.html": "/caritas/index.html",
-    "main.aa27b9c2.css.map": "/caritas/static/css/main.aa27b9c2.css.map",
-    "main.b536ca8c.js.map": "/caritas/static/js/main.b536ca8c.js.map"
-  },
-  "entrypoints": [
-    "static/css/main.aa27b9c2.css",
-    "static/js/main.b536ca8c.js"
-  ]
+  "main.css": "./static/css/main.6d1a3221.chunk.css",
+  "main.js": "./static/js/main.06bd57fe.chunk.js",
+  "main.js.map": "./static/js/main.06bd57fe.chunk.js.map",
+  "static/css/1.c5d18434.chunk.css": "./static/css/1.c5d18434.chunk.css",
+  "static/js/1.5dc1c2d1.chunk.js": "./static/js/1.5dc1c2d1.chunk.js",
+  "static/js/1.5dc1c2d1.chunk.js.map": "./static/js/1.5dc1c2d1.chunk.js.map",
+  "runtime~main.js": "./static/js/runtime~main.4a686d48.js",
+  "runtime~main.js.map": "./static/js/runtime~main.4a686d48.js.map",
+  "static/media/database-icon-adv.png": "./static/media/database-icon-adv.28ed3233.png",
+  "static/css/main.6d1a3221.chunk.css.map": "./static/css/main.6d1a3221.chunk.css.map",
+  "static/css/1.c5d18434.chunk.css.map": "./static/css/1.c5d18434.chunk.css.map",
+  "index.html": "./index.html",
+  "precache-manifest.9be67b8f8931420ab0f28331d6490cb0.js": "./precache-manifest.9be67b8f8931420ab0f28331d6490cb0.js",
+  "service-worker.js": "./service-worker.js"
 }

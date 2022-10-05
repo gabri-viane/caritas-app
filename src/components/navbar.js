@@ -28,6 +28,7 @@ class ProgrammNavbar extends Component {
                             <Nav className="me-auto" activeKey={this.state.key} onSelect={(selectedKey) => this.setState({ key: selectedKey })}>
                                 <Nav.Link href="#home" onClick={() => this.props.home()}>Home</Nav.Link>
                                 <Nav.Link href="#famiglie" onClick={() => this.props.fams()}>Famiglie</Nav.Link>
+                                <Nav.Link href="#magazzino" onClick={() => this.props.mag()}>Magazzino</Nav.Link>
                                 <Nav.Link href="#borse">Borse</Nav.Link>
                             </Nav>
                             <Nav>

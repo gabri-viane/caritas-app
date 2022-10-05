@@ -76,6 +76,57 @@ export function AutoFamFullTable(query, handleDelete, handleEdit) {
 }
 
 
+export function AutoMagazzinoTable(handleShow, handleEdit, handleDelete, query) {
+  const searchText = "Esegui ricerca: (Nome prodotto)";
+  const filter = (item, value) => (
+    (item['Nome']).toLocaleLowerCase().includes(value));
+  const heads = {
+    'Nome': 'Nome Prodotto',
+    'Totale': 'Quantità Magazzino'
+  };
+  return <AutoSearchTable
+    query={query}
+    searchText={searchText}
+    handleShow={handleShow}
+    handleEdit={handleEdit}
+    handleDelete={handleDelete}
+    heads={heads}
+    handleParam={'IDProdotto'}
+    datafilter={filter} />;
+}
+
+export function AutoProdottiTable(handleShow, handleEdit, handleDelete, query) {
+  const searchText = "Esegui ricerca: (Nome prodotto, Igiene, Fresco, Extra, A magazzino)";
+  const filter = (item, value) => (
+    (item['Nome']).toLocaleLowerCase().includes(value)
+    || (('' + value).toLowerCase() === 'extra' ? item['IsExtra'] === '1' : false)
+    || (('' + value).toLowerCase() === 'igiene' ? item['IsIgiene'] === '1' : false));
+    
+  const heads = {
+    'Nome': 'Nome Prodotto',
+    'IsMagazzino': 'A Magazzino',
+    'IsIgiene': 'Igiene',
+    'IsFresco': 'Fresco',
+    'IsExtra': 'Extra'
+  };
+  return <AutoSearchTable
+    query={query}
+    searchText={searchText}
+    handleShow={handleShow}
+    handleEdit={handleEdit}
+    handleDelete={handleDelete}
+    dataFormatter={(column, data) => {
+      if (column === "IsMagazzino" || column === "IsIgiene"
+        || column === "IsExtra" || column === "IsFresco") {
+        return data === '0' ? "No" : "Sì";
+      }
+      return data;
+    }}
+    heads={heads}
+    handleParam={'ID'}
+    datafilter={filter} />;
+}
+
 export class AutoSearchTable extends Component {
   state = {
     options: true,
@@ -92,6 +143,16 @@ export class AutoSearchTable extends Component {
     if (prevProps.query !== this.props.query) {
       this.setState({
         query: this.props.query,
+      });
+    }
+    if (prevProps.searchText !== this.props.searchText) {
+      this.setState({
+        search_form: <Form bg="dark" variant="dark" sticky="top">
+          <Form.Group className="mb-3" controlId="searchGroupFamily">
+            <Form.Label className="lead">{this.props.searchText}</Form.Label>
+            <Form.Control autoComplete="off" autoCorrect="off" type="search" onChange={this.handleSearch} />
+          </Form.Group>
+        </Form>
       });
     }
   }
@@ -120,6 +181,13 @@ export class AutoSearchTable extends Component {
     this.setState({ query: arr });
   }
 
+  dataFormatter = (column, data) => {
+    if (!!this.props.dataFormatter) {
+      return this.props.dataFormatter(column, data);
+    }
+    return data;
+  }
+
   render() {
     return <Container>
       {this.state.search_form}
@@ -140,7 +208,7 @@ export class AutoSearchTable extends Component {
               return <tr key={index}>
                 {Object.keys(this.props.heads).map((cl_id) => {
                   const tData = row[cl_id] ? row[cl_id] : "——";
-                  return <td key={index + "" + cl_id + "" + row[cl_id]}>{tData}</td>
+                  return <td key={index + "" + cl_id + "" + row[cl_id]}>{this.dataFormatter(cl_id, tData)}</td>
                 })}
                 {this.state.options ?
                   <td key={index}>

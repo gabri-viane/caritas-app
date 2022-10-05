@@ -1,6 +1,6 @@
 import axios from "axios";
 import { datax } from "../data";
-const API_PATH = 'http://localhost:80/caritas-api/index.php';
+const API_PATH = "http://localhost:80/caritas-api/index.php";// + process.env.REACT_APP_WEB_API_REF;
 
 function conn(path, values, success_handler, error_handler) {
     if (values.method === 'post') {
@@ -100,6 +100,10 @@ export function user(values, success_handler, error_handler) {
 
 export function fam(values, success_handler, error_handler) {
     conn("/fam/" + values['k'], values, success_handler, error_handler);
+}
+
+export function mag(values, success_handler, error_handler) {
+    conn("/mag/" + values['k'], values, success_handler, error_handler);
 }
 
 export function extra(values, success_handler, error_handler) {
