@@ -6,7 +6,7 @@ import Form from "react-bootstrap/esm/Form";
 import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
 import Modal from "react-bootstrap/esm/Modal";
 import Button from "react-bootstrap/esm/Button";
-import { requestConfezioni, showProds, updateProd, createProd } from "./MagFunctions";
+import { requestConfezioni, showProds, updateProd, createProd, requestDonatori, showEntrate, updateEntrata, createEntrata } from "./MagFunctions";
 //import { AutoFamFullTable } from "../../../contents/functions/tableGen";
 
 
@@ -194,6 +194,217 @@ export class MagEditor extends Component {
                             (this.state.create ?
                                 <Button variant="primary" onClick={this.handleCreate}>
                                     Salva prodotto
+                                </Button>
+                                :
+                                <Button variant="primary" onClick={this.handleEdit}>
+                                    Salva modifiche
+                                </Button>) : <></>}
+                    </Modal.Footer>
+                </Modal>
+                ://Eseguito qua sotto se c'è un errore di ricezione dati dalla chiamata al codice php per i dati della famiglia
+                <Container>
+                    <span>Errore caricamento dati</span>
+                </Container>
+            }
+        </>;
+    }
+
+}
+
+
+export class EntryEditor extends Component {
+
+    state = {
+        show: false,
+        create: false,
+        edit: false,
+        ID: -1,
+        IDProdotti: -1,
+        IDDonatori: 1,
+        Prodotto: '',
+        Donatore: '',
+        Totale: 1,
+        Arrivo: new Date().toDateInputValue(),
+        query_prods: [],
+        query_dons: []
+    };
+
+    constructor(props) {
+        super(props);
+        this.state.ID = props.ID;
+        if (props.edit) {
+            this.state.IDProdotti = props.IDProdotti || -1;
+            this.state.IDDonatori = props.IDDonatori || 1;
+        }
+        this.state.edit = props.edit || props.create;
+        this.state.create = props.create;
+    }
+
+    componentDidMount() {
+        requestDonatori((dt) => {
+            this.setState({ query_dons: dt.query })
+        });
+        showProds((dt) => {
+            this.setState({
+                query_prods: dt.query,
+                IDProdotti: this.state.create ? dt.query[0].ID : this.state.IDProdotti
+            });
+        }, (dt) => {
+            console.log(dt.msg)
+        }, 'all');
+        if (!this.state.create) {
+            showEntrate((dt) => {
+                this.setState({
+                    show: true,
+                    ID: dt.query[0].ID || 0,
+                    IDProdotti: dt.query[0].IDProdotti || -1,
+                    IDDonatori: dt.query[0].IDDonatori || -1,
+                    Prodotto: dt.query[0].Prodotto || '',
+                    Donatore: dt.query[0].Donatre || '',
+                    Totale: dt.query[0].Totale || 0,
+                    Arrivo: new Date(dt.query[0].Arrivo).toDateInputValue()
+                });
+            }, (dt) => {
+                this.setState({
+                    show: false
+                });
+            }, this.state.ID);
+        } else {
+            this.setState({
+                show: true,
+                IDProdotti: -1,
+                IDDonatori: 1,
+                Totale: 1,
+                Arrivo: new Date().toDateInputValue()
+            });
+        }
+    }
+
+    handleProdottoChange = (e) => {
+        e.preventDefault();
+        this.setState({ IDProdotti: e.target.value });
+    }
+
+    handleDonatoreChange = (e) => {
+        e.preventDefault();
+        this.setState({ IDDonatori: e.target.value });
+    }
+
+    handleDateChange = (e) => {
+        e.preventDefault();
+        this.setState({ Arrivo: e.target.value });
+    }
+
+    handleTotaleChange = (e) => {
+        e.preventDefault();
+        this.setState({ Totale: e.target.value });
+    }
+
+    handleEdit = (e) => {
+        e.preventDefault();
+        updateEntrata((dt) => {
+            if (!!this.props.success_handler) {
+                this.props.success_handler(dt);
+                this.props.handleClose();
+            }
+        },
+            (dt) => {
+                if (!!this.props.error_handler) {
+                    this.props.error_handler(dt);
+                }
+            },
+            this.state.ID,
+            {
+                ID: this.state.ID,
+                Totale: this.state.Totale,
+                Arrivo: new Date(this.state.Arrivo).getTime() / 1000
+            });
+    }
+
+    handleCreate = (e) => {
+        e.preventDefault();
+        createEntrata(
+            (dt) => { //Devo aggiungere un prodotto
+                if (!!this.props.success_handler) {
+                    this.props.success_handler(dt);
+                    this.props.handleClose();
+                }
+            },
+            (dt) => {
+                if (!!this.props.error_handler) {
+                    this.props.error_handler(dt);
+                }
+            },
+            {
+                IDProdotti: this.state.IDProdotti,
+                IDDonatori: this.state.IDDonatori,
+                Totale: this.state.Totale,
+                Arrivo: new Date(this.state.Arrivo).getTime() / 1000
+            });
+    }
+
+    render() {
+        return <>
+            {this.state.show ?
+                <Modal show={this.state.show} onHide={this.props.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{this.state.edit ? (this.state.create ? "Crea Entrata" : "Modifica Entrata") : "Mostra Entrata"}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <span className="lead">Dati dell'entrata registrata:</span>
+                        <Form>
+                            <Container fluid mx="auto">
+                                <Row mx="auto" >
+                                    <Form.Group className="mb-3 mt-3" controlId="entrdata">
+                                        <Form.Text className="h6">Dati Entrata:</Form.Text>
+                                        <FloatingLabel controlId="floatingProdotto" label="Prodotto" className="mt-1">
+                                            <Form.Select aria-label="Prodotto" disabled={!this.state.edit} value={this.state.IDProdotti} onChange={this.handleProdottoChange}>
+                                                {this.state.query_prods.map((row, index) => {
+                                                    return <option key={index} value={row['ID']}>{row['Nome']}</option>
+                                                })}
+                                            </Form.Select>
+                                        </FloatingLabel>
+                                        <FloatingLabel controlId="floatingDonatore" label="Donatore" className="mt-1">
+                                            <Form.Select aria-label="Donatore" disabled={!this.state.edit} value={this.state.IDDonatori} onChange={this.handleDonatoreChange}>
+                                                {this.state.query_dons.map((row, index) => {
+                                                    return <option key={index} value={row['ID']}>{row['Nome']}</option>
+                                                })}
+                                            </Form.Select>
+                                        </FloatingLabel>
+                                    </Form.Group>
+                                </Row>
+                                <Row mx="auto">
+                                    <Col md>
+                                        <Form.Group className="mt-3" controlId="blockreg">
+                                            <FloatingLabel controlId="floatingData" label="Data registrazione" className="mt-1">
+                                                <Form.Control type="date" autoComplete="off" autoCorrect="off" disabled={!this.state.edit} value={this.state.Arrivo} onChange={this.handleDateChange} />
+                                            </FloatingLabel> <FloatingLabel controlId="floatingTotale" label="Quantità" className="mt-1">
+                                                <Form.Control as="input" type="number" autoComplete="off" autoCorrect="off" disabled={!this.state.edit} value={this.state.Totale} onChange={this.handleTotaleChange} />
+                                            </FloatingLabel>
+                                        </Form.Group>
+                                    </Col>
+                                    {this.state.create ? <></> :
+                                        <Col md>
+                                            <Form.Group className="mt-3" controlId="entrid">
+                                                <Form.Text className="h6">ID Entrata:</Form.Text>
+                                                <FloatingLabel controlId="floatingID" label="ID" className="mt-1">
+                                                    <Form.Control type="text" autoComplete="off" autoCorrect="off" disabled value={this.state.ID} />
+                                                </FloatingLabel>
+                                            </Form.Group>
+                                        </Col>
+                                    }
+                                </Row>
+                            </Container>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.props.handleClose}>
+                            Chiudi
+                        </Button>
+                        {this.state.edit ?
+                            (this.state.create ?
+                                <Button variant="primary" onClick={this.handleCreate}>
+                                    Salva entrata
                                 </Button>
                                 :
                                 <Button variant="primary" onClick={this.handleEdit}>

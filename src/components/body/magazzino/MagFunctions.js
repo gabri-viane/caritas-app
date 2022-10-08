@@ -23,3 +23,23 @@ export function createProd(success_handler, error_handler, values) {
 export function requestConfezioni(success_handler) {
     extra({ ...{ method: 'get', k: "confezioni" } }, success_handler, (dt) => { alert(dt) });
 }
+
+export function requestDonatori(success_handler) {
+    extra({ ...{ method: 'get', k: "donatori" } }, success_handler, (dt) => { alert(dt) });
+}
+
+export function showEntrate(success_handler, error_handler, k_url) {
+    mag({ ...{ method: 'get', k: "entr/" + k_url } }, (dt) => { success_handler(dt) }, (dt) => { error_handler(dt) });
+}
+
+export function createEntrata(success_handler, error_handler, values) {
+    mag({ ...values, ...{ method: 'post', k: "add/entr" } }, (dt) => { success_handler(dt) }, (dt) => { error_handler(dt) });
+}
+
+export function updateEntrata(success_handler, error_handler, k_url, values) {
+    mag({ ...values, ...{ method: 'put', k: "entr/update/" + k_url } }, (dt) => { success_handler(dt) }, (dt) => { error_handler(dt) });
+}
+
+export function deleteEntrata(success_handler, error_handler, k_url) {
+    mag({ ...{ method: 'delete', k: "entr/" + k_url.identr } }, (dt) => { success_handler(dt) }, (dt) => { error_handler(dt) });
+}

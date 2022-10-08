@@ -1,6 +1,6 @@
 import axios from "axios";
 import { datax } from "../data";
-const API_PATH = "http://localhost:80/caritas-api/index.php";// + process.env.REACT_APP_WEB_API_REF;
+const API_PATH =  process.env.REACT_APP_API_PATH;// + process.env.REACT_APP_WEB_API_REF;
 
 function conn(path, values, success_handler, error_handler) {
     if (values.method === 'post') {
@@ -13,7 +13,7 @@ function conn(path, values, success_handler, error_handler) {
             }
         }).then(result => {
             let dt = result.data;
-            //console.log("Response Post: " + JSON.stringify(dt));
+            console.log("Response Post: " + JSON.stringify(dt));
             if (dt.auth && dt.res.exec) {
                 success_handler(dt);
             } else {

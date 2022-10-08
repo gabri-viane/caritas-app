@@ -133,7 +133,7 @@ export class FamNavbar extends Component {
     render() {
         return <>
             <Container>
-                <Nav variant="pills" bg="dark" className="mt-2"
+                <Nav bg="dark" className="mt-2"
                     activeKey={this.state.key} onSelect={(selectedKey) => this.setState({ key: selectedKey })}>
                     <Nav.Item>
                         <Nav.Link href="#/" onClick={this.props.handleHome}><img src={backicon} style={{ width: 16, height: 16 }} alt="Indietro" /> Home</Nav.Link>
@@ -164,7 +164,7 @@ export class FamNavbar extends Component {
                         </>
                     }
                     <Nav.Item className="ml-auto text-center">
-                        <Nav.Link href="#/" onClick={() => this.componentDidMount()}><img src={refreshicon} alt="Ricarica" /> Ricarica</Nav.Link>
+                        <Nav.Link href="#/" onClick={() => this.componentDidMount()}><img src={refreshicon} alt="Ricarica" data-bs-toggle="tooltip" title="Ricarica dati" /></Nav.Link>
                     </Nav.Item>
                 </Nav>
                 <hr />
