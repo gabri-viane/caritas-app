@@ -79,7 +79,7 @@ function conn(path, values, success_handler, error_handler) {
             }
         ).then(result => {
             let dt = result.data;
-            //console.log("Response Delete: " + JSON.stringify(dt));
+            console.log("Response Delete: " + JSON.stringify(dt));
             if (dt.auth && dt.res.exec) {
                 success_handler(dt);
             } else {

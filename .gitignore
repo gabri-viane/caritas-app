@@ -74,5 +74,8 @@ typings/
 
 # FuseBox cache
 .fusebox/
+
+
+build/
 .env.development
 .env.production
