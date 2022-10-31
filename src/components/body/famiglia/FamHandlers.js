@@ -7,9 +7,13 @@ import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
 import Modal from "react-bootstrap/esm/Modal";
 import Button from "react-bootstrap/esm/Button";
 import addicon from "../../../resources/images/add.png";
+import erroricon from "../../../resources/images/error.png";
+import successicon from "../../../resources/images/success.png";
 import { showFams, updateFam, createFam, deleteFam, deleteComp, requestParentele, requestComponent, createComp, updateComp } from "./FamFunctions";
 import { AutoFamFullTable } from "../../../contents/functions/tableGen";
 import { ConfirmDialog, OkDialog } from "../../../contents/functions/Dialogs";
+import LoadApp from "../../loadApp";
+import { datax } from "../../../contents/data";
 
 export class FamEditor extends Component {
 
@@ -194,12 +198,20 @@ export class FamShower extends Component {
                 components: !dt.query[0].components ? {} : dt.query[0].components,
                 modal: <></>
             });
-        }, (dt) => {
+        }, this.errorFamLoad, (this.state.IDFAM > -1) ? "data/" + this.state.IDFAM : "d/" + this.state.ID);
+    }
+
+    errorFamLoad = (dt) => {
+        if (datax.DataHandler.dataSettings.light) {
             this.setState({
-                show: false
+                show: false,
+                modal: OkDialog("Errore caricamento.", "Non è stato possibile caricare i dati della famiglia.", () => {
+                    this.setState({ modal: <></> })
+                }, false)
             });
-            console.log(dt);
-        }, (this.state.IDFAM > -1) ? "data/" + this.state.IDFAM : "d/" + this.state.ID);
+        } else {
+            LoadApp.addMessage(erroricon, "Famiglie", "Errore caricamento dati della famiglia.");
+        }
     }
 
     handleAdd = (e) => {
@@ -237,11 +249,29 @@ export class FamShower extends Component {
             modal: ConfirmDialog("Elimina componente", "Vuoi davvero eliminare questo componente?", () => {
                 CompDelete(this.state.IDFAM, id, (dt) => {
                     this.refersh();
-                }, () => { });
+                }, this.errorDeleteComp);
             }, () => { }, () => {
                 this.setState({ show: true, modal: <></> })
             })
         })
+    }
+
+    errorDeleteComp = (dt) => {
+        if (datax.DataHandler.dataSettings.light) {
+            this.setState({
+                show: false,
+                modal:
+                    OkDialog("Errore eliminazione componente", "Non è stato possibile eliminare il componente.",
+                        () => {
+                            this.setState({
+                                show: true,
+                                modal: <></>
+                            });
+                        })
+            });
+        } else {
+            LoadApp.addMessage(erroricon, "Componenti", "Non è stato possibile eliminare il componente.");
+        }
     }
 
     render() {
@@ -474,9 +504,7 @@ export class CompEditor extends Component {
                         Parentela: dt.query[0].IDParentela
                     })
                 },
-                (dt) => {
-                    console.log(dt);
-                },
+                this.errorLoadComp,
                 { idfam: this.props.IDFAM, idcomp: this.props.ID }
             );
         }
@@ -508,22 +536,12 @@ export class CompEditor extends Component {
         if (this.state.edit) {
             updateComp(
                 (dt) => {
+                    if (!datax.DataHandler.dataSettings.light) {
+                        LoadApp.addMessage(successicon, "Componenti", "Componente aggiornato con successo");
+                    }
                     this.props.handleClose();
                 },
-                (dt) => {
-                    console.log(dt);
-                    this.setState({
-                        show: false,
-                        modal: OkDialog("Errore modifica componente", "Non è stato possibile modificare il componente.",
-                            () => {
-                                this.setState({
-                                    show: true,
-                                    modal: <></>
-                                });
-                                this.props.handleClose();
-                            })
-                    });
-                },
+                this.errorModifyComp,
                 { idfam: this.props.IDFAM, idcomp: this.props.ID },
                 {
                     Nome: this.state.Nome,
@@ -535,24 +553,12 @@ export class CompEditor extends Component {
         } else {
             createComp(
                 (dt) => {
-                    console.log(dt);
+                    if (!datax.DataHandler.dataSettings.light) {
+                        LoadApp.addMessage(successicon, "Componenti", "Componente creato con successo");
+                    }
                     this.props.handleClose();
                 },
-                (dt) => {
-                    console.log(dt);
-                    this.setState({
-                        show: false,
-                        modal:
-                            OkDialog("Errore creazione componente", "Non è stato possibile creare un nuovo componente.",
-                                () => {
-                                    this.setState({
-                                        show: true,
-                                        modal: <></>
-                                    });
-                                    this.props.handleClose();
-                                })
-                    });
-                },
+                this.errorCreateComp,
                 this.props.IDFAM,
                 {
                     Nome: this.state.Nome,
@@ -561,6 +567,53 @@ export class CompEditor extends Component {
                     Parentela: this.state.Parentela,
                 }
             )
+        }
+    }
+
+    errorLoadComp = (dt) => {
+        if (datax.DataHandler.dataSettings.light) {
+            this.setState({
+                modal: OkDialog("Errore caricamento dati", "Non è stato possibile scaricare i dati.", () => this.setState({ modal: <></> }), false)
+            });
+        } else {
+            LoadApp.addMessage(erroricon, "Componenti", "Non è stato possibile scaricare i dati.");
+        }
+    }
+
+    errorCreateComp = (dt) => {
+        if (datax.DataHandler.dataSettings.light) {
+            this.setState({
+                show: false,
+                modal:
+                    OkDialog("Errore creazione componente", "Non è stato possibile creare un nuovo componente.",
+                        () => {
+                            this.setState({
+                                show: true,
+                                modal: <></>
+                            });
+                            this.props.handleClose();
+                        })
+            });
+        } else {
+            LoadApp.addMessage(erroricon, "Componenti", "Non è stato possibile creare un nuovo componente.");
+        }
+    }
+
+    errorModifyComp = (dt) => {
+        if (datax.DataHandler.dataSettings.light) {
+            this.setState({
+                show: false,
+                modal: OkDialog("Errore modifica componente", "Non è stato possibile modificare il componente.",
+                    () => {
+                        this.setState({
+                            show: true,
+                            modal: <></>
+                        });
+                        this.props.handleClose();
+                    })
+            });
+        } else {
+            LoadApp.addMessage(erroricon, "Componenti", "Non è stato possibile modificare il componente.");
         }
     }
 

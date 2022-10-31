@@ -9,10 +9,12 @@ import Footer from "./footer";
 
 import { handleUserAction } from '../contents/functions/UserHandlers.js';
 
-import Container from "react-bootstrap/esm/Container";
-import Row from "react-bootstrap/esm/Row";
-import Col from "react-bootstrap/esm/Col";
-import Button from "react-bootstrap/esm/Button";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import ToastContainer from "react-bootstrap/ToastContainer";
+import Toast from "react-bootstrap/Toast";
 import { FamNavbar } from "./body/famiglia/FamNavbar";
 import { MagNavbar } from "./body/magazzino/MagNavbar";
 import SettingsPage from "./extra/settings";
@@ -28,23 +30,38 @@ Date.prototype.toDateInputValue = (function () {
 
 class LoadApp extends Component {
 
+    static app;
+
     state = {
         showLogin: false,
         navbar: <></>,
         body: <></>,
         footer: <></>,
         user_page: <></>,
-        modal: <></>
+        modal: <></>,
+        messages: []
     };
 
     constructor(props) {
-        if (LoadApp._instance) {
-            return LoadApp._instance
+        if (LoadApp.app) {
+            return LoadApp.app
         }
         super(props);
-        LoadApp._instance = this;
+        LoadApp.app = this;
     }
 
+    static addMessage(icon, sender, message) {
+        const msg = this.app.state.messages;
+        msg.unshift({ icon: icon, sender: sender, time: new Date().toLocaleDateString(), text: message });
+        this.app.setState({ messages: msg });
+    }
+
+    removeMessage = (i)=>{
+        const msg = this.state.messages;
+        msg.splice(i, 1);
+        this.setState({ messages: msg });
+    }
+    
     access_app = () => {
         return <>
             <Container fluid>
@@ -82,11 +99,11 @@ class LoadApp extends Component {
     }
 
     setFams = () => {
-        this.setState({ body: <FamNavbar handleHome = {this.setHome}/> })
+        this.setState({ body: <FamNavbar handleHome={this.setHome} /> })
     }
 
     setMag = () => {
-        this.setState({ body: <MagNavbar  handleHome = {this.setHome}/> })
+        this.setState({ body: <MagNavbar handleHome={this.setHome} /> })
     }
 
     setupPage = (username) => {
@@ -129,6 +146,20 @@ class LoadApp extends Component {
             {this.state.navbar}
             <Container fluid role="main" md="auto">
                 {this.state.body}
+                <ToastContainer position="bottom-end" className="p-2">
+                    {
+                        this.state.messages.map((v, i) => {
+                            return <Toast key={i} onClose={() => this.removeMessage(i)} delay={10000} autohide> 
+                                <Toast.Header>
+                                    <img src={v.icon} className="rounded me-2" alt="" />
+                                    <strong className="me-auto">{v.sender}</strong>
+                                    <small className="text-muted">{v.time}</small>
+                                </Toast.Header>
+                                <Toast.Body>{v.text}</Toast.Body>
+                            </Toast>
+                        })
+                    }
+                </ToastContainer>
             </Container>
             {this.state.modal}
         </>

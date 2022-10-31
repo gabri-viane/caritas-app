@@ -43,3 +43,15 @@ export function updateEntrata(success_handler, error_handler, k_url, values) {
 export function deleteEntrata(success_handler, error_handler, k_url) {
     mag({ ...{ method: 'delete', k: "entr/" + k_url.identr } }, (dt) => { success_handler(dt) }, (dt) => { error_handler(dt) });
 }
+
+export function requestMotivi(success_handler) {
+    extra({ ...{ method: 'get', k: "motivi" } }, success_handler, (dt) => { alert(dt) });
+}
+
+export function editMagazzino(success_handler, error_handler, values) {
+    mag({ ...values, ...{ method: 'post', k: "edit" } }, (dt) => { success_handler(dt) }, (dt) => { error_handler(dt) });
+}
+
+export function showEditMagazzino(success_handler, error_handler, k_url) {
+    mag({ ...{ method: 'get', k: "edit/" + k_url } }, (dt) => { success_handler(dt) }, (dt) => { error_handler(dt) });
+}

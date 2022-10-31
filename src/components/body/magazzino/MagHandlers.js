@@ -6,7 +6,7 @@ import Form from "react-bootstrap/esm/Form";
 import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
 import Modal from "react-bootstrap/esm/Modal";
 import Button from "react-bootstrap/esm/Button";
-import { requestConfezioni, showProds, updateProd, createProd, requestDonatori, showEntrate, updateEntrata, createEntrata } from "./MagFunctions";
+import { requestConfezioni, showProds, updateProd, createProd, requestDonatori, showEntrate, updateEntrata, createEntrata, requestMotivi, showEditMagazzino, editMagazzino } from "./MagFunctions";
 //import { AutoFamFullTable } from "../../../contents/functions/tableGen";
 
 
@@ -246,11 +246,15 @@ export class EntryEditor extends Component {
         });
         showProds((dt) => {
             this.setState({
-                query_prods: dt.query,
-                IDProdotti: this.state.create ? dt.query[0].ID : this.state.IDProdotti
+                query_prods: dt.query
             });
+            if (!this.state.edit && this.state.create) {
+                this.setState({
+                    IDProdotti: dt.query[0].ID
+                });
+            }
         }, (dt) => {
-            console.log(dt.msg)
+            
         }, 'all');
         if (!this.state.create) {
             showEntrate((dt) => {
@@ -272,7 +276,6 @@ export class EntryEditor extends Component {
         } else {
             this.setState({
                 show: true,
-                IDProdotti: -1,
                 IDDonatori: 1,
                 Totale: 1,
                 Arrivo: new Date().toDateInputValue()
@@ -410,6 +413,194 @@ export class EntryEditor extends Component {
                                 <Button variant="primary" onClick={this.handleEdit}>
                                     Salva modifiche
                                 </Button>) : <></>}
+                    </Modal.Footer>
+                </Modal>
+                ://Eseguito qua sotto se c'è un errore di ricezione dati dalla chiamata al codice php per i dati della famiglia
+                <Container>
+                    <span>Errore caricamento dati</span>
+                </Container>
+            }
+        </>;
+    }
+
+}
+
+export class ModifcheEditor extends Component {
+
+    state = {
+        show: false,
+        showing: false,//mostra solamente una modifica
+        empty_create: true,//Se non viene passato come parametro l'id del prodotto
+        ID: -1,
+        IDProdotti: -1,
+        IDMotivi: 1,
+        Totale: 1,
+        Data: new Date().toDateInputValue(),
+        query_prods: [],
+        query_mots: []
+    };
+
+    constructor(props) {
+        super(props);
+        this.state.ID = props.ID;
+        this.state.showing = props.showing;
+        if (props.showing) {
+            this.state.empty_create = false;
+        }
+        if (props.IDProdotti) {
+            this.state.empty_create = false;
+            this.state.IDProdotti = props.IDProdotti;
+            console.log("SET PROD:" + JSON.stringify(this.state.IDProdotti))
+        }
+    }
+
+    componentDidMount() {
+        requestMotivi((dt) => {
+            this.setState({ query_mots: dt.query })
+        });
+        showProds((dt) => {
+            this.setState({
+                query_prods: dt.query
+            });
+            if (!this.state.showing && this.state.empty_create) {
+                this.setState({
+                    IDProdotti: dt.query[0].ID
+                })
+            }
+        }, (dt) => {
+            console.log(dt.msg)
+        }, 'all');
+        if (this.state.showing) {
+            showEditMagazzino((dt) => {
+                this.setState({
+                    show: true,
+                    ID: dt.query[0].ID || 0,
+                    IDProdotti: dt.query[0].IDProdotti || -1,
+                    IDMotivi: dt.query[0].IDMotivi || 1,
+                    Totale: (dt.query[0].IsSottrai ? - dt.query[0].Totale : dt.query[0].Totale) || 0,
+                    Data: new Date(dt.query[0].Data).toDateInputValue()
+                });
+            }, (dt) => {
+                this.setState({
+                    show: false
+                });
+            }, this.state.ID);
+        } else {
+            this.setState({
+                show: true,
+                IDProdotti: this.state.IDProdotti,
+                IDMotivi: 1,
+                Totale: 1,
+                Data: new Date().toDateInputValue()
+            });
+        }
+    }
+
+    handleProdottoChange = (e) => {
+        e.preventDefault();
+        this.setState({ IDProdotti: e.target.value });
+    }
+
+    handleMotivoChange = (e) => {
+        e.preventDefault();
+        this.setState({ IDMotivi: e.target.value });
+    }
+
+    handleTotaleChange = (e) => {
+        e.preventDefault();
+        this.setState({ Totale: e.target.value });
+    }
+
+    handleCreate = (e) => {
+        e.preventDefault();
+        editMagazzino(
+            (dt) => { //Devo aggiungere un prodotto
+                if (!!this.props.success_handler) {
+                    this.props.success_handler(dt);
+                    this.props.handleClose();
+                }
+            },
+            (dt) => {
+                if (!!this.props.error_handler) {
+                    this.props.error_handler(dt);
+                }
+            },
+            {
+                IDProdotti: this.state.IDProdotti,
+                IDMotivi: this.state.IDMotivi,
+                Totale: Math.abs(this.state.Totale),
+                Sottrai: this.state.Totale < 0
+            });
+    }
+
+    render() {
+        return <>
+            {this.state.show ?
+                <Modal show={this.state.show} onHide={this.props.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{this.state.showing ? "Mostra Modifica Magazzino" : "Modifica Quantità Magazzino"}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <span className="lead">Dati della modifica:</span>
+                        <Form>
+                            <Container fluid mx="auto">
+                                <Row mx="auto" >
+                                    <Form.Group className="mb-3 mt-3" controlId="entrdata">
+                                        <Form.Text className="h6">Dati modifica:</Form.Text>
+                                        <FloatingLabel controlId="floatingProdotto" label="Prodotto" className="mt-1">
+                                            <Form.Select aria-label="Prodotto" disabled={this.state.showing} value={this.state.IDProdotti} onChange={this.handleProdottoChange}>
+                                                {this.state.query_prods.map((row, index) => {
+                                                    return <option key={index} value={row['ID']}>{row['Nome']}</option>
+                                                })}
+                                            </Form.Select>
+                                        </FloatingLabel>
+                                        <FloatingLabel controlId="floatingMotivo" label="Motivo" className="mt-1">
+                                            <Form.Select aria-label="Motivo" disabled={this.state.showing} value={this.state.IDMotivi} onChange={this.handleMotivoChange}>
+                                                {this.state.query_mots.map((row, index) => {
+                                                    return <option key={index} value={row['ID']}>{row['Nome']}</option>
+                                                })}
+                                            </Form.Select>
+                                        </FloatingLabel>
+                                    </Form.Group>
+                                </Row>
+                                <Row mx="auto">
+                                    <Col md>
+                                        <Form.Group className="mt-3" controlId="blockmod">
+                                            <FloatingLabel controlId="floatingData" label="Data modifica" className="mt-1">
+                                                <Form.Control type="date" autoComplete="off" autoCorrect="off" disabled value={this.state.Data} />
+                                            </FloatingLabel>
+                                            <FloatingLabel controlId="floatingTotale" label="Quantità" className="mt-1">
+                                                <Form.Control as="input" type="number" autoComplete="off" autoCorrect="off" disabled={this.state.showing} value={this.state.Totale} onChange={this.handleTotaleChange} />
+                                            </FloatingLabel>
+                                        </Form.Group>
+                                    </Col>
+                                    {this.state.showing ?
+                                        <Col md>
+                                            <Form.Group className="mt-3" controlId="modifid">
+                                                <Form.Text className="h6">ID Modifica:</Form.Text>
+                                                <FloatingLabel controlId="floatingID" label="ID" className="mt-1">
+                                                    <Form.Control type="text" autoComplete="off" autoCorrect="off" disabled value={this.state.ID} />
+                                                </FloatingLabel>
+                                            </Form.Group>
+                                        </Col>
+                                        :
+                                        <></>
+                                    }
+                                </Row>
+                            </Container>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.props.handleClose}>
+                            Chiudi
+                        </Button>
+                        {this.state.showing ?
+                            <></>
+                            :
+                            <Button variant="primary" onClick={this.handleCreate}>
+                                Modifica Magazzino
+                            </Button>
+                        }
                     </Modal.Footer>
                 </Modal>
                 ://Eseguito qua sotto se c'è un errore di ricezione dati dalla chiamata al codice php per i dati della famiglia

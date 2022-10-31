@@ -5,10 +5,12 @@ import { showFams } from "./FamFunctions";
 import { datax } from "../../../contents/data";
 import backicon from "../../../resources/images/left-arrow.png";
 import refreshicon from "../../../resources/images/refresh.png";
+import erroricon from "../../../resources/images/error.png";
 import Container from "react-bootstrap/esm/Container";
 import Nav from "react-bootstrap/esm/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { ConfirmDialog, OkDialog } from "../../../contents/functions/Dialogs";
+import LoadApp from "../../loadApp";
 
 export class FamNavbar extends Component {
 
@@ -32,11 +34,13 @@ export class FamNavbar extends Component {
         this.setState({
             modal: <FamEditor
                 IDFAM={idfam}
-                handleClose={() => {
-                    this.setState({ modal: <></> })
-                }}
+                handleClose={this.resetModal}
                 edit={true}
-                success_handler={(resp) => showFams(render, (dt) => { console.log(dt) }, kurl)}
+                success_handler={(resp) => showFams(render, (dt) => {
+                    this.setState({
+                        modal: OkDialog("Errore caricamento dati", "Non è stato possibile scaricare i dati.", this.resetModal, false)
+                    })
+                }, kurl)}
                 error_handler={this.errorReloadFams} />
         });
     }
@@ -64,6 +68,9 @@ export class FamNavbar extends Component {
                             }}
                             ID={dt.res.query.ID} />
                     });
+                }}
+                error_handler={(dt) => {
+                    LoadApp.addMessage(erroricon, "Famiglie", "Non è stato possibile aggiungere la famiglia:\n" + dt.res.msg);
                 }} />
         });
     }
@@ -107,9 +114,13 @@ export class FamNavbar extends Component {
     }
 
     errorReloadFams = (dt) => {
-        this.setState({
-            modal: OkDialog("Errore ricezione dati", "Non è stato possibile leggere la lista famiglie.", this.resetModal)
-        });
+        if (datax.DataHandler.dataSettings.light) {
+            this.setState({
+                modal: OkDialog("Errore ricezione dati", "Non è stato possibile leggere la lista famiglie.", this.resetModal)
+            });
+        } else {
+            LoadApp.addMessage(erroricon, "Aggiornamento dati", "Non è stato possibile leggere la lista famiglie.")
+        }
     };
 
     handleIdChange = (e) => {

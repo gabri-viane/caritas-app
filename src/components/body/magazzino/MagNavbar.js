@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { AutoEntrateTable, AutoMagazzinoTable, AutoProdottiTable } from "../../../contents/functions/tableGen";
-import { EntryEditor, MagEditor } from "./MagHandlers";
-import { showMag, showProds, deleteProd, showEntrate, deleteEntrata } from "./MagFunctions";
+import { AutoEntrateTable, AutoMagazzinoTable, AutoProdottiTable, AutoModificheTable } from "../../../contents/functions/tableGen";
+import { EntryEditor, MagEditor, ModifcheEditor } from "./MagHandlers";
+import { showMag, showProds, deleteProd, showEntrate, deleteEntrata, showEditMagazzino } from "./MagFunctions";
 import { datax } from "../../../contents/data";
 import backicon from "../../../resources/images/left-arrow.png";
 import refreshicon from "../../../resources/images/refresh.png";
@@ -10,7 +10,7 @@ import Nav from "react-bootstrap/esm/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Collapse from "react-bootstrap/Collapse";
 import Button from "react-bootstrap/Button"
-import { ConfirmDialog, InputIntegerDialog, OkDialog } from "../../../contents/functions/Dialogs";
+import { ConfirmDialog, OkDialog } from "../../../contents/functions/Dialogs";
 
 export class MagNavbar extends Component {
 
@@ -42,17 +42,6 @@ export class MagNavbar extends Component {
         });
     }
 
-    handleEditQuantity = (e, data) => {
-        this.setState({
-            modal: InputIntegerDialog("Modifica quantità", <span>Modifica la quantità presente in magazzino per il prodotto:<b> {data['Nome']}</b></span>, (value) => {
-                //this.renderMag();
-                alert("aggiornato a " + value);
-            }, () => {
-
-            }, this.resetModal, data['Totale'])
-        });
-    };
-
     handleShow = (e, idprod) => {
         e.preventDefault();
         this.setState({
@@ -77,6 +66,18 @@ export class MagNavbar extends Component {
         });
     }
 
+    handleShowModifca = (e, idmod) => {
+        e.preventDefault();
+        this.setState({
+            modal: <ModifcheEditor
+                ID={idmod}
+                handleClose={this.resetModal}
+                showing={true}
+                success_handler={(resp) => showEditMagazzino(this.renderModficihe, (dt) => { console.log(dt) }, 'all')}
+                error_handler={this.errorReloadModifiche} />
+        });
+    }
+
     handleCreate = (e) => {
         e.preventDefault();
         this.setState({
@@ -89,12 +90,12 @@ export class MagNavbar extends Component {
         });
     }
 
-    handleRegisterEntrate = (e, idprod) => {
+    handleRegisterEntrate = (e, prod) => {
         e.preventDefault();
         this.setState({
             modal: <EntryEditor
                 handleClose={this.resetModal}
-                IDProdotti={idprod}
+                IDProdotti={prod.IDProdotto}
                 edit={true}
                 create={true}
                 success_handler={(resp) => showEntrate(this.renderEntrate, (dt) => { console.log(dt) }, 'all')}
@@ -113,6 +114,18 @@ export class MagNavbar extends Component {
                 error_handler={this.errorReloadMag} />
         });
     }
+
+    handleEditQuantity = (e, modifica) => {
+        e.preventDefault();
+        this.setState({
+            modal: <ModifcheEditor
+                handleClose={this.resetModal}
+                IDProdotti={modifica.ID}
+                showing={false}
+                success_handler={(resp) => showMag(this.renderMag, (dt) => { console.log(dt) }, 'all')}
+                error_handler={this.errorReloadMag} />
+        });
+    };
 
     handleDelete = (e, idprod) => {
         e.preventDefault();
@@ -157,7 +170,7 @@ export class MagNavbar extends Component {
                 this.handleShow,
                 (e, idprod) => this.handleEdit(e, idprod, this.renderMag, 'all'),
                 this.handleDelete,
-                (e, prod) => this.handleEditQuantity(e, prod, this.renderMag),
+                this.handleEditQuantity,
                 this.handleRegisterEntrate,
                 dt.query)
         });
@@ -192,6 +205,22 @@ export class MagNavbar extends Component {
         });
     }
 
+    renderModficihe = (dt) => {
+        this.current_render = () => {
+            showEditMagazzino(this.renderModficihe, this.errorReloadModifiche, 'all');
+        }
+        this.setState({
+            body: AutoModificheTable(
+                this.handleShowModifca,
+                null,//this.handleEditEntrata,
+                null,//this.handleDeleteEntrata,
+                dt.query
+                /*(e, idprod) => this.handleEdit(e, idprod, this.renderProds, 'all'),
+                this.handleDelete, dt.query*/
+            )
+        });
+    }
+
     errorReloadMag = (dt) => {
         this.setState({
             modal: OkDialog("Errore ricezione dati", "Non è stato possibile leggere il magazzino.", this.resetModal)
@@ -203,6 +232,12 @@ export class MagNavbar extends Component {
             modal: OkDialog("Errore ricezione dati", "Non è stato possibile leggere il registro entrate.", this.resetModal)
         });
     };
+
+    errorReloadModifiche = (dt) => {
+        this.setState({
+            modal: OkDialog("Errore ricezione dati", "Non è stato possibile leggere il registro delle modifiche al magazzino.", this.resetModal)
+        });
+    }
 
     handleIdChange = (e) => {
         e.preventDefault();
@@ -261,6 +296,9 @@ export class MagNavbar extends Component {
                                         <NavDropdown.Item
                                             href="#mag/prod/all"
                                             onClick={() => showProds(this.renderProds, this.errorReloadMag, 'all')}>Prodotti</NavDropdown.Item>
+                                        <NavDropdown.Item
+                                            href="#mag/edit/all"
+                                            onClick={() => showEditMagazzino(this.renderModficihe, this.errorReloadModifiche, 'all')}>Modifiche</NavDropdown.Item>
                                     </NavDropdown>
                                 </>
                             }

@@ -93,7 +93,7 @@ export function AutoMagazzinoTable(handleShow, handleEdit, handleDelete, handleE
     handleShow={handleShow}
     handleEdit={handleEdit}
     handleDelete={handleDelete}
-    handleExtra={[{ onClick: (e, row) => handleEditQuantity(e, row), icon: wrenchicon, alt: "Modifica" },
+    handleExtra={[{ onClick: (e, row) => handleEditQuantity(e, row), icon: wrenchicon, alt: "Modifica quantità" },
     { onClick: (e, row) => handleRegEntry(e, row), icon: regediticon, alt: "Registra entrata" }]}
 
     heads={heads}
@@ -156,6 +156,37 @@ export function AutoEntrateTable(handleShow, handleEdit, handleDelete, query) {
     datafilter={filter} />;
 }
 
+export function AutoModificheTable(handleShow, handleEdit, handleDelete, query) {
+  const searchText = "Esegui ricerca: (Nome prodotto, Nome Motivo)";
+  const filter = (item, value) => (
+    (item['Prodotto']).toLocaleLowerCase().includes(value)
+    || (item['Motivo']).toLocaleLowerCase().includes(value));
+
+  const heads = {
+    'Prodotto': 'Nome Prodotto',
+    'Totale': 'Quantità',
+    'IsSottrai': 'Modifica',
+    'Motivo': 'Motivo',
+    'Data': 'Data'
+  };
+
+  return <AutoSearchTable
+    query={query}
+    searchText={searchText}
+    handleShow={handleShow}
+    handleEdit={handleEdit}
+    handleDelete={handleDelete}
+    dataFormatter={(column, data, row) => {
+      if (column === "IsSottrai") {
+        return row[column] ? "Sottratto" : "Aggiunto";
+      }
+      return data;
+    }}
+    heads={heads}
+    handleParam={'ID'}
+    datafilter={filter} />;
+}
+
 export class AutoSearchTable extends Component {
   state = {
     modal: <></>,
@@ -166,7 +197,7 @@ export class AutoSearchTable extends Component {
 
   constructor(props) {
     super(props);
-    this.state.options = (this.props.handleShow || this.props.handleEdit || this.props.handleDelete);
+    this.state.options = (props.handleShow || props.handleEdit || props.handleDelete);
   }
 
   componentDidUpdate(prevProps) {
@@ -230,13 +261,13 @@ export class AutoSearchTable extends Component {
                 {
                   this.props.handleExtra ?
                     Object.values(this.props.handleExtra).map((element) => {
-                      return <Button key={"extra" + index + element.icon} className="center-text" variant="transparent" onClick={(e) => element.onClick(e, row)}><img src={element.icon} alt={element.alt} style={{ width: 16, height: 16 }}></img></Button>
+                      return <Button key={"extra" + index + element.icon} className="center-text" variant="transparent" onClick={(e) => element.onClick(e, row)}><img src={element.icon} alt={element.alt} style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title={element.alt}></img></Button>
                     })
                     : <></>
                 }
-                {this.props.handleShow ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleShow(e, row[this.props.handleParam])}><img src={eyeicon} alt="Mostra" style={{ width: 16, height: 16 }}></img></Button> : <></>}
-                {this.props.handleEdit ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleEdit(e, row[this.props.handleParam])}><img src={editicon} alt="Modifica" style={{ width: 16, height: 16 }}></img></Button> : <></>}
-                {this.props.handleDelete ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleDelete(e, row[this.props.handleParam])}><img src={deleteicon} alt="Elimina" style={{ width: 16, height: 16 }}></img></Button> : <></>}
+                {this.props.handleShow ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleShow(e, row[this.props.handleParam])}><img src={eyeicon} alt="Mostra" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Mostra"></img></Button> : <></>}
+                {this.props.handleEdit ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleEdit(e, row[this.props.handleParam])}><img src={editicon} alt="Modifica" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Modifica"></img></Button> : <></>}
+                {this.props.handleDelete ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleDelete(e, row[this.props.handleParam])}><img src={deleteicon} alt="Elimina" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Elimina"></img></Button> : <></>}
               </Container>
             </Modal.Body>
           </Modal>
@@ -273,13 +304,13 @@ export class AutoSearchTable extends Component {
                       {
                         this.props.handleExtra ?
                           Object.values(this.props.handleExtra).map((element) => {
-                            return <Button key={"extra" + index + element.icon} className="center-text" variant="transparent" onClick={(e) => element.onClick(e, row)}><img src={element.icon} alt={element.alt} style={{ width: 16, height: 16 }}></img></Button>
+                            return <Button key={"extra" + index + element.icon} className="center-text" variant="transparent" onClick={(e) => element.onClick(e, row)}><img src={element.icon} alt={element.alt} style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title={element.alt}></img></Button>
                           })
                           : <></>
                       }
-                      {this.props.handleShow ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleShow(e, row[this.props.handleParam])}><img src={eyeicon} alt="Mostra" style={{ width: 16, height: 16 }}></img></Button> : <></>}
-                      {this.props.handleEdit ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleEdit(e, row[this.props.handleParam])}><img src={editicon} alt="Modifica" style={{ width: 16, height: 16 }}></img></Button> : <></>}
-                      {this.props.handleDelete ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleDelete(e, row[this.props.handleParam])}><img src={deleteicon} alt="Elimina" style={{ width: 16, height: 16 }}></img></Button> : <></>}
+                      {this.props.handleShow ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleShow(e, row[this.props.handleParam])}><img src={eyeicon} alt="Mostra" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Mostra"></img></Button> : <></>}
+                      {this.props.handleEdit ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleEdit(e, row[this.props.handleParam])}><img src={editicon} alt="Modifica" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Modifica"></img></Button> : <></>}
+                      {this.props.handleDelete ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleDelete(e, row[this.props.handleParam])}><img src={deleteicon} alt="Elimina" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Elimina"></img></Button> : <></>}
                     </td>
                     : <></>}
                 </tr>;
