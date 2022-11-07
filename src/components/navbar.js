@@ -29,7 +29,7 @@ class ProgrammNavbar extends Component {
                                 <Nav.Link href="#home" onClick={() => this.props.home()}>Home</Nav.Link>
                                 <Nav.Link href="#famiglie" onClick={() => this.props.fams()}>Famiglie</Nav.Link>
                                 <Nav.Link href="#magazzino" onClick={() => this.props.mag()}>Magazzino</Nav.Link>
-                                <Nav.Link href="#borse">Borse</Nav.Link>
+                                <Nav.Link href="#borse" onClick={() => this.props.bag()}>Borse</Nav.Link>
                             </Nav>
                             <Nav>
                                 <Navbar.Text>Collegato come:{' '}</Navbar.Text>

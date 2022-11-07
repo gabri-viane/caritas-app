@@ -18,6 +18,7 @@ import Toast from "react-bootstrap/Toast";
 import { FamNavbar } from "./body/famiglia/FamNavbar";
 import { MagNavbar } from "./body/magazzino/MagNavbar";
 import SettingsPage from "./extra/settings";
+import { BagEditor } from "./body/borse/BagHandlers";
 
 const API_PATH = process.env.REACT_APP_API_PATH; //"http://localhost:80/caritas-api/index.php";//+process.env.REACT_APP_WEB_API_REF;
 
@@ -56,12 +57,12 @@ class LoadApp extends Component {
         this.app.setState({ messages: msg });
     }
 
-    removeMessage = (i)=>{
+    removeMessage = (i) => {
         const msg = this.state.messages;
         msg.splice(i, 1);
         this.setState({ messages: msg });
     }
-    
+
     access_app = () => {
         return <>
             <Container fluid>
@@ -106,6 +107,10 @@ class LoadApp extends Component {
         this.setState({ body: <MagNavbar handleHome={this.setHome} /> })
     }
 
+    setBag = () => {
+        this.setState({ body: <BagEditor></BagEditor> });
+    }
+
     setupPage = (username) => {
         this.setState({
             navbar: <ProgrammNavbar
@@ -114,6 +119,7 @@ class LoadApp extends Component {
                 home={this.setHome}
                 fams={this.setFams}
                 mag={this.setMag}
+                bag={this.setBag}
                 handleSettings={() => this.setState({ body: <SettingsPage /> })}
                 handleDisconnect={() => { handleDisconnect(this) }} />,
             footer: <Footer
@@ -149,7 +155,7 @@ class LoadApp extends Component {
                 <ToastContainer position="bottom-end" className="p-2">
                     {
                         this.state.messages.map((v, i) => {
-                            return <Toast key={i} onClose={() => this.removeMessage(i)} delay={10000} autohide> 
+                            return <Toast key={i} onClose={() => this.removeMessage(i)} delay={10000} autohide>
                                 <Toast.Header>
                                     <img src={v.icon} className="rounded me-2" alt="" />
                                     <strong className="me-auto">{v.sender}</strong>
