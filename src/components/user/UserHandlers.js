@@ -1,12 +1,11 @@
 import React from 'react';
-import User from "./../../components/extra/user";
-import { datax, handleDisconnect } from "../data.js";
-import { user } from '../database/Connection';
+import User from "./user";
+import { datax, handleDisconnect } from '../../contents/data';
+import { user } from '../../contents/database/Connection';
 
 
 
-export function handleModify(instance, params, success_handler, error_handler) {
-    //instance.setState({ body: <><span>Modificato correttamente</span></> });
+export function handleModify(params, success_handler, error_handler) {
     user({
         ...{
             method: 'put',

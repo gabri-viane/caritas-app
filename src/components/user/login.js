@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import Logo from "../components/logo.js";
-import { datax } from "../contents/data.js";
-import { user } from "../contents/database/Connection.js";
+import Logo from "../extra/logo.js";
+import { datax } from "../../contents/data.js";
+import { user } from "../../contents/database/Connection.js";
 
 class LoginModule extends Component {
 

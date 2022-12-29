@@ -5,6 +5,7 @@ import ErrorIcon from "../../resources/images/error.png";
 import editIcon from "../../resources/images/pencil.png";
 import SuccessIcon from "../../resources/images/success.png";
 import WarningIcon from "../../resources/images/warning.png";
+import DisconnectIcon from "../../resources/images/logout.png";
 import { Container, Form } from "react-bootstrap";
 
 export function ConfirmDialog(title, text, yes_handler, no_handler, on_exit) {
@@ -95,6 +96,40 @@ export function InputIntegerDialog(title, text, yes_handler, no_handler, on_exit
                 </Button>
                 <Button variant="primary" onClick={yesEvent}>
                     Sì
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    </>
+}
+
+export function DisconnectDialog(yes_handler, no_handler) {
+
+    const noEvent = (e) => {
+        if (e) {
+            e.preventDefault();
+        }
+        no_handler();
+    };
+
+    const yesEvent = (e) => {
+        e.preventDefault();
+        yes_handler();
+    }
+
+    return <>
+        <Modal show={true} onHide={noEvent} centered>
+            <Modal.Header closeButton>
+                <Modal.Title><img src={DisconnectIcon} alt={"Disconnettiti"} /> Disconnettersi?</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <span className="lead warp">Vuoi disconnetterti dal database? Dovrai eseguire nuovamente l'accesso.</span>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="primary" onClick={yesEvent}>
+                    Sì
+                </Button>
+                <Button variant="secondary" onClick={noEvent}>
+                    No
                 </Button>
             </Modal.Footer>
         </Modal>

@@ -8,8 +8,8 @@ function conn(path, values, success_handler, error_handler) {
             values, {
             headers: {
                 'content-type': 'application/json',
-                'X-Auth-Username': datax.DataHandler.access.username,
-                'X-Auth-Token': datax.DataHandler.access.token
+                'x-auth-username': datax.DataHandler.access.username,
+                'x-auth-token': datax.DataHandler.access.token
             }
         }).then(result => {
             let dt = result.data;
@@ -25,11 +25,11 @@ function conn(path, values, success_handler, error_handler) {
         axios.get(
             API_PATH + path,
             {
-                params: values,
+                //params: values,
                 headers: {
                     'content-type': 'application/json',
-                    'X-Auth-Username': datax.DataHandler.access.username,
-                    'X-Auth-Token': datax.DataHandler.access.token
+                    'x-auth-username': datax.DataHandler.access.username,
+                    'x-auth-token': datax.DataHandler.access.token
                 }
             }
         ).then(result => {
@@ -49,8 +49,8 @@ function conn(path, values, success_handler, error_handler) {
             {
                 headers: {
                     'content-type': 'application/json',
-                    'X-Auth-Username': datax.DataHandler.access.username,
-                    'X-Auth-Token': datax.DataHandler.access.token
+                    'x-auth-username': datax.DataHandler.access.username,
+                    'x-auth-token': datax.DataHandler.access.token
                 }
             }
         ).then(result => {
@@ -68,8 +68,8 @@ function conn(path, values, success_handler, error_handler) {
             {
                 headers: {
                     'content-type': 'application/json',
-                    'X-Auth-Username': datax.DataHandler.access.username,
-                    'X-Auth-Token': datax.DataHandler.access.token
+                    'x-auth-username': datax.DataHandler.access.username,
+                    'x-auth-token': datax.DataHandler.access.token
                 }
                 /* ,
                 data: {
@@ -91,21 +91,21 @@ function conn(path, values, success_handler, error_handler) {
 
 
 export function verify(values, success_handler, error_handler) {
-    user({ method: 'post', link: 'user', k: 'access', username: values.username, token: values.token }, success_handler, error_handler);
+    user({ method: 'post', k: 'access', username: values.username, token: values.token }, success_handler, error_handler);
 }
 
 export function user(values, success_handler, error_handler) {
-    conn("/user/" + values['k'], values, success_handler, error_handler);
+    conn("user/" + values['k'], values, success_handler, error_handler);
 }
 
 export function fam(values, success_handler, error_handler) {
-    conn("/fam/" + values['k'], values, success_handler, error_handler);
+    conn("fam/" + values['k'], values, success_handler, error_handler);
 }
 
 export function mag(values, success_handler, error_handler) {
-    conn("/mag/" + values['k'], values, success_handler, error_handler);
+    conn("mag/" + values['k'], values, success_handler, error_handler);
 }
 
 export function extra(values, success_handler, error_handler) {
-    conn("/extra/" + values['k'], values, success_handler, error_handler);
+    conn("extra/" + values['k'], values, success_handler, error_handler);
 }

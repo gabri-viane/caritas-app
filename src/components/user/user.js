@@ -11,13 +11,17 @@ import Modal from "react-bootstrap/esm/Modal";
 
 class User extends Component {
 
+    /**
+     * Mostra o nascondi il modale per cambiare i dati utente
+     * @param {boolean} val Mostra(true) o nascondi(false)
+     */
     setShow(val) {
         this.setState({ show: val });
     }
 
 
-    handleClose = () => this.setShow(false);
-    handleShow = () => this.setShow(true);
+    handleClose = () => this.setShow(false);//Nascondi modale di modifica
+    handleShow = () => this.setShow(true);//Mostra modale di modifica
 
     state = {
         username: '',
@@ -31,6 +35,10 @@ class User extends Component {
         body: <></>
     }
 
+    /**
+     * Richiedi i dati dell'utente e impostali nello stato.
+     * Nel caso di errore mostra il messaggio
+     */
     reloadComp() {
         user({ ...{ method: 'get', k: 'get' }, ...datax.DataHandler.access },
             (dt) => {
@@ -41,13 +49,20 @@ class User extends Component {
                     auth: dt.auth
                 });
             },
-            (dt) => { this.setState({ body: this.onErrorHandle(dt.msg) }); });
+            (dt) => {
+                //Se c'è un'errore imposta l'intero corpo con il messaggio.
+                this.setState({ body: this.onErrorHandle(dt.msg) });
+            });
     }
 
     componentDidMount() {
         this.reloadComp();
     }
 
+    /**
+     * Avvia la modalità di editing cambiando i testi dei pulsanti
+     * e aggiungendo il pulsante di salvataggio
+     */
     edit = () => {
         let editing = !this.state.editing;
         this.setState({
@@ -57,23 +72,37 @@ class User extends Component {
                 <Button variant="success" onClick={this.handleShow}>Salva</Button>
             </Col> : <></>
         });
-        this.reloadComp();
+        this.reloadComp();//Richiedi nuovamente i dati prima e dopo essere entrato/uscito dalla modifica
     }
 
+
+    /**
+    * Imposta un'errore che viene mostrato
+    */
     onErrorHandle(error) {
         return <>{error}</>;
     }
 
+
+    /**
+    * Aggiorna l'email alla tippizzazione
+    */
     handleChangeEventEmail = (e) => {
         e.preventDefault();
         this.setState({ email: e.target.value });
     }
 
+    /**
+    * Aggiorna la il nome utente  alla tippizzazione
+    */
     handleChangeEventUsername = (e) => {
         e.preventDefault();
         this.setState({ username: e.target.value });
     };
 
+    /**
+    * Aggiorna la password alla tippizzazione
+    */
     handleChangeEventPassword = (e) => {
         e.preventDefault();
         this.setState({ password: e.target.value });
@@ -110,6 +139,7 @@ class User extends Component {
                     </Col>
                 </Row>
                 <Modal show={this.state.show} onHide={this.handleClose}>
+                    {/*Modale che mostra l'inserimento password per cambiare i dati dell'utente*/}
                     <Modal.Header closeButton>
                         <Modal.Title>Conferma cambio dati</Modal.Title>
                     </Modal.Header>
@@ -127,9 +157,10 @@ class User extends Component {
                             Chiudi
                         </Button>
                         <Button variant="primary" onClick={() => {
-                            this.handleClose();
+                            this.handleClose();//Chiudi il modale
+                            //aggiorna le credenziali inviandole all'handler corretto
                             this.props.handleModify({ newuser: this.state.username, password: this.state.password, newemail: this.state.email });
-                            this.edit();
+                            this.edit();//switch della modalità da edit a non-edit
                         }}>
                             Salva modifiche
                         </Button>

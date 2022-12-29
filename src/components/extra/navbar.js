@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import Logo from "../components/logo.js";
+import Logo from "./logo.js";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/esm/NavDropdown';
 
 
-import usericon from "../resources/images/user.png";
+import usericon from "../../resources/images/user.png";
 
 class ProgrammNavbar extends Component {
 
@@ -34,7 +34,7 @@ class ProgrammNavbar extends Component {
                             <Nav>
                                 <Navbar.Text>Collegato come:{' '}</Navbar.Text>
                                 <NavDropdown title={<><img alt="User" src={usericon} />{this.props.username} </>} id="basic-nav-dropdown" menuVariant="dark">
-                                    <NavDropdown.Item onClick={() => this.props.handleUser("handle")} href="#user/handle" id="handBtnNav">Gestisci</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => this.props.handleUser()} href="#user/handle" id="handBtnNav">Gestisci</NavDropdown.Item>
                                     <NavDropdown.Item onClick={() => this.props.handleSettings()} href="#user/settings" id="settBtnNav">Impostazioni</NavDropdown.Item>
                                     <NavDropdown.Item onClick={() => this.props.handleDisconnect()} href="#disconnect" id="discBtnNav">Disconnettiti</NavDropdown.Item>
                                 </NavDropdown>

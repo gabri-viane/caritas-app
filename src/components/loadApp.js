@@ -1,24 +1,20 @@
 import React, { Component } from "react";
-import ProgrammNavbar from './navbar';
+import ProgrammNavbar from './extra/navbar';
 import Home from './body/home';
-import LoginModule from "./login";
+import LoginModule from "./user/login";
 import { datax, handleDisconnect } from "../contents/data.js";
-import Logo from "./logo";
 import axios from "axios";
-import Footer from "./footer";
+import accessApp from "./extra/access";
 
-import { handleUserAction } from '../contents/functions/UserHandlers.js';
+import { handleUserAction } from "./user/UserHandlers";
 
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
 import ToastContainer from "react-bootstrap/ToastContainer";
 import Toast from "react-bootstrap/Toast";
 import { FamNavbar } from "./body/famiglia/FamNavbar";
 import { MagNavbar } from "./body/magazzino/MagNavbar";
-import SettingsPage from "./extra/settings";
 import { BagEditor } from "./body/borse/BagHandlers";
+import SettingsPage from "./extra/settings";
 
 const API_PATH = process.env.REACT_APP_API_PATH; //"http://localhost:80/caritas-api/index.php";//+process.env.REACT_APP_WEB_API_REF;
 
@@ -63,27 +59,6 @@ class LoadApp extends Component {
         this.setState({ messages: msg });
     }
 
-    access_app = () => {
-        return <>
-            <Container fluid>
-                <Row className="text-center">
-                    <Container fluid >
-                        <Col className="text-center">
-                            <Row>
-                                <span className="mt-5"><Logo size={64} /><p className="h1 ">Database Caritas</p></span>
-                            </Row>
-                            <Row>
-                                <Col className="text-center mt-4">
-                                    <Button type="submit" variant="primary" className="align-self-center" onClick={this.handleOnSubmitAccess}> Avvia App </Button>
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Container>
-                </Row>
-            </Container>
-        </>
-    };
-
     //<button type="submit" className="btn btn-primary align-self-center " onClick={this.register}> Registrati App </button>
 
     handleOnSubmitAccess = () => {
@@ -121,16 +96,7 @@ class LoadApp extends Component {
                 mag={this.setMag}
                 bag={this.setBag}
                 handleSettings={() => this.setState({ body: <SettingsPage /> })}
-                handleDisconnect={() => { handleDisconnect(this) }} />,
-            footer: <Footer
-                handleLogout={datax.DataHandler.releaseAccess
-                    /*  () => {
-                         this.setState({
-                             modal: OkDialog("Errore generico", "Testo dell'errore generico", () => { this.setState({ modal: <></> }) }, true)
-                         });
-                     } */
-                }
-                username={username} />
+                handleDisconnect={() => { handleDisconnect(this) }} />
         });
         this.setHome();
     }
@@ -143,7 +109,7 @@ class LoadApp extends Component {
 
     componentDidMount() {
         this.setState({
-            body: datax.DataHandler.hasLogged(this.handleOnSubmitAccess, this.access_app)
+            body: datax.DataHandler.hasLogged(this.handleOnSubmitAccess, accessApp(this.handleOnSubmitAccess))
         });
     }
 
@@ -190,7 +156,6 @@ class LoadApp extends Component {
                 error: error.message
             }));
     }
-
 }
 
 export default LoadApp;

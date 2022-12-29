@@ -211,7 +211,6 @@ export class MagEditor extends Component {
 
 }
 
-
 export class EntryEditor extends Component {
 
     state = {

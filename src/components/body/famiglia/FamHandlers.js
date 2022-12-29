@@ -93,7 +93,7 @@ export class FamEditor extends Component {
             this.setState({
                 show: false
             });
-        }, this.state.IDFAM);
+        }, 'idfam/'+ this.state.IDFAM);
     }
 
     render() {
@@ -198,7 +198,7 @@ export class FamShower extends Component {
                 components: !dt.query[0].components ? {} : dt.query[0].components,
                 modal: <></>
             });
-        }, this.errorFamLoad, (this.state.IDFAM > -1) ? "data/" + this.state.IDFAM : "d/" + this.state.ID);
+        }, this.errorFamLoad, (this.state.IDFAM > -1) ? "idfam/data/" + this.state.IDFAM : "idfam/" + this.state.ID);
     }
 
     errorFamLoad = (dt) => {

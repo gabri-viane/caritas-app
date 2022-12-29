@@ -95,7 +95,7 @@ export class MagNavbar extends Component {
         this.setState({
             modal: <EntryEditor
                 handleClose={this.resetModal}
-                IDProdotti={prod.IDProdotto}
+                IDProdotti={ prod ? prod.IDProdotto : null}
                 edit={true}
                 create={true}
                 success_handler={(resp) => showEntrate(this.renderEntrate, (dt) => { console.log(dt) }, 'all')}

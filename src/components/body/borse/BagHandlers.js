@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Col, Collapse, Container, Row } from "react-bootstrap";
+import { Button, Col, Collapse, Container, Row} from "react-bootstrap";
 import add from '../../../resources/images/plus.png';
 import remove from '../../../resources/images/trash.png';
 
@@ -10,7 +10,6 @@ export class BagEditor extends Component {
         edit: false,
         show_bar: true
     };
-
 
     render() {
         return <>
@@ -27,10 +26,10 @@ export class BagEditor extends Component {
                             <Container fluid>
                                 <Row>
                                     <Col className="p-2">
-                                        <text> Prodotto
+                                        <p> Prodotto
                                             <img width='12px' height='12px' src={add} alt="Aggiungi" />
                                             <img width='12px' height='12px' src={remove} alt="Rimuovi" />
-                                        </text>
+                                        </p>
                                     </Col>
                                 </Row>
                             </Container>

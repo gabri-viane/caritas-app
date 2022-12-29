@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import logo from "../resources/images/database-icon-adv.png";
+import logo from "../../resources/images/database-icon-adv.png";
 
 class Logo extends Component {
     render() {
