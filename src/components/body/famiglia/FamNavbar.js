@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { AutoDichTable, AutoFamilyTable } from "../../../contents/functions/tableGen";
-import { FamCreate, FamDelete, FamEditor, FamShower } from "./FamHandlers";
-import { showFams } from "./FamFunctions";
+import { FamCreate, FamEditor, FamShower } from "./FamHandlers";
+import { deleteFamily, getAddressAndCodiceFamilies, getAddressFamilies, getAllFamilies, getCodiceFiscaleFamilies, getDichiarantiFamilies } from '../../../contents/api/capi-family';
 import { datax } from "../../../contents/data";
 import backicon from "../../../resources/images/left-arrow.png";
 import refreshicon from "../../../resources/images/refresh.png";
@@ -29,18 +29,18 @@ export class FamNavbar extends Component {
         this.setState({ modal: <></> });
     };
 
-    handleEdit = (e, idfam, render, kurl) => {
+    handleEdit = (e, idfam, render, api_function) => {
         e.preventDefault();
         this.setState({
             modal: <FamEditor
                 IDFAM={idfam}
                 handleClose={this.resetModal}
                 edit={true}
-                success_handler={(resp) => showFams(render, (dt) => {
+                success_handler={(resp) => api_function(render, (dt) => {
                     this.setState({
                         modal: OkDialog("Errore caricamento dati", "Non è stato possibile scaricare i dati.", this.resetModal, false)
                     })
-                }, kurl)}
+                })}
                 error_handler={this.errorReloadFams} />
         });
     }
@@ -79,7 +79,7 @@ export class FamNavbar extends Component {
         e.preventDefault();
         this.setState({
             modal: ConfirmDialog("Eliminare Famiglia", "Vuoi davvero eliminare questa famiglia?", () => {
-                FamDelete(idfam, () => {
+                deleteFamily(idfam, () => {
                     this.componentDidMount();
                 }, () => {
                     this.setState({
@@ -96,7 +96,7 @@ export class FamNavbar extends Component {
         this.setState({
             body: AutoFamilyTable(
                 this.handleShow,
-                (e, idfam) => this.handleEdit(e, idfam, this.renderfams, 'all'),
+                (e, idfam) => this.handleEdit(e, idfam, this.renderfams, getAllFamilies),
                 this.handleDelete,
                 dt.query)
         });
@@ -106,7 +106,7 @@ export class FamNavbar extends Component {
         this.setState({
             body: AutoDichTable(
                 this.handleShow,
-                (e, idfam) => this.handleEdit(e, idfam, this.renderDichs, 'dichs'),
+                (e, idfam) => this.handleEdit(e, idfam, this.renderDichs, getDichiarantiFamilies),
                 this.handleDelete, dt.query
             )
         })
@@ -122,22 +122,21 @@ export class FamNavbar extends Component {
             LoadApp.addMessage(erroricon, "Aggiornamento dati", "Non è stato possibile leggere la lista famiglie.")
         }
     };
-
-    handleIdChange = (e) => {
+    //NON RICORDO A COSA SERVE
+    /*handleIdChange = (e) => {
         e.preventDefault();
         if (e.target.value === "") {
-            showFams(this.renderfams, this.errorReloadFams, 'all');
+            getAllFamilies(this.renderfams, this.errorReloadFams);
             return;
         }
-
         showFams(this.renderfams, this.errorReloadFams, e.target.value);
-    }
+    }*/
 
     componentDidMount() {
         if (datax.DataHandler.dataSettings.light) {
-            showFams(this.renderDichs, this.errorReloadFams, 'dichs');
+            getDichiarantiFamilies(this.renderDichs, this.errorReloadFams);
         } else {
-            showFams(this.renderfams, this.errorReloadFams, 'all');
+            getAllFamilies(this.renderfams, this.errorReloadFams);
         }
     }
 
@@ -154,23 +153,23 @@ export class FamNavbar extends Component {
                     </Nav.Item>
                     {datax.DataHandler.dataSettings.light ?  //Controllo se voglio mostrare i dati in modo light o no
                         <Nav.Item>
-                            <Nav.Link href="#fam/show/dichs" onClick={() => showFams(this.renderDichs, this.errorReloadFams, 'dichs')}>Dichiaranti</Nav.Link>
+                            <Nav.Link href="#fam/show/dichs" onClick={() => getDichiarantiFamilies(this.renderDichs, this.errorReloadFams)}>Dichiaranti</Nav.Link>
                         </Nav.Item>
                         :
                         <>
                             <NavDropdown title="Mostra famiglie" id="nav-dropdown-x">
                                 <NavDropdown.Item
                                     href="#fam/show/all"
-                                    onClick={() => showFams(this.renderfams, this.errorReloadFams, 'all')}>Tutte</NavDropdown.Item>
+                                    onClick={() => getAllFamilies(this.renderfams, this.errorReloadFams)}>Tutte</NavDropdown.Item>
                                 <NavDropdown.Item
                                     href="#fam/show/address"
-                                    onClick={() => showFams(this.renderfams, this.errorReloadFams, 'address')}>Con Indirizzo</NavDropdown.Item>
+                                    onClick={() => getAddressFamilies(this.renderfams, this.errorReloadFams)}>Con Indirizzo</NavDropdown.Item>
                                 <NavDropdown.Item
                                     href="#fam/show/codice"
-                                    onClick={() => showFams(this.renderfams, this.errorReloadFams, 'codice')}>Con Codice Fiscale</NavDropdown.Item>
+                                    onClick={() => getCodiceFiscaleFamilies(this.renderfams, this.errorReloadFams)}>Con Codice Fiscale</NavDropdown.Item>
                                 <NavDropdown.Item
                                     href="#fam/show/both"
-                                    onClick={() => showFams(this.renderfams, this.errorReloadFams, 'both')}>Con Entrambi</NavDropdown.Item>
+                                    onClick={() => getAddressAndCodiceFamilies(this.renderfams, this.errorReloadFams)}>Con Entrambi</NavDropdown.Item>
                             </NavDropdown>
                         </>
                     }

@@ -9,11 +9,12 @@ import Button from "react-bootstrap/esm/Button";
 import addicon from "../../../resources/images/add.png";
 import erroricon from "../../../resources/images/error.png";
 import successicon from "../../../resources/images/success.png";
-import { showFams, updateFam, createFam, deleteFam, deleteComp, requestParentele, requestComponent, createComp, updateComp } from "./FamFunctions";
 import { AutoFamFullTable } from "../../../contents/functions/tableGen";
 import { ConfirmDialog, OkDialog } from "../../../contents/functions/Dialogs";
 import LoadApp from "../../loadApp";
 import { datax } from "../../../contents/data";
+import { addComponentFamily, addFamily, boxComponentValues, boxFamilyValues, deleteComponentFamily, getCompIDFAMFamily, getIDFAMFamilies, getIDFAMFamiliesComplete, getIDFamiliesComplete, updateComponentFamily, updateFamily } from "../../../contents/api/capi-family";
+import { getParenteleExtra } from "../../../contents/api/capi-extra";
 
 export class FamEditor extends Component {
 
@@ -56,30 +57,25 @@ export class FamEditor extends Component {
 
     handleEdit = (e) => {
         e.preventDefault();
-        updateFam((dt) => {
-            if (!!this.props.success_handler) {
-                this.props.success_handler(dt);
-                this.props.handleClose();
-            }
-        },
+        const fam_values = boxFamilyValues(this.state.IDFAM, this.state.NDic, this.state.CDic,
+            this.state.Indirizzo, this.state.Telefono, this.state.CodiceF);
+
+        updateFamily(this.state.IDFAM, fam_values,
+            (dt) => {
+                if (!!this.props.success_handler) {
+                    this.props.success_handler(dt);
+                    this.props.handleClose();
+                }
+            },
             (dt) => {
                 if (!!this.props.error_handler) {
                     this.props.error_handler(dt);
                 }
-            },
-            this.state.IDFAM,
-            {
-                IDFAM: this.state.IDFAM,
-                NDic: this.state.NDic,
-                CDic: this.state.CDic,
-                CodiceF: this.state.CodiceF,
-                Indirizzo: this.state.Indirizzo,
-                Telefono: this.state.Telefono
             });
     }
 
     componentDidMount() {
-        showFams((dt) => {
+        getIDFAMFamilies(this.state.IDFAM, (dt) => {
             this.setState({
                 show: true,
                 IDFAM: !dt.query[0].IDFAM ? '' : dt.query[0].IDFAM,
@@ -93,7 +89,7 @@ export class FamEditor extends Component {
             this.setState({
                 show: false
             });
-        }, 'idfam/'+ this.state.IDFAM);
+        });
     }
 
     render() {
@@ -185,20 +181,39 @@ export class FamShower extends Component {
     }
 
     refersh() {
-        showFams((dt) => {
-            this.setState({
-                query: dt.query,
-                show: true,
-                IDFAM: !dt.query[0].IDFAM ? '' : dt.query[0].IDFAM,
-                NDic: !dt.query[0].NDic ? '' : dt.query[0].NDic,
-                CDic: !dt.query[0].CDic ? '' : dt.query[0].CDic,
-                CodiceF: !dt.query[0].CodiceF ? '' : dt.query[0].CodiceF,
-                Indirizzo: !dt.query[0].Indirizzo ? '' : dt.query[0].Indirizzo,
-                Telefono: !dt.query[0].Telefono ? '' : dt.query[0].Telefono,
-                components: !dt.query[0].components ? {} : dt.query[0].components,
-                modal: <></>
-            });
-        }, this.errorFamLoad, (this.state.IDFAM > -1) ? "idfam/data/" + this.state.IDFAM : "idfam/" + this.state.ID);
+        if (this.state.IDFAM > -1) {//Uso IDFAM per recuperare la famiglia
+            getIDFAMFamiliesComplete(this.state.IDFAM,
+                (dt) => {
+                    this.setState({
+                        query: dt.query,
+                        show: true,
+                        IDFAM: !dt.query[0].IDFAM ? '' : dt.query[0].IDFAM,
+                        NDic: !dt.query[0].NDic ? '' : dt.query[0].NDic,
+                        CDic: !dt.query[0].CDic ? '' : dt.query[0].CDic,
+                        CodiceF: !dt.query[0].CodiceF ? '' : dt.query[0].CodiceF,
+                        Indirizzo: !dt.query[0].Indirizzo ? '' : dt.query[0].Indirizzo,
+                        Telefono: !dt.query[0].Telefono ? '' : dt.query[0].Telefono,
+                        components: !dt.query[0].components ? {} : dt.query[0].components,
+                        modal: <></>
+                    });
+                }, this.errorFamLoad
+            );
+        } else {//Uso ID per recuperare la famiglia
+            getIDFamiliesComplete(this.state.ID, (dt) => {
+                this.setState({
+                    query: dt.query,
+                    show: true,
+                    IDFAM: !dt.query[0].IDFAM ? '' : dt.query[0].IDFAM,
+                    NDic: !dt.query[0].NDic ? '' : dt.query[0].NDic,
+                    CDic: !dt.query[0].CDic ? '' : dt.query[0].CDic,
+                    CodiceF: !dt.query[0].CodiceF ? '' : dt.query[0].CodiceF,
+                    Indirizzo: !dt.query[0].Indirizzo ? '' : dt.query[0].Indirizzo,
+                    Telefono: !dt.query[0].Telefono ? '' : dt.query[0].Telefono,
+                    components: !dt.query[0].components ? {} : dt.query[0].components,
+                    modal: <></>
+                });
+            }, this.errorFamLoad)
+        }
     }
 
     errorFamLoad = (dt) => {
@@ -247,7 +262,7 @@ export class FamShower extends Component {
         this.setState({
             show: false,
             modal: ConfirmDialog("Elimina componente", "Vuoi davvero eliminare questo componente?", () => {
-                CompDelete(this.state.IDFAM, id, (dt) => {
+                deleteComponentFamily(this.state.IDFAM, id, (dt) => {
                     this.refersh();
                 }, this.errorDeleteComp);
             }, () => { }, () => {
@@ -378,7 +393,11 @@ export class FamCreate extends Component {
 
     handleCreate = (e) => {
         e.preventDefault();
-        createFam(
+        //A quanto pare quando ho scritto questo codice non ho aggiunto la parte per il coniuge oppure l'ho lasciata a metà
+        const fam_values = boxFamilyValues(this.state.IDFAM, this.state.NDic, this.state.CDic,
+            this.state.Indirizzo, this.state.Telefono, this.state.CodiceF, this.state.NCon, this.state.CCon);
+
+        addFamily(fam_values,
             (dt) => {
                 if (!!this.props.success_handler) {
                     this.props.success_handler(dt);
@@ -390,16 +409,6 @@ export class FamCreate extends Component {
                 if (!!this.props.error_handler) {
                     this.props.error_handler(dt);
                 }
-            },
-            {
-                IDFAM: this.state.IDFAM,
-                NDic: this.state.NDic,
-                CDic: this.state.CDic,
-                CodiceF: this.state.CodiceF,
-                Indirizzo: this.state.Indirizzo,
-                Telefono: this.state.Telefono,
-                NCon: this.state.NCon,
-                CCon: this.state.CCon
             });
     }
 
@@ -491,11 +500,11 @@ export class CompEditor extends Component {
     }
 
     componentDidMount() {
-        requestParentele((dt) => {
+        getParenteleExtra((dt) => {
             this.setState({ query: dt.query })
-        });
+        }, () => { });
         if (this.state.edit) {
-            requestComponent(
+            getCompIDFAMFamily(this.props.IDFAM, this.props.ID,
                 (dt) => {
                     this.setState({
                         Nome: dt.query[0].Nome,
@@ -504,8 +513,7 @@ export class CompEditor extends Component {
                         Parentela: dt.query[0].IDParentela
                     })
                 },
-                this.errorLoadComp,
-                { idfam: this.props.IDFAM, idcomp: this.props.ID }
+                this.errorLoadComp
             );
         }
     }
@@ -533,25 +541,19 @@ export class CompEditor extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
+        const comp_values = boxComponentValues(this.state.Nome, this.state.Cognome, new Date(this.state.Nascita), this.state.Parentela);
         if (this.state.edit) {
-            updateComp(
+            updateComponentFamily(this.props.IDFAM, this.props.ID, comp_values,
                 (dt) => {
                     if (!datax.DataHandler.dataSettings.light) {
                         LoadApp.addMessage(successicon, "Componenti", "Componente aggiornato con successo");
                     }
                     this.props.handleClose();
                 },
-                this.errorModifyComp,
-                { idfam: this.props.IDFAM, idcomp: this.props.ID },
-                {
-                    Nome: this.state.Nome,
-                    Cognome: this.state.Cognome,
-                    Nascita: new Date(this.state.Nascita).getTime() / 1000,
-                    Parentela: this.state.Parentela
-                }
+                this.errorModifyComp
             );
         } else {
-            createComp(
+            addComponentFamily(this.props.IDFAM, comp_values,
                 (dt) => {
                     if (!datax.DataHandler.dataSettings.light) {
                         LoadApp.addMessage(successicon, "Componenti", "Componente creato con successo");
@@ -559,14 +561,7 @@ export class CompEditor extends Component {
                     this.props.handleClose();
                 },
                 this.errorCreateComp,
-                this.props.IDFAM,
-                {
-                    Nome: this.state.Nome,
-                    Cognome: this.state.Cognome,
-                    Nascita: new Date(this.state.Nascita).getTime() / 1000,
-                    Parentela: this.state.Parentela,
-                }
-            )
+            );
         }
     }
 
@@ -672,12 +667,4 @@ export class CompEditor extends Component {
         </>;
     }
 
-}
-
-export function FamDelete(idfam, success_handler, error_handler) {
-    deleteFam(success_handler, error_handler, { idfam: idfam });
-}
-
-export function CompDelete(idfam, idcomp, success_handler, error_handler) {
-    deleteComp(success_handler, error_handler, { idfam: idfam, idcomp: idcomp });
 }

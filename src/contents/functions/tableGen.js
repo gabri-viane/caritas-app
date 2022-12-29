@@ -197,6 +197,7 @@ export class AutoSearchTable extends Component {
 
   constructor(props) {
     super(props);
+    this.state.query = props.query;
     this.state.options = (props.handleShow || props.handleEdit || props.handleDelete);
   }
 

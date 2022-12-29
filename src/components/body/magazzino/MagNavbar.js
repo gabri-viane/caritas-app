@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { AutoEntrateTable, AutoMagazzinoTable, AutoProdottiTable, AutoModificheTable } from "../../../contents/functions/tableGen";
 import { EntryEditor, MagEditor, ModifcheEditor } from "./MagHandlers";
-import { showMag, showProds, deleteProd, showEntrate, deleteEntrata, showEditMagazzino } from "./MagFunctions";
+import { deleteEntrataMagazzino, deleteProdottoMagazzino, getAfterEntrateMagazzino, getAllEntrateMagazzino, getAllMagazzino, getAllModificheMagazzino, getAllProdottiMagazzino, getBeforeEntrateMagazzino, getFromEntrateMagazzino, getProdottoEntrateMagazzino } from '../../../contents/api/capi-magazzino';
 import { datax } from "../../../contents/data";
 import backicon from "../../../resources/images/left-arrow.png";
 import refreshicon from "../../../resources/images/refresh.png";
@@ -30,14 +30,14 @@ export class MagNavbar extends Component {
         this.setState({ modal: <></> });
     };
 
-    handleEdit = (e, idprod, render, kurl) => {
+    handleEdit = (e, idprod, render) => {
         e.preventDefault();
         this.setState({
             modal: <MagEditor
                 ID={idprod}
                 handleClose={this.resetModal}
                 edit={true}
-                success_handler={(resp) => showProds(render, (dt) => { console.log(dt) }, kurl)}
+                success_handler={(resp) => getAllProdottiMagazzino(render, (dt) => { console.log(dt) })}
                 error_handler={this.errorReloadMag} />
         });
     }
@@ -49,7 +49,7 @@ export class MagNavbar extends Component {
                 ID={idprod}
                 handleClose={this.resetModal}
                 edit={false}
-                success_handler={(resp) => showProds(this.renderProds, (dt) => { console.log(dt) }, 'all')}
+                success_handler={(resp) => getAllProdottiMagazzino(this.renderProds, (dt) => { console.log(dt) })}
                 error_handler={this.errorReloadMag} />
         });
     }
@@ -61,7 +61,7 @@ export class MagNavbar extends Component {
                 ID={identr}
                 handleClose={this.resetModal}
                 edit={false}
-                success_handler={(resp) => showEntrate(this.renderEntrate, (dt) => { console.log(dt) }, 'all')}
+                success_handler={(resp) => getAllProdottiMagazzino(this.renderEntrate, (dt) => { console.log(dt) })}
                 error_handler={this.errorReloadEntrate} />
         });
     }
@@ -73,7 +73,7 @@ export class MagNavbar extends Component {
                 ID={idmod}
                 handleClose={this.resetModal}
                 showing={true}
-                success_handler={(resp) => showEditMagazzino(this.renderModficihe, (dt) => { console.log(dt) }, 'all')}
+                success_handler={(resp) => getAllModificheMagazzino(this.renderModficihe, (dt) => { console.log(dt) })}
                 error_handler={this.errorReloadModifiche} />
         });
     }
@@ -85,7 +85,7 @@ export class MagNavbar extends Component {
                 handleClose={this.resetModal}
                 edit={true}
                 create={true}
-                success_handler={(resp) => showProds(this.renderProds, (dt) => { console.log(dt) }, 'all')}
+                success_handler={(resp) => getAllProdottiMagazzino(this.renderProds, (dt) => { console.log(dt) })}
                 error_handler={this.errorReloadMag} />
         });
     }
@@ -95,10 +95,10 @@ export class MagNavbar extends Component {
         this.setState({
             modal: <EntryEditor
                 handleClose={this.resetModal}
-                IDProdotti={ prod ? prod.IDProdotto : null}
+                IDProdotti={prod ? prod.IDProdotto : null}
                 edit={true}
                 create={true}
-                success_handler={(resp) => showEntrate(this.renderEntrate, (dt) => { console.log(dt) }, 'all')}
+                success_handler={(resp) => getAllEntrateMagazzino(this.renderEntrate, (dt) => { console.log(dt) })}
                 error_handler={this.errorReloadEntrate} />
         });
     }
@@ -110,7 +110,7 @@ export class MagNavbar extends Component {
                 ID={identr}
                 handleClose={this.resetModal}
                 edit={true}
-                success_handler={(resp) => showEntrate(this.renderEntrate, (dt) => { console.log(dt) }, 'all')}
+                success_handler={(resp) => getAllEntrateMagazzino(this.renderEntrate, (dt) => { console.log(dt) })}
                 error_handler={this.errorReloadMag} />
         });
     }
@@ -122,7 +122,7 @@ export class MagNavbar extends Component {
                 handleClose={this.resetModal}
                 IDProdotti={modifica.ID}
                 showing={false}
-                success_handler={(resp) => showMag(this.renderMag, (dt) => { console.log(dt) }, 'all')}
+                success_handler={(resp) => getAllMagazzino(this.renderMag, (dt) => { console.log(dt) })}
                 error_handler={this.errorReloadMag} />
         });
     };
@@ -131,13 +131,13 @@ export class MagNavbar extends Component {
         e.preventDefault();
         this.setState({
             modal: ConfirmDialog("Eliminare Prodotto", "Vuoi davvero eliminare questo prodotto?", () => {
-                deleteProd(() => {
+                deleteProdottoMagazzino(idprod, () => {
                     this.componentDidMount();
                 }, () => {
                     this.setState({
                         modal: OkDialog("Errore eliminazione", "Non è stato possibile eliminare il prodotto.", this.resetModal)
                     });
-                }, { id_prod: idprod });
+                });
             }, () => {
 
             }, this.resetModal)
@@ -148,13 +148,14 @@ export class MagNavbar extends Component {
         e.preventDefault();
         this.setState({
             modal: ConfirmDialog("Eliminare Entrata", "Vuoi davvero eliminare questa entrata?\nI valori in magazzini saranno modificaiti di conseguenza.", () => {
-                deleteEntrata(() => {
-                    this.componentDidMount();
-                }, () => {
-                    this.setState({
-                        modal: OkDialog("Errore eliminazione", "Non è stato possibile eliminare l'entrata.", this.resetModal)
+                deleteEntrataMagazzino(identr,
+                    () => {
+                        this.componentDidMount();
+                    }, () => {
+                        this.setState({
+                            modal: OkDialog("Errore eliminazione", "Non è stato possibile eliminare l'entrata.", this.resetModal)
+                        });
                     });
-                }, { identr: identr });
             }, () => {
 
             }, this.resetModal)
@@ -163,12 +164,12 @@ export class MagNavbar extends Component {
 
     renderMag = (dt) => {
         this.current_render = () => {
-            showMag(this.renderMag, this.errorReloadMag, 'all');
+            getAllMagazzino(this.renderMag, this.errorReloadMag);
         }
         this.setState({
             body: AutoMagazzinoTable(
                 this.handleShow,
-                (e, idprod) => this.handleEdit(e, idprod, this.renderMag, 'all'),
+                (e, idprod) => this.handleEdit(e, idprod, this.renderMag),
                 this.handleDelete,
                 this.handleEditQuantity,
                 this.handleRegisterEntrate,
@@ -178,12 +179,12 @@ export class MagNavbar extends Component {
 
     renderProds = (dt) => {
         this.current_render = () => {
-            showProds(this.renderProds, this.errorReloadMag, 'all');
+            getAllProdottiMagazzino(this.renderProds, this.errorReloadMag);
         }
         this.setState({
             body: AutoProdottiTable(
                 this.handleShow,
-                (e, idprod) => this.handleEdit(e, idprod, this.renderProds, 'all'),
+                (e, idprod) => this.handleEdit(e, idprod, this.renderProds),
                 this.handleDelete, dt.query
             )
         });
@@ -191,7 +192,7 @@ export class MagNavbar extends Component {
 
     renderEntrate = (dt) => {
         this.current_render = () => {
-            showEntrate(this.renderEntrate, this.errorReloadEntrate, 'all');
+            getAllEntrateMagazzino(this.renderEntrate, this.errorReloadEntrate);
         }
         this.setState({
             body: AutoEntrateTable(
@@ -207,7 +208,7 @@ export class MagNavbar extends Component {
 
     renderModficihe = (dt) => {
         this.current_render = () => {
-            showEditMagazzino(this.renderModficihe, this.errorReloadModifiche, 'all');
+            getAllModificheMagazzino(this.renderModficihe, this.errorReloadModifiche);
         }
         this.setState({
             body: AutoModificheTable(
@@ -238,18 +239,18 @@ export class MagNavbar extends Component {
             modal: OkDialog("Errore ricezione dati", "Non è stato possibile leggere il registro delle modifiche al magazzino.", this.resetModal)
         });
     }
-
-    handleIdChange = (e) => {
+    //NON MI RICORDO A COSA SERVE
+    /*handleIdChange = (e) => {
         e.preventDefault();
         if (e.target.value === "") {
-            showMag(this.renderMag, this.errorReloadMag, 'all');
+            getAllMagazzino(this.renderMag, this.errorReloadMag);
             return;
         }
         showMag(this.renderMag, this.errorReloadMag, e.target.value);
-    }
+    }*/
 
     current_render = () => {
-        showMag(this.renderMag, this.errorReloadMag, 'all');
+        getAllMagazzino(this.renderMag, this.errorReloadMag);
     }
 
     componentDidMount() {
@@ -285,45 +286,46 @@ export class MagNavbar extends Component {
                             </Nav.Item>
                             {datax.DataHandler.dataSettings.light ?  //Controllo se voglio mostrare i dati in modo light o no
                                 <Nav.Item>
-                                    <Nav.Link href="#mag/show/" onClick={() => showMag(this.renderMag, this.errorReloadMag, 'all')}>Prodotti</Nav.Link>
+                                    <Nav.Link href="#mag/show/" onClick={() => getAllMagazzino(this.renderMag, this.errorReloadMag)}>Prodotti</Nav.Link>
                                 </Nav.Item>
                                 :
                                 <>
                                     <NavDropdown title="Mostra Magazzino" id="nav-dropdown-x">
                                         <NavDropdown.Item
                                             href="#mag/show/all"
-                                            onClick={() => showMag(this.renderMag, this.errorReloadMag, 'all')}>Tutti</NavDropdown.Item>
+                                            onClick={() => getAllMagazzino(this.renderMag, this.errorReloadMag)}>Tutti</NavDropdown.Item>
                                         <NavDropdown.Item
                                             href="#mag/prod/all"
-                                            onClick={() => showProds(this.renderProds, this.errorReloadMag, 'all')}>Prodotti</NavDropdown.Item>
+                                            onClick={() => getAllProdottiMagazzino(this.renderProds, this.errorReloadMag)}>Prodotti</NavDropdown.Item>
                                         <NavDropdown.Item
                                             href="#mag/edit/all"
-                                            onClick={() => showEditMagazzino(this.renderModficihe, this.errorReloadModifiche, 'all')}>Modifiche</NavDropdown.Item>
+                                            onClick={() => getAllModificheMagazzino(this.renderModficihe, this.errorReloadModifiche)}>Modifiche</NavDropdown.Item>
                                     </NavDropdown>
                                 </>
                             }
                             {datax.DataHandler.dataSettings.light ?  //Controllo se voglio mostrare i dati in modo light o no
                                 <Nav.Item>
-                                    <Nav.Link href="#mag/entr/" onClick={() => showEntrate(this.renderEntrate, this.errorReloadEntrate, 'all')}>Entrate</Nav.Link>
+                                    <Nav.Link href="#mag/entr/" onClick={() => getAllEntrateMagazzino(this.renderEntrate, this.errorReloadEntrate)}>Entrate</Nav.Link>
                                 </Nav.Item>
                                 :
                                 <>
                                     <NavDropdown title="Mostra Entrate" id="nav-dropdown-x">
                                         <NavDropdown.Item
                                             href="#mag/entr/all"
-                                            onClick={() => showEntrate(this.renderEntrate, this.errorReloadEntrate, 'all')}>Tutte</NavDropdown.Item>
+                                            onClick={() => getAllEntrateMagazzino(this.renderEntrate, this.errorReloadEntrate)}>Tutte</NavDropdown.Item>
+                                        {/*TODO: Devo modificare i -1 con le rispettive scelte: per i donatori, e per le date after e before , e per il prodotto */}
                                         <NavDropdown.Item
                                             href="#mag/entr/from"
-                                            onClick={() => showProds(this.renderEntrate, this.errorReloadEntrate, 'from/')}>Dal Dontatore</NavDropdown.Item>
+                                            onClick={() => getFromEntrateMagazzino(-1, this.renderEntrate, this.errorReloadEntrate)}>Dal Dontatore</NavDropdown.Item>
                                         <NavDropdown.Item
                                             href="#mag/entr/after"
-                                            onClick={() => showProds(this.renderEntrate, this.errorReloadEntrate, 'after/')}>Dopo il</NavDropdown.Item>
+                                            onClick={() => getAfterEntrateMagazzino(-1, this.renderEntrate, this.errorReloadEntrate)}>Dopo il</NavDropdown.Item>
                                         <NavDropdown.Item
                                             href="#mag/entr/before"
-                                            onClick={() => showProds(this.renderEntrate, this.errorReloadEntrate, 'before/')}>Prima del</NavDropdown.Item>
+                                            onClick={() => getBeforeEntrateMagazzino(-1, this.renderEntrate, this.errorReloadEntrate)}>Prima del</NavDropdown.Item>
                                         <NavDropdown.Item
                                             href="#mag/entr/prod"
-                                            onClick={() => showProds(this.renderEntrate, this.errorReloadEntrate, 'prod/')}>Solo Prodotto</NavDropdown.Item>
+                                            onClick={() => getProdottoEntrateMagazzino(-1, this.renderEntrate, this.errorReloadEntrate)}>Solo Prodotto</NavDropdown.Item>
                                     </NavDropdown>
                                 </>
                             }

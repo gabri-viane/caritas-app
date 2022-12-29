@@ -6,7 +6,8 @@ import Form from "react-bootstrap/esm/Form";
 import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
 import Modal from "react-bootstrap/esm/Modal";
 import Button from "react-bootstrap/esm/Button";
-import { requestConfezioni, showProds, updateProd, createProd, requestDonatori, showEntrate, updateEntrata, createEntrata, requestMotivi, showEditMagazzino, editMagazzino } from "./MagFunctions";
+import { addEntrataMagazzino, addModificaMagazzino, addProdottoMagazzino, boxEntrataValues, boxModificaValues, boxProdottoValues, getAllProdottiMagazzino, getIDEntrateMagazzino, getIDModificheMagazzino, getIDProdottiMagazzino, updateEntrataMagazzino, updateProdottoMagazzino } from "../../../contents/api/capi-magazzino";
+import { getConfezioniExtra, getDonatoriExtra, getMotiviExtra } from '../../../contents/api/capi-extra';
 //import { AutoFamFullTable } from "../../../contents/functions/tableGen";
 
 
@@ -55,32 +56,27 @@ export class MagEditor extends Component {
 
     handleEdit = (e) => {
         e.preventDefault();
-        updateProd((dt) => {
-            if (!!this.props.success_handler) {
-                this.props.success_handler(dt);
-                this.props.handleClose();
-            }
-        },
+        const prod_values = boxProdottoValues(this.state.Nome, this.state.IDConfezioni, this.state.IsMagazzino,
+            this.state.IsFresco, this.state.IsIgiene, this.state.IsExtra);
+        updateProdottoMagazzino(this.state.ID, prod_values,
+            (dt) => {
+                if (!!this.props.success_handler) {
+                    this.props.success_handler(dt);
+                    this.props.handleClose();
+                }
+            },
             (dt) => {
                 if (!!this.props.error_handler) {
                     this.props.error_handler(dt);
                 }
-            },
-            this.state.ID,
-            {
-                ID: this.state.ID,
-                Nome: this.state.Nome,
-                IDConfezioni: this.state.IDConfezioni,
-                IsMagazzino: this.state.IsMagazzino,
-                IsFresco: this.state.IsFresco,
-                IsIgiene: this.state.IsIgiene,
-                IsExtra: this.state.IsExtra
             });
     }
 
     handleCreate = (e) => {
         e.preventDefault();
-        createProd(
+        const prod_values = boxProdottoValues(this.state.nome, this.state.IDConfezioni, this.state.IsMagazzino,
+            this.state.IsFresco, this.state.IsIgiene, this.state.IsExtra);
+        addProdottoMagazzino(prod_values,
             (dt) => { //Devo aggiungere un prodotto
                 if (!!this.props.success_handler) {
                     this.props.success_handler(dt);
@@ -91,39 +87,32 @@ export class MagEditor extends Component {
                 if (!!this.props.error_handler) {
                     this.props.error_handler(dt);
                 }
-            },
-            {
-                Nome: this.state.Nome,
-                IDConfezioni: this.state.IDConfezioni,
-                IsMagazzino: this.state.IsMagazzino,
-                IsFresco: this.state.IsFresco,
-                IsIgiene: this.state.IsIgiene,
-                IsExtra: this.state.IsExtra
             });
     }
 
     componentDidMount() {
-        requestConfezioni((dt) => {
+        getConfezioniExtra((dt) => {
             this.setState({ query: dt.query })
-        });
+        }, () => { });
         if (!this.state.create) {
-            showProds((dt) => {
-                this.setState({
-                    show: true,
-                    ID: !dt.query[0].ID ? '' : dt.query[0].ID,
-                    Nome: !dt.query[0].Nome ? '' : dt.query[0].Nome,
-                    Confezione: !dt.query[0].Confezione ? '' : dt.query[0].Confezione,
-                    IDConfezioni: !dt.query[0].IDConfezioni ? '' : dt.query[0].IDConfezioni,
-                    IsMagazzino: !dt.query[0].IsMagazzino ? false : dt.query[0].IsMagazzino,
-                    IsFresco: !dt.query[0].IsFresco ? false : dt.query[0].IsFresco,
-                    IsIgiene: !dt.query[0].IsIgiene ? false : dt.query[0].IsIgiene,
-                    IsExtra: !dt.query[0].IsExtra ? false : dt.query[0].IsExtra
+            getIDProdottiMagazzino(this.state.ID,
+                (dt) => {
+                    this.setState({
+                        show: true,
+                        ID: !dt.query[0].ID ? '' : dt.query[0].ID,
+                        Nome: !dt.query[0].Nome ? '' : dt.query[0].Nome,
+                        Confezione: !dt.query[0].Confezione ? '' : dt.query[0].Confezione,
+                        IDConfezioni: !dt.query[0].IDConfezioni ? '' : dt.query[0].IDConfezioni,
+                        IsMagazzino: !dt.query[0].IsMagazzino ? false : dt.query[0].IsMagazzino,
+                        IsFresco: !dt.query[0].IsFresco ? false : dt.query[0].IsFresco,
+                        IsIgiene: !dt.query[0].IsIgiene ? false : dt.query[0].IsIgiene,
+                        IsExtra: !dt.query[0].IsExtra ? false : dt.query[0].IsExtra
+                    });
+                }, (dt) => {
+                    this.setState({
+                        show: false
+                    });
                 });
-            }, (dt) => {
-                this.setState({
-                    show: false
-                });
-            }, this.state.ID);
         } else {
             this.setState({
                 show: true,
@@ -240,10 +229,10 @@ export class EntryEditor extends Component {
     }
 
     componentDidMount() {
-        requestDonatori((dt) => {
+        getDonatoriExtra((dt) => {
             this.setState({ query_dons: dt.query })
-        });
-        showProds((dt) => {
+        }, () => { });
+        getAllProdottiMagazzino((dt) => {
             this.setState({
                 query_prods: dt.query
             });
@@ -252,26 +241,25 @@ export class EntryEditor extends Component {
                     IDProdotti: dt.query[0].ID
                 });
             }
-        }, (dt) => {
-            
-        }, 'all');
+        }, () => { });
         if (!this.state.create) {
-            showEntrate((dt) => {
-                this.setState({
-                    show: true,
-                    ID: dt.query[0].ID || 0,
-                    IDProdotti: dt.query[0].IDProdotti || -1,
-                    IDDonatori: dt.query[0].IDDonatori || -1,
-                    Prodotto: dt.query[0].Prodotto || '',
-                    Donatore: dt.query[0].Donatre || '',
-                    Totale: dt.query[0].Totale || 0,
-                    Arrivo: new Date(dt.query[0].Arrivo).toDateInputValue()
+            getIDEntrateMagazzino(this.state.ID,
+                (dt) => {
+                    this.setState({
+                        show: true,
+                        ID: dt.query[0].ID || 0,
+                        IDProdotti: dt.query[0].IDProdotti || -1,
+                        IDDonatori: dt.query[0].IDDonatori || -1,
+                        Prodotto: dt.query[0].Prodotto || '',
+                        Donatore: dt.query[0].Donatre || '',
+                        Totale: dt.query[0].Totale || 0,
+                        Arrivo: new Date(dt.query[0].Arrivo).toDateInputValue()
+                    });
+                }, (dt) => {
+                    this.setState({
+                        show: false
+                    });
                 });
-            }, (dt) => {
-                this.setState({
-                    show: false
-                });
-            }, this.state.ID);
         } else {
             this.setState({
                 show: true,
@@ -304,28 +292,25 @@ export class EntryEditor extends Component {
 
     handleEdit = (e) => {
         e.preventDefault();
-        updateEntrata((dt) => {
-            if (!!this.props.success_handler) {
-                this.props.success_handler(dt);
-                this.props.handleClose();
-            }
-        },
+        const entr_values = boxEntrataValues(null, null, this.state.Totale, new Date(this.state.Arrivo));
+        updateEntrataMagazzino(this.state.ID, entr_values,
+            (dt) => {
+                if (!!this.props.success_handler) {
+                    this.props.success_handler(dt);
+                    this.props.handleClose();
+                }
+            },
             (dt) => {
                 if (!!this.props.error_handler) {
                     this.props.error_handler(dt);
                 }
-            },
-            this.state.ID,
-            {
-                ID: this.state.ID,
-                Totale: this.state.Totale,
-                Arrivo: new Date(this.state.Arrivo).getTime() / 1000
             });
     }
 
     handleCreate = (e) => {
         e.preventDefault();
-        createEntrata(
+        const entr_values = boxEntrataValues(this.state.IDProdotti, this.state.IDDonatori, this.state.Totale, new Date(this.state.Arrivo));
+        addEntrataMagazzino(entr_values,
             (dt) => { //Devo aggiungere un prodotto
                 if (!!this.props.success_handler) {
                     this.props.success_handler(dt);
@@ -336,12 +321,6 @@ export class EntryEditor extends Component {
                 if (!!this.props.error_handler) {
                     this.props.error_handler(dt);
                 }
-            },
-            {
-                IDProdotti: this.state.IDProdotti,
-                IDDonatori: this.state.IDDonatori,
-                Totale: this.state.Totale,
-                Arrivo: new Date(this.state.Arrivo).getTime() / 1000
             });
     }
 
@@ -454,10 +433,10 @@ export class ModifcheEditor extends Component {
     }
 
     componentDidMount() {
-        requestMotivi((dt) => {
+        getMotiviExtra((dt) => {
             this.setState({ query_mots: dt.query })
-        });
-        showProds((dt) => {
+        }, () => { });
+        getAllProdottiMagazzino((dt) => {
             this.setState({
                 query_prods: dt.query
             });
@@ -468,22 +447,23 @@ export class ModifcheEditor extends Component {
             }
         }, (dt) => {
             console.log(dt.msg)
-        }, 'all');
+        });
         if (this.state.showing) {
-            showEditMagazzino((dt) => {
-                this.setState({
-                    show: true,
-                    ID: dt.query[0].ID || 0,
-                    IDProdotti: dt.query[0].IDProdotti || -1,
-                    IDMotivi: dt.query[0].IDMotivi || 1,
-                    Totale: (dt.query[0].IsSottrai ? - dt.query[0].Totale : dt.query[0].Totale) || 0,
-                    Data: new Date(dt.query[0].Data).toDateInputValue()
+            getIDModificheMagazzino(this.state.ID,
+                (dt) => {
+                    this.setState({
+                        show: true,
+                        ID: dt.query[0].ID || 0,
+                        IDProdotti: dt.query[0].IDProdotti || -1,
+                        IDMotivi: dt.query[0].IDMotivi || 1,
+                        Totale: (dt.query[0].IsSottrai ? - dt.query[0].Totale : dt.query[0].Totale) || 0,
+                        Data: new Date(dt.query[0].Data).toDateInputValue()
+                    });
+                }, (dt) => {
+                    this.setState({
+                        show: false
+                    });
                 });
-            }, (dt) => {
-                this.setState({
-                    show: false
-                });
-            }, this.state.ID);
         } else {
             this.setState({
                 show: true,
@@ -512,7 +492,8 @@ export class ModifcheEditor extends Component {
 
     handleCreate = (e) => {
         e.preventDefault();
-        editMagazzino(
+        const mod_values = boxModificaValues(this.state.IDProdotti, this.state.IDMotivi, Math.abs(this.state.Totale), this.state.Totale < 0);
+        addModificaMagazzino(mod_values,
             (dt) => { //Devo aggiungere un prodotto
                 if (!!this.props.success_handler) {
                     this.props.success_handler(dt);
@@ -523,12 +504,6 @@ export class ModifcheEditor extends Component {
                 if (!!this.props.error_handler) {
                     this.props.error_handler(dt);
                 }
-            },
-            {
-                IDProdotti: this.state.IDProdotti,
-                IDMotivi: this.state.IDMotivi,
-                Totale: Math.abs(this.state.Totale),
-                Sottrai: this.state.Totale < 0
             });
     }
 
