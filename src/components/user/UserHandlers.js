@@ -3,8 +3,6 @@ import User from "./user";
 import { datax, handleDisconnect } from '../../contents/data';
 import { user } from '../../contents/database/Connection';
 
-
-
 export function handleModify(params, success_handler, error_handler) {
     user({
         ...{

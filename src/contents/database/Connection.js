@@ -8,12 +8,12 @@ function conn(path, values, success_handler, error_handler) {
             values, {
             headers: {
                 'content-type': 'application/json',
-                'x-auth-username': datax.DataHandler.access.username,
-                'x-auth-token': datax.DataHandler.access.token
+                'X-Auth-Username': datax.DataHandler.access.username,
+                'X-Auth-Token': datax.DataHandler.access.token
             }
         }).then(result => {
             let dt = result.data;
-            //console.log("Response Post: " + JSON.stringify(dt));
+            console.log("Response Post: (" +path+") " + JSON.stringify(dt));
             if (dt.auth && dt.res.exec) {
                 success_handler(dt);
             } else {
@@ -28,8 +28,8 @@ function conn(path, values, success_handler, error_handler) {
                 //params: values,
                 headers: {
                     'content-type': 'application/json',
-                    'x-auth-username': datax.DataHandler.access.username,
-                    'x-auth-token': datax.DataHandler.access.token
+                    'X-Auth-Username': datax.DataHandler.access.username,
+                    'X-Auth-Token': datax.DataHandler.access.token
                 }
             }
         ).then(result => {
@@ -49,8 +49,8 @@ function conn(path, values, success_handler, error_handler) {
             {
                 headers: {
                     'content-type': 'application/json',
-                    'x-auth-username': datax.DataHandler.access.username,
-                    'x-auth-token': datax.DataHandler.access.token
+                    'X-Auth-Username': datax.DataHandler.access.username,
+                    'X-Auth-Token': datax.DataHandler.access.token
                 }
             }
         ).then(result => {
@@ -68,8 +68,8 @@ function conn(path, values, success_handler, error_handler) {
             {
                 headers: {
                     'content-type': 'application/json',
-                    'x-auth-username': datax.DataHandler.access.username,
-                    'x-auth-token': datax.DataHandler.access.token
+                    'X-Auth-Username': datax.DataHandler.access.username,
+                    'X-Auth-Token': datax.DataHandler.access.token
                 }
                 /* ,
                 data: {

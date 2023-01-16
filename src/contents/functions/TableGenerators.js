@@ -278,7 +278,7 @@ export class AutoSearchTable extends Component {
 
 
   render() {
-    return <Container>
+    return <Container fluid>
       {this.state.search_form}
       <div style={{ height: '60vh', overflowY: 'auto' }} className="rounded shadow" mx="auto">
         <Table className="text-center" bgcolor="white" striped responsive mx="auto" hover>

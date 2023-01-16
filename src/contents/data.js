@@ -15,7 +15,8 @@ export class Data extends Component {
     };
 
     dataSettings = {
-        light: false
+        light: false,
+        cols: 4
     };
 
     constructor(props) {
@@ -42,7 +43,7 @@ export class Data extends Component {
 
     setDataSettings(data) {
         this.dataSettings = data;
-        console.log(this.dataSettings);
+        //console.log(this.dataSettings);
         Cookies.set('dataSettings', JSON.stringify(this.dataSettings));
     }
 

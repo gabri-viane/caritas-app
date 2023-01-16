@@ -1,22 +1,17 @@
 import React, { Component } from "react";
-import { AutoDichTable, AutoFamilyTable } from "../../../contents/functions/tableGen";
-import { FamCreate, FamEditor, FamShower } from "./FamHandlers";
+import { AutoDichTable, AutoFamilyTable } from "../../../contents/functions/TableGenerators";
 import { deleteFamily, getAddressAndCodiceFamilies, getAddressFamilies, getAllFamilies, getCodiceFiscaleFamilies, getDichiarantiFamilies } from '../../../contents/api/capi-family';
 import { datax } from "../../../contents/data";
-import backicon from "../../../resources/images/left-arrow.png";
-import refreshicon from "../../../resources/images/refresh.png";
-import erroricon from "../../../resources/images/error.png";
-import Container from "react-bootstrap/esm/Container";
-import Nav from "react-bootstrap/esm/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import { ConfirmDialog, OkDialog } from "../../../contents/functions/Dialogs";
+import { _BackIcon, _ErrorIcon, _RefreshIcon } from "../../../contents/images";
+import { Container, Nav, NavDropdown } from "react-bootstrap";
+import { ConfirmDialog, OkDialog } from "../../../contents/functions/DialogGenerators";
 import LoadApp from "../../loadApp";
+import { fun_FamEditorModal, fun_FamShowerModal } from './FamModals';
 
 export class FamNavbar extends Component {
 
     state = {
         body: <></>,
-        modal: <></>,
         key: ''
     };
 
@@ -31,65 +26,40 @@ export class FamNavbar extends Component {
 
     handleEdit = (e, idfam, render, api_function) => {
         e.preventDefault();
-        this.setState({
-            modal: <FamEditor
-                IDFAM={idfam}
-                handleClose={this.resetModal}
-                edit={true}
-                success_handler={(resp) => api_function(render, (dt) => {
-                    this.setState({
-                        modal: OkDialog("Errore caricamento dati", "Non è stato possibile scaricare i dati.", this.resetModal, false)
-                    })
-                })}
-                error_handler={this.errorReloadFams} />
-        });
+        fun_FamEditorModal(() => {
+            this.resetModal();
+            this.componentDidMount();
+            api_function(render, () => { });
+        }, idfam);
     }
 
     handleShow = (e, idfam) => {
         e.preventDefault();
-        this.setState({
-            modal: <FamShower
-                handleClose={this.resetModal}
-                IDFAM={idfam} />
-        });
+        fun_FamShowerModal(() => {
+            this.resetModal();
+        }, idfam);
     }
 
     handleCreate = (e) => {
         e.preventDefault();
-        this.setState({
-            modal: <FamCreate
-                handleClose={this.resetModal}
-                success_handler={(dt) => {
-                    this.setState({
-                        modal: <FamShower
-                            handleClose={() => {
-                                this.resetModal();
-                                this.componentDidMount();
-                            }}
-                            ID={dt.res.query.ID} />
-                    });
-                }}
-                error_handler={(dt) => {
-                    LoadApp.addMessage(erroricon, "Famiglie", "Non è stato possibile aggiungere la famiglia:\n" + dt.res.msg);
-                }} />
+        fun_FamEditorModal(() => {
+            this.resetModal();
+            this.componentDidMount();
         });
     }
 
     handleDelete = (e, idfam) => {
         e.preventDefault();
-        this.setState({
-            modal: ConfirmDialog("Eliminare Famiglia", "Vuoi davvero eliminare questa famiglia?", () => {
-                deleteFamily(idfam, () => {
-                    this.componentDidMount();
-                }, () => {
-                    this.setState({
-                        modal: OkDialog("Errore eliminazione", "Non è stato possibile eliminare la famiglia.", this.resetModal)
-                    });
-                });
+        LoadApp.addModal(ConfirmDialog("Eliminare Famiglia", "Vuoi davvero eliminare questa famiglia?", () => {
+            deleteFamily(idfam, () => {
+                this.componentDidMount();
             }, () => {
-
-            }, this.resetModal)
-        });
+                this.setState({
+                    modal: OkDialog("Errore eliminazione", "Non è stato possibile eliminare la famiglia.", this.resetModal)
+                });
+            });
+        }, () => {
+        }, () => { }));
     }
 
     renderfams = (dt) => {
@@ -119,7 +89,7 @@ export class FamNavbar extends Component {
                 modal: OkDialog("Errore ricezione dati", "Non è stato possibile leggere la lista famiglie.", this.resetModal)
             });
         } else {
-            LoadApp.addMessage(erroricon, "Aggiornamento dati", "Non è stato possibile leggere la lista famiglie.")
+            LoadApp.addMessage(_ErrorIcon, "Aggiornamento dati", "Non è stato possibile leggere la lista famiglie.")
         }
     };
     //NON RICORDO A COSA SERVE
@@ -142,11 +112,11 @@ export class FamNavbar extends Component {
 
     render() {
         return <>
-            <Container>
+            <Container fluid>
                 <Nav bg="dark" className="mt-2"
                     activeKey={this.state.key} onSelect={(selectedKey) => this.setState({ key: selectedKey })}>
                     <Nav.Item>
-                        <Nav.Link href="#/" onClick={this.props.handleHome}><img src={backicon} style={{ width: 16, height: 16 }} alt="Indietro" /> Home</Nav.Link>
+                        <Nav.Link href="#/" onClick={this.props.handleHome}><img src={_BackIcon} style={{ width: 16, height: 16 }} alt="Indietro" /> Home</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
                         <Nav.Link href="#/fam/add" onClick={this.handleCreate}>Aggiungi Famiglia</Nav.Link>
@@ -174,13 +144,12 @@ export class FamNavbar extends Component {
                         </>
                     }
                     <Nav.Item className="ml-auto text-center">
-                        <Nav.Link href="#/" onClick={() => this.componentDidMount()}><img src={refreshicon} alt="Ricarica" data-bs-toggle="tooltip" title="Ricarica dati" /></Nav.Link>
+                        <Nav.Link href="#/" onClick={() => this.componentDidMount()}><img src={_RefreshIcon} alt="Ricarica" data-bs-toggle="tooltip" title="Ricarica dati" /></Nav.Link>
                     </Nav.Item>
                 </Nav>
                 <hr />
-                <Container>
+                <Container fluid>
                     {this.state.body}
-                    {this.state.modal}
                 </Container>
             </Container>
         </>;

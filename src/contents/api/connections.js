@@ -9,14 +9,14 @@ export function _post(path, values, success_handler, error_handler) {
         {
             headers: {
                 'content-type': 'application/json',
-                'x-auth-username': datax.DataHandler.access.username,
-                'x-auth-token': datax.DataHandler.access.token
+                'X-Auth-Username': datax.DataHandler.access.username,
+                'X-Auth-Token': datax.DataHandler.access.token
             }
         }
     ).then(result => {
         let dt = result.data;
         //console.log("Response Post: " + JSON.stringify(dt));
-        if (dt.auth && dt.res.exec) {
+        if (dt.auth && dt.res.exec && !dt.e) {
             success_handler(dt);
         } else {
             error_handler(dt);
@@ -33,20 +33,19 @@ export function _get(path, values, success_handler, error_handler) {
             params: values,
             headers: {
                 'content-type': 'application/json',
-                'x-auth-username': datax.DataHandler.access.username,
-                'x-auth-token': datax.DataHandler.access.token
+                'X-Auth-Username': datax.DataHandler.access.username,
+                'X-Auth-Token': datax.DataHandler.access.token
             }
         }
     ).then(result => {
         let dt = result.data;
         //console.log("Response Get: " + JSON.stringify(dt));
-        if (dt.auth) {
+        if (dt.auth & !dt.e) {
             success_handler(dt);
         } else {
             error_handler(dt);
         }
-    })
-        .catch(error => error_handler(error));
+    }).catch((error) => { error_handler(error) });
 }
 
 export function _put(path, values, success_handler, error_handler) {
@@ -56,8 +55,8 @@ export function _put(path, values, success_handler, error_handler) {
         {
             headers: {
                 'content-type': 'application/json',
-                'x-auth-username': datax.DataHandler.access.username,
-                'x-auth-token': datax.DataHandler.access.token
+                'X-Auth-Username': datax.DataHandler.access.username,
+                'X-Auth-Token': datax.DataHandler.access.token
             }
         }
     ).then(result => {
@@ -77,8 +76,8 @@ export function _delete(path, values, success_handler, error_handler) {
         {
             headers: {
                 'content-type': 'application/json',
-                'x-auth-username': datax.DataHandler.access.username,
-                'x-auth-token': datax.DataHandler.access.token
+                'X-Auth-Username': datax.DataHandler.access.username,
+                'X-Auth-Token': datax.DataHandler.access.token
             }
         }
     ).then(result => {

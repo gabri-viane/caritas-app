@@ -1,16 +1,8 @@
-import React, { Component } from "react";
-import Container from "react-bootstrap/esm/Container";
-import Row from "react-bootstrap/esm/Row";
-import Col from "react-bootstrap/esm/Col";
-import Form from "react-bootstrap/esm/Form";
-import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
-import Modal from "react-bootstrap/esm/Modal";
-import Button from "react-bootstrap/esm/Button";
-import addicon from "../../../resources/images/add.png";
-import erroricon from "../../../resources/images/error.png";
-import successicon from "../../../resources/images/success.png";
-import { AutoFamFullTable } from "../../../contents/functions/tableGen";
-import { ConfirmDialog, OkDialog } from "../../../contents/functions/Dialogs";
+/*import React, { Component } from "react";
+import { Container, Row, Col, Form, FloatingLabel, Modal, Button } from "react-bootstrap";
+import { _AddIcon, _ErrorIcon, _SuccessIcon } from "../../../contents/images";
+import { AutoFamFullTable } from "../../../contents/functions/TableGenerators";
+import { ConfirmDialog, OkDialog } from "../../../contents/functions/DialogGenerators";
 import LoadApp from "../../loadApp";
 import { datax } from "../../../contents/data";
 import { addComponentFamily, addFamily, boxComponentValues, boxFamilyValues, deleteComponentFamily, getCompIDFAMFamily, getIDFAMFamilies, getIDFAMFamiliesComplete, getIDFamiliesComplete, updateComponentFamily, updateFamily } from "../../../contents/api/capi-family";
@@ -225,7 +217,7 @@ export class FamShower extends Component {
                 }, false)
             });
         } else {
-            LoadApp.addMessage(erroricon, "Famiglie", "Errore caricamento dati della famiglia.");
+            LoadApp.addMessage(_ErrorIcon, "Famiglie", "Errore caricamento dati della famiglia.");
         }
     }
 
@@ -285,7 +277,7 @@ export class FamShower extends Component {
                         })
             });
         } else {
-            LoadApp.addMessage(erroricon, "Componenti", "Non è stato possibile eliminare il componente.");
+            LoadApp.addMessage(_ErrorIcon, "Componenti", "Non è stato possibile eliminare il componente.");
         }
     }
 
@@ -326,7 +318,7 @@ export class FamShower extends Component {
                                 <Col>
                                     <span className="lead text-center">Componenti: </span>
                                     <Container fluid className="justify-content-end">
-                                        <Button size="sm" className="text-center" onClick={this.handleAdd}><img src={addicon} style={{ width: 16, height: 16 }} alt="Aggiungi" /> Aggiungi</Button>
+                                        <Button size="sm" className="text-center" onClick={this.handleAdd}><img src={_AddIcon} style={{ width: 16, height: 16 }} alt="Aggiungi" /> Aggiungi</Button>
                                     </Container>
                                 </Col>
                             </Row>
@@ -475,7 +467,6 @@ export class FamCreate extends Component {
             }
         </>;
     }
-
 }
 
 export class CompEditor extends Component {
@@ -546,7 +537,7 @@ export class CompEditor extends Component {
             updateComponentFamily(this.props.IDFAM, this.props.ID, comp_values,
                 (dt) => {
                     if (!datax.DataHandler.dataSettings.light) {
-                        LoadApp.addMessage(successicon, "Componenti", "Componente aggiornato con successo");
+                        LoadApp.addMessage(_SuccessIcon, "Componenti", "Componente aggiornato con successo");
                     }
                     this.props.handleClose();
                 },
@@ -556,7 +547,7 @@ export class CompEditor extends Component {
             addComponentFamily(this.props.IDFAM, comp_values,
                 (dt) => {
                     if (!datax.DataHandler.dataSettings.light) {
-                        LoadApp.addMessage(successicon, "Componenti", "Componente creato con successo");
+                        LoadApp.addMessage(_SuccessIcon, "Componenti", "Componente creato con successo");
                     }
                     this.props.handleClose();
                 },
@@ -571,7 +562,7 @@ export class CompEditor extends Component {
                 modal: OkDialog("Errore caricamento dati", "Non è stato possibile scaricare i dati.", () => this.setState({ modal: <></> }), false)
             });
         } else {
-            LoadApp.addMessage(erroricon, "Componenti", "Non è stato possibile scaricare i dati.");
+            LoadApp.addMessage(_ErrorIcon, "Componenti", "Non è stato possibile scaricare i dati.");
         }
     }
 
@@ -590,7 +581,7 @@ export class CompEditor extends Component {
                         })
             });
         } else {
-            LoadApp.addMessage(erroricon, "Componenti", "Non è stato possibile creare un nuovo componente.");
+            LoadApp.addMessage(_ErrorIcon, "Componenti", "Non è stato possibile creare un nuovo componente.");
         }
     }
 
@@ -608,7 +599,7 @@ export class CompEditor extends Component {
                     })
             });
         } else {
-            LoadApp.addMessage(erroricon, "Componenti", "Non è stato possibile modificare il componente.");
+            LoadApp.addMessage(_ErrorIcon, "Componenti", "Non è stato possibile modificare il componente.");
         }
     }
 
@@ -667,4 +658,4 @@ export class CompEditor extends Component {
         </>;
     }
 
-}
+}*/

@@ -1,6 +1,7 @@
 import { _get, _post, _delete, _put } from './connections';
 
 const GET_ALL_MAG = 'mag/get/all';
+const GET_AVAILABLES_MAG = 'mag/get/availables';
 //Prodotti
 const GET_ALL_PROD_MAG = 'mag/get/prod/all';
 const GET_ID_PROD_MAG = 'mag/get/prod/';//+ID_PROD
@@ -28,6 +29,17 @@ const GET_ID_EDIT_MAG = 'mag/get/edit/id/';//+ID_EDIT
 export function getAllMagazzino(success_handler, error_handler) {
     _get(GET_ALL_MAG, {}, success_handler, error_handler);
 }
+
+/**
+ * Restituisce una lista di tutto il magazzino.
+ * 
+ * @param {Function} success_handler 
+ * @param {Function} error_handler 
+ */
+export function getAvailablesMagazzino(success_handler, error_handler) {
+    _get(GET_AVAILABLES_MAG, {}, success_handler, error_handler);
+}
+
 
 /**
  * Restituisce una lista di tutti i prodotti del magazzino.

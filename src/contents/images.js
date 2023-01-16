@@ -1,0 +1,23 @@
+import ErrorIcon from "../resources/images/error.png";
+import EditIcon from "../resources/images/pencil.png";
+import SuccessIcon from "../resources/images/success.png";
+import WarningIcon from "../resources/images/warning.png";
+import DisconnectIcon from "../resources/images/logout.png";
+import BackIcon from "../resources/images/left-arrow.png";
+import RefreshIcon from "../resources/images/refresh.png";
+import AddIcon from "../resources/images/add.png";
+import ShowIcon from "../resources/images/list.png";
+import AddUserIcon from "../resources/images/user-add.png";
+import DeleteIcon from "../resources/images/trash.png";
+
+export const _ErrorIcon = ErrorIcon;
+export const _EditIcon = EditIcon;
+export const _SuccessIcon = SuccessIcon;
+export const _WarningIcon = WarningIcon;
+export const _DisconnectIcon = DisconnectIcon;
+export const _BackIcon = BackIcon;
+export const _RefreshIcon = RefreshIcon;
+export const _AddIcon = AddIcon;
+export const _AddUserIcon = AddUserIcon;
+export const _ShowIcon = ShowIcon;
+export const _DeleteIcon = DeleteIcon;

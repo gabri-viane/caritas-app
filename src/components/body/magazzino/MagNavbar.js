@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { AutoEntrateTable, AutoMagazzinoTable, AutoProdottiTable, AutoModificheTable } from "../../../contents/functions/tableGen";
-import { EntryEditor, MagEditor, ModifcheEditor } from "./MagHandlers";
+import { AutoEntrateTable, AutoMagazzinoTable, AutoProdottiTable, AutoModificheTable } from "../../../contents/functions/TableGenerators";
 import { deleteEntrataMagazzino, deleteProdottoMagazzino, getAfterEntrateMagazzino, getAllEntrateMagazzino, getAllMagazzino, getAllModificheMagazzino, getAllProdottiMagazzino, getBeforeEntrateMagazzino, getFromEntrateMagazzino, getProdottoEntrateMagazzino } from '../../../contents/api/capi-magazzino';
 import { datax } from "../../../contents/data";
 import backicon from "../../../resources/images/left-arrow.png";
@@ -10,7 +9,9 @@ import Nav from "react-bootstrap/esm/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Collapse from "react-bootstrap/Collapse";
 import Button from "react-bootstrap/Button"
-import { ConfirmDialog, OkDialog } from "../../../contents/functions/Dialogs";
+import { ConfirmDialog, InputIntegerDialog, OkDialog } from "../../../contents/functions/DialogGenerators";
+import { fun_EntryEditorModal, fun_MagEditorModal, fun_ModificheEditorModal } from "./MagModals";
+import LoadApp from "../../loadApp";
 
 export class MagNavbar extends Component {
 
@@ -32,134 +33,82 @@ export class MagNavbar extends Component {
 
     handleEdit = (e, idprod, render) => {
         e.preventDefault();
-        this.setState({
+        fun_MagEditorModal(this.resetModal, true, idprod, (resp) => getAllProdottiMagazzino(render, (dt) => { console.log(dt) }), this.errorReloadMag);
+        /*this.setState({
             modal: <MagEditor
                 ID={idprod}
                 handleClose={this.resetModal}
                 edit={true}
                 success_handler={(resp) => getAllProdottiMagazzino(render, (dt) => { console.log(dt) })}
                 error_handler={this.errorReloadMag} />
-        });
+        });*/
     }
 
     handleShow = (e, idprod) => {
         e.preventDefault();
-        this.setState({
-            modal: <MagEditor
-                ID={idprod}
-                handleClose={this.resetModal}
-                edit={false}
-                success_handler={(resp) => getAllProdottiMagazzino(this.renderProds, (dt) => { console.log(dt) })}
-                error_handler={this.errorReloadMag} />
-        });
+        fun_MagEditorModal(this.resetModal, false, idprod, (resp) => getAllProdottiMagazzino(this.renderProds, (dt) => { console.log(dt) }), this.errorReloadMag);
     }
 
     handleShowEntrate = (e, identr) => {
         e.preventDefault();
-        this.setState({
-            modal: <EntryEditor
-                ID={identr}
-                handleClose={this.resetModal}
-                edit={false}
-                success_handler={(resp) => getAllProdottiMagazzino(this.renderEntrate, (dt) => { console.log(dt) })}
-                error_handler={this.errorReloadEntrate} />
-        });
+        fun_EntryEditorModal(this.resetModal, false, identr, null, null,
+            (resp) => getAllProdottiMagazzino(this.renderEntrate, (dt) => { console.log(dt) }), this.errorReloadEntrate);
     }
 
     handleShowModifca = (e, idmod) => {
         e.preventDefault();
-        this.setState({
-            modal: <ModifcheEditor
-                ID={idmod}
-                handleClose={this.resetModal}
-                showing={true}
-                success_handler={(resp) => getAllModificheMagazzino(this.renderModficihe, (dt) => { console.log(dt) })}
-                error_handler={this.errorReloadModifiche} />
-        });
+        fun_ModificheEditorModal(this.resetModal, false, idmod, null, null, (resp) => getAllModificheMagazzino(this.renderModficihe, (dt) => { console.log(dt) }), this.errorReloadModifiche);
     }
 
     handleCreate = (e) => {
         e.preventDefault();
-        this.setState({
-            modal: <MagEditor
-                handleClose={this.resetModal}
-                edit={true}
-                create={true}
-                success_handler={(resp) => getAllProdottiMagazzino(this.renderProds, (dt) => { console.log(dt) })}
-                error_handler={this.errorReloadMag} />
-        });
+        fun_MagEditorModal(this.resetModal, true, null, (resp) => getAllProdottiMagazzino(this.renderProds, (dt) => { console.log(dt) }), this.errorReloadMag);
     }
 
     handleRegisterEntrate = (e, prod) => {
         e.preventDefault();
-        this.setState({
-            modal: <EntryEditor
-                handleClose={this.resetModal}
-                IDProdotti={prod ? prod.IDProdotto : null}
-                edit={true}
-                create={true}
-                success_handler={(resp) => getAllEntrateMagazzino(this.renderEntrate, (dt) => { console.log(dt) })}
-                error_handler={this.errorReloadEntrate} />
-        });
-    }
+        fun_EntryEditorModal(this.resetModal, true, null, prod ? prod.IDProdotto : null, null,
+            (resp) => getAllProdottiMagazzino(this.renderEntrate, (dt) => { console.log(dt) }), this.errorReloadEntrate);
+    };
 
     handleEditEntrata = (e, identr) => {
         e.preventDefault();
-        this.setState({
-            modal: <EntryEditor
-                ID={identr}
-                handleClose={this.resetModal}
-                edit={true}
-                success_handler={(resp) => getAllEntrateMagazzino(this.renderEntrate, (dt) => { console.log(dt) })}
-                error_handler={this.errorReloadMag} />
-        });
+        fun_EntryEditorModal(this.resetModal, true, identr, null, null, (resp) => getAllEntrateMagazzino(this.renderEntrate, (dt) => { console.log(dt) }), this.errorReloadEntrate);
     }
 
     handleEditQuantity = (e, modifica) => {
         e.preventDefault();
-        this.setState({
-            modal: <ModifcheEditor
-                handleClose={this.resetModal}
-                IDProdotti={modifica.ID}
-                showing={false}
-                success_handler={(resp) => getAllMagazzino(this.renderMag, (dt) => { console.log(dt) })}
-                error_handler={this.errorReloadMag} />
-        });
+        fun_ModificheEditorModal(this.resetModal, false, null, modifica.ID, null, (resp) => getAllMagazzino(this.renderMag, (dt) => { console.log(dt) }), this.errorReloadMag);
     };
 
     handleDelete = (e, idprod) => {
         e.preventDefault();
-        this.setState({
-            modal: ConfirmDialog("Eliminare Prodotto", "Vuoi davvero eliminare questo prodotto?", () => {
+        LoadApp.addModal(
+            ConfirmDialog("Eliminare Prodotto", "Vuoi davvero eliminare questo prodotto?", () => {
                 deleteProdottoMagazzino(idprod, () => {
                     this.componentDidMount();
                 }, () => {
-                    this.setState({
-                        modal: OkDialog("Errore eliminazione", "Non è stato possibile eliminare il prodotto.", this.resetModal)
-                    });
+                    LoadApp.addModal(OkDialog("Errore eliminazione", "Non è stato possibile eliminare il prodotto.", this.resetModal));
                 });
             }, () => {
 
             }, this.resetModal)
-        });
+        );
     }
 
     handleDeleteEntrata = (e, identr) => {
         e.preventDefault();
-        this.setState({
-            modal: ConfirmDialog("Eliminare Entrata", "Vuoi davvero eliminare questa entrata?\nI valori in magazzini saranno modificaiti di conseguenza.", () => {
-                deleteEntrataMagazzino(identr,
-                    () => {
-                        this.componentDidMount();
-                    }, () => {
-                        this.setState({
-                            modal: OkDialog("Errore eliminazione", "Non è stato possibile eliminare l'entrata.", this.resetModal)
-                        });
-                    });
+        LoadApp.addModal(
+            ConfirmDialog("Eliminare Entrata", "Vuoi davvero eliminare questa entrata?\nI valori in magazzini saranno modificaiti di conseguenza.", () => {
+                deleteEntrataMagazzino(identr, () => {
+                    this.componentDidMount();
+                }, () => {
+                    LoadApp.addModal(OkDialog("Errore eliminazione", "Non è stato possibile eliminare l'entrata.", this.resetModal));
+                });
             }, () => {
 
             }, this.resetModal)
-        });
+        );
     }
 
     renderMag = (dt) => {
@@ -200,8 +149,6 @@ export class MagNavbar extends Component {
                 this.handleEditEntrata,
                 this.handleDeleteEntrata,
                 dt.query
-                /*(e, idprod) => this.handleEdit(e, idprod, this.renderProds, 'all'),
-                this.handleDelete, dt.query*/
             )
         });
     }
@@ -216,8 +163,6 @@ export class MagNavbar extends Component {
                 null,//this.handleEditEntrata,
                 null,//this.handleDeleteEntrata,
                 dt.query
-                /*(e, idprod) => this.handleEdit(e, idprod, this.renderProds, 'all'),
-                this.handleDelete, dt.query*/
             )
         });
     }
@@ -251,20 +196,15 @@ export class MagNavbar extends Component {
 
     current_render = () => {
         getAllMagazzino(this.renderMag, this.errorReloadMag);
-    }
+    };
 
     componentDidMount() {
-        /*if (datax.DataHandler.dataSettings.light) {
-            showFams(this.renderDichs, this.errorReloadFams, 'dichs');
-        } else {
-            showFams(this.renderfams, this.errorReloadFams, 'all');
-        }*/
         this.current_render();
     }
 
     render() {
         return <>
-            <Container>
+            <Container fluid>
                 <Nav bg="dark" className="mt-2"
                     activeKey={this.state.key} onSelect={(selectedKey) => this.setState({ key: selectedKey })}>
                     <Nav.Item>
@@ -316,7 +256,11 @@ export class MagNavbar extends Component {
                                         {/*TODO: Devo modificare i -1 con le rispettive scelte: per i donatori, e per le date after e before , e per il prodotto */}
                                         <NavDropdown.Item
                                             href="#mag/entr/from"
-                                            onClick={() => getFromEntrateMagazzino(-1, this.renderEntrate, this.errorReloadEntrate)}>Dal Dontatore</NavDropdown.Item>
+                                            onClick={() => {
+                                                LoadApp.addModal(InputIntegerDialog("Cerca per donatore", "Inserisci ID donatore", (value) => {
+                                                    getFromEntrateMagazzino(value, this.renderEntrate, this.errorReloadEntrate)
+                                                }, () => { }, () => { }));
+                                            }}>Dal Dontatore</NavDropdown.Item>
                                         <NavDropdown.Item
                                             href="#mag/entr/after"
                                             onClick={() => getAfterEntrateMagazzino(-1, this.renderEntrate, this.errorReloadEntrate)}>Dopo il</NavDropdown.Item>
@@ -336,9 +280,8 @@ export class MagNavbar extends Component {
                     </Nav.Item>
                 </Nav>
                 <hr />
-                <Container>
+                <Container fluid>
                     {this.state.body}
-                    {this.state.modal}
                 </Container>
             </Container>
         </>;

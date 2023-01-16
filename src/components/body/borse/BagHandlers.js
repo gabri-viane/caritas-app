@@ -1,15 +1,22 @@
 import React, { Component } from "react";
-import { Button, Col, Collapse, Container, Row} from "react-bootstrap";
+import { Button, Col, Collapse, Container, Row } from "react-bootstrap";
 import add from '../../../resources/images/plus.png';
 import remove from '../../../resources/images/trash.png';
+import { ContenitoreElementi } from "./Contents";
 
 export class BagEditor extends Component {
 
     state = {
         create: true,
         edit: false,
-        show_bar: true
+        show_bar: true,
+
     };
+
+    componentDidMount() {
+
+    }
+
 
     render() {
         return <>
@@ -21,7 +28,7 @@ export class BagEditor extends Component {
                     <hr />
                 </Container>
                 <Row>
-                    <Collapse in={this.state.show_bar}>
+                    {/*<Collapse in={this.state.show_bar}>
                         <Col sm style={{ maxWidth: '20%', borderRightColor: 'black' }}>
                             <Container fluid>
                                 <Row>
@@ -34,9 +41,9 @@ export class BagEditor extends Component {
                                 </Row>
                             </Container>
                         </Col>
-                    </Collapse>
+    </Collapse>*/}
                     <Col>
-                        Contenuto pagina
+                        <ContenitoreElementi />
                     </Col>
                 </Row>
             </Container>

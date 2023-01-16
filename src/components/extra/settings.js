@@ -14,16 +14,41 @@ export default class SettingsPage extends Component {
         this.setState({ light: !this.state.light });
     }
 
+
+    handleChangeSettingCols = (e) => {
+        if (e.target.value > 0) {
+            this.setState({ cols: e.target.value });
+        } else {
+            this.setState({ cols: 1 });
+        }
+    }
+
     render() {
-        return <Container fluid mx="auto" my="auto">
+        return <Container fluid >
+            <Row>
+                <span className="lead">Impostazioni programma</span>
+            </Row>
             <Row className="mt-2 justify-content-center align-items-center" >
-                <Col md="auto">
+                <Col>
                     <Form>
-                        <Form.Group className="mb-3" controlId="settingsgroup">
+                        <Form.Group className="mb-3 p-2" controlId="settingsgroup">
                             <Form.Check className="font-weight-light" type="switch" label="Tabelle dati ridotte"
                                 checked={this.state.light === 'true' || this.state.light}
                                 onChange={this.handleChangeSettingLight} />
-                            <Button onClick={(e) => datax.DataHandler.setDataSettings(this.state)}>Salva tutto</Button>
+                            <Container className="mt-2">
+                                <Row className="align-items-left" md="auto">
+                                    <Col md="auto">
+                                        <Form.Label className="font-weight-light">Numero di colonne di elementi borse</Form.Label>
+                                    </Col>
+                                    <Col md="auto">
+                                        <Form.Control type="number" aria-label="Numero colonne creazione borse"
+                                            style={{ maxWidth: '60px' }}
+                                            value={this.state.cols}
+                                            onChange={this.handleChangeSettingCols} />
+                                    </Col>
+                                </Row>
+                            </Container>
+                            <Button className="mt-3" onClick={(e) => datax.DataHandler.setDataSettings(this.state)}>Salva tutto</Button>
                         </Form.Group>
                     </Form>
                 </Col>

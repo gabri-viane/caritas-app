@@ -8,13 +8,12 @@ import accessApp from "./extra/access";
 
 import { handleUserAction } from "./user/UserHandlers";
 
-import Container from "react-bootstrap/Container";
-import ToastContainer from "react-bootstrap/ToastContainer";
-import Toast from "react-bootstrap/Toast";
+import { Container, ToastContainer, Toast } from "react-bootstrap";
 import { FamNavbar } from "./body/famiglia/FamNavbar";
 import { MagNavbar } from "./body/magazzino/MagNavbar";
 import { BagEditor } from "./body/borse/BagHandlers";
 import SettingsPage from "./extra/settings";
+import { ModalTemplate } from "../contents/functions/ModalGenerators";
 
 const API_PATH = process.env.REACT_APP_API_PATH; //"http://localhost:80/caritas-api/index.php";//+process.env.REACT_APP_WEB_API_REF;
 
@@ -28,14 +27,19 @@ Date.prototype.toDateInputValue = (function () {
 class LoadApp extends Component {
 
     static app;
+    /**
+     * Lista di modali
+     */
+    modal_list = [];
 
     state = {
         showLogin: false,
         navbar: <></>,
         body: <></>,
         footer: <></>,
-        user_page: <></>,
-        modal: <></>,
+        show: false,
+        modal: {},//modale corrente
+        modals: [],
         messages: []
     };
 
@@ -45,12 +49,37 @@ class LoadApp extends Component {
         }
         super(props);
         LoadApp.app = this;
+        this.state.footer = <></>;
+        const empty_modal = {
+            ID: 0,
+            title: <></>,
+            body: () => <></>,
+            body_params: {},
+            footer: () => <></>,
+            footer_params: {},
+            icon: {
+                icon_src: null,
+                alt: ''
+            },
+            exit_action: () => { },
+            size: 'md'
+        };
+        this.state.modal = empty_modal;
+        this.state.modal[0] = { modal: empty_modal };
     }
 
+    /**
+     * Aggiunge un messaggio alla lista di Toasts da mostrare.
+     * Dopo 1000ms viene rimosso.
+     * 
+     * @param {String} icon 
+     * @param {String} sender 
+     * @param {String} message 
+     */
     static addMessage(icon, sender, message) {
-        const msg = this.app.state.messages;
+        const msg = LoadApp.app.state.messages;
         msg.unshift({ icon: icon, sender: sender, time: new Date().toLocaleDateString(), text: message });
-        this.app.setState({ messages: msg });
+        LoadApp.app.setState({ messages: msg });
     }
 
     removeMessage = (i) => {
@@ -60,6 +89,47 @@ class LoadApp extends Component {
     }
 
     //<button type="submit" className="btn btn-primary align-self-center " onClick={this.register}> Registrati App </button>
+
+    static addModal(modal) {
+        LoadApp.app._addModal(modal);
+    }
+
+    _addModal = (modal, show = true) => {
+        const mods_list = this.state.modals;
+        mods_list.push({ modal: modal });
+        this.setState({
+            show: show,
+            modals: mods_list,
+            modal: modal
+        });
+    }
+
+    removeModal = () => {
+        const mds = this.state.modals;
+        if (mds.length > 2) {
+            mds.pop();
+            this.setState({ modal: mds[mds.length - 1].modal, show: true, modals: mds });
+        } else {
+            mds.pop();
+            mds[0] = {
+                modal: {
+                    ID: 0,
+                    title: <></>,
+                    body: () => <></>,
+                    body_params: {},
+                    footer: () => <></>,
+                    footer_params: {},
+                    icon: {
+                        icon_src: null,
+                        alt: ''
+                    },
+                    exit_action: () => { },
+                    size: 'md'
+                }
+            };
+            this.setState({ modal: mds[mds.length - 1].modal, show: false, modals: mds });
+        }
+    }
 
     handleOnSubmitAccess = () => {
         datax.DataHandler.isLogged(() => {
@@ -103,11 +173,12 @@ class LoadApp extends Component {
 
     generateLoginModule(extra) {
         return <LoginModule extraInfo={extra} handleSuccess={this.handleOnSubmitAccess} handleCancel={() => {
-            this.setState({ showLogin: false, body: this.access_app() });
+            this.setState({ showLogin: false, body: accessApp(this.handleOnSubmitAccess)() });
         }} />;
     }
 
     componentDidMount() {
+        //
         this.setState({
             body: datax.DataHandler.hasLogged(this.handleOnSubmitAccess, accessApp(this.handleOnSubmitAccess))
         });
@@ -132,10 +203,14 @@ class LoadApp extends Component {
                         })
                     }
                 </ToastContainer>
+                {this.state.footer}
             </Container>
-            {this.state.modal}
+            <ModalTemplate ID={this.state.modal.ID} show={this.state.show} title={this.state.modal.title} body={this.state.modal.body} body_params={this.state.modal.body_params}
+                footer={this.state.modal.footer} footer_params={this.state.modal.footer_params}
+                icon_src={this.state.modal.icon.icon_src} alt={this.state.modal.icon.alt} on_close_action={this.state.modal.exit_action}
+                on_exit={this.removeModal} size={this.state.modal.size} />
         </>
-        //{this.state.footer}
+
     };
 
     register(event) {

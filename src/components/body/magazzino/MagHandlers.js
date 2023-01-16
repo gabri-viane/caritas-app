@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+/*import React, { Component } from "react";
 import Container from "react-bootstrap/esm/Container";
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/esm/Col";
@@ -432,10 +432,21 @@ export class ModifcheEditor extends Component {
         }
     }
 
+    componentDidUpdate(prevprops) {
+        if (prevprops.ID !== this.props.ID || prevprops.IDProdotti !== this.props.IDProdotti) {
+            this.setState({
+                ID: this.props.ID,
+                showing: this.props.showing,
+                empty_create: !this.props.showing || !this.props.IDProdotti,
+                IDProdotti: this.props.IDProdotti
+            });
+        }
+    }
+
     componentDidMount() {
         getMotiviExtra((dt) => {
             this.setState({ query_mots: dt.query })
-        }, () => { });
+        }, (dt) => { console.log(dt) });
         getAllProdottiMagazzino((dt) => {
             this.setState({
                 query_prods: dt.query
@@ -460,6 +471,7 @@ export class ModifcheEditor extends Component {
                         Data: new Date(dt.query[0].Data).toDateInputValue()
                     });
                 }, (dt) => {
+                    console.log(dt);
                     this.setState({
                         show: false
                     });
@@ -585,4 +597,4 @@ export class ModifcheEditor extends Component {
         </>;
     }
 
-}
+}*/

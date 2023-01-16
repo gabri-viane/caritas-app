@@ -77,7 +77,7 @@ class LoginModule extends Component {
             });
         }, (dt) => {
             console.log(dt);
-            alert(dt.res.msg);
+            alert("Impossibile accedere");
         });
     }
 

@@ -8,7 +8,7 @@ import NavDropdown from 'react-bootstrap/esm/NavDropdown';
 
 import usericon from "../../resources/images/user.png";
 
-class ProgrammNavbar extends Component {
+export default class ProgrammNavbar extends Component {
 
     state = {
         key: '#home'
@@ -18,7 +18,7 @@ class ProgrammNavbar extends Component {
         return (
             <>
                 <Navbar bg="dark" expand="lg" variant="dark" sticky="top">
-                    <Container>
+                    <Container fluid>
                         <Navbar.Brand href="#">
                             <Logo />
                             <span className="ms-2">Caritas Grumello</span>
@@ -47,5 +47,3 @@ class ProgrammNavbar extends Component {
     }
 
 }
-
-export default ProgrammNavbar;

@@ -7,7 +7,7 @@ class HomeCard extends Component {
 
     render() {
         return <>
-            <Col sm="auto" p="1">
+            <Col sm="auto" className="m-1">
                 <Card style={{ width: '18rem' }}>
                     <Card.Body>
                         <Button href={"#" + this.props.link} className="btn btn-primary" onClick={this.props.action}><img alt="Icona" src={this.props.icon} /> {this.props.btntitle}</Button>
