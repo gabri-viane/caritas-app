@@ -2,10 +2,13 @@ import Cookies from 'js-cookie';
 import { verify } from './database/Connection';
 import React, { Component } from 'react';
 
-import Container from "react-bootstrap/esm/Container";
-import Row from "react-bootstrap/esm/Row";
-import Col from "react-bootstrap/esm/Col";
-import Button from "react-bootstrap/esm/Button";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import LoadApp from '../components/loadApp';
+import generateModal from './functions/ModalGenerators';
+import { _DisconnectIcon } from './images';
 
 export class Data extends Component {
 
@@ -85,22 +88,25 @@ export class Data extends Component {
 export const datax = { DataHandler: new Data() };
 
 export function handleDisconnect(instance) {
-    instance.setState({
-        body: <><Container fluid className="mt-5">
-            <Row md="auto">
-                <Container fluid md="auto" className="text-center">
-                    <Col md="auto" className="text-center">
-                        <Row md="auto">
-                            <span className="h5 lead">Stai per disconnetterti: dopo il loguot dovrai eseguire nuovamente l'accesso.</span>
-                        </Row>
-                        <Row md="auto" className="text-center">
+    LoadApp.addModal(
+        generateModal(2, "Disconnettersi?", _DisconnectIcon, "Disconnessione", () => {
+            return <>
+                <Container fluid >
+                    <Row md="auto">
+                        <Container fluid md="auto" className="text-center">
                             <Col md="auto" className="text-center">
-                                <Button onClick={datax.DataHandler.releaseAccess}>Disconnetti</Button>
+                                <Row md="auto">
+                                    <span className="h5 lead">Stai per disconnetterti: dopo il loguot dovrai eseguire nuovamente l'accesso.</span>
+                                </Row>
                             </Col>
-                        </Row>
-                    </Col>
+                        </Container>
+                    </Row>
                 </Container>
-            </Row>
-        </Container></>
-    });
+            </>;
+        }, () => {
+            return <>
+                <Button variant='secondary' onClick={datax.DataHandler.releaseAccess}>Disconnetti</Button>
+            </>
+        }, () => { })
+    );
 }

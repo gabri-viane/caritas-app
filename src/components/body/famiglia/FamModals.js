@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import  Button from "react-bootstrap/Button";
-import  Col from "react-bootstrap/Col";
-import  Container from "react-bootstrap/Container";
-import  FloatingLabel from "react-bootstrap/FloatingLabel";
-import  Form from "react-bootstrap/Button";
-import  Row from "react-bootstrap/Row";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Form from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
 import { getParenteleExtra } from '../../../contents/api/capi-extra';
 import { boxFamilyValues, addFamily, updateFamily, getIDFAMFamilies, getIDFAMFamiliesComplete, getIDFamiliesComplete, deleteComponentFamily, updateComponentFamily, addComponentFamily, getCompIDFAMFamily, boxComponentValues } from '../../../contents/api/capi-family';
 import { datax } from '../../../contents/data';
@@ -385,9 +385,7 @@ export class CompEditorModal extends Component {
 
     state = {
         dtx: null,
-        show: true,
         edit: false,
-        modal: <></>,
         Nome: '',
         Cognome: '',
         Nascita: new Date().toISOString().substring(0, 10),
@@ -471,7 +469,9 @@ export class CompEditorModal extends Component {
     }
 
     handleSubmit = (e) => {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
         const comp_values = boxComponentValues(this.state.Nome, this.state.Cognome, new Date(this.state.Nascita), this.state.Parentela);
         if (this.state.edit) {
             updateComponentFamily(this.props.IDFAM, this.props.ID, comp_values,

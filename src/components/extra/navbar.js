@@ -3,7 +3,7 @@ import Logo from "./logo.js";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/esm/NavDropdown';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 
 
 import usericon from "../../resources/images/user.png";

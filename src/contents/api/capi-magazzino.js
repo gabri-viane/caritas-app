@@ -224,7 +224,7 @@ export function boxProdottoValues(nome_prodotto, idconf,
 /**
  * Aggiunge un nuovo prodotto.
  * 
- * @param {Array} values Array di parametri creati con 'boxProdottoValues'
+ * @param {Array} values Oggetto di parametri creati con 'boxProdottoValues'
  * @param {Function} success_handler 
  * @param {Function} error_handler 
  */
@@ -254,7 +254,7 @@ export function boxEntrataValues(idprod, iddon, totale, data_arrivo) {
 /**
  * Aggiunge una nuova entrata.
  * 
- * @param {Array} values Array di parametri creati con 'boxEntrataValues'
+ * @param {Array} values Oggetto di parametri creati con 'boxEntrataValues'
  * @param {Function} success_handler 
  * @param {Function} error_handler 
  */
@@ -284,7 +284,7 @@ export function boxModificaValues(idprod, idmot, totale, sottrai) {
 /**
  * Aggiunge una nuova modifica magazzino.
  * 
- * @param {Array} values Array di parametri creati con 'boxModificaValues'
+ * @param {Array} values Oggetto di parametri creati con 'boxModificaValues'
  * @param {Function} success_handler 
  * @param {Function} error_handler 
  */
@@ -299,7 +299,7 @@ const UPDATE_ENTR_MAG = 'mag/update/entr/';//+ID_ENTR
  * Aggiorna i valori di un prodotto con IDPROD.
  * 
  * @param {Number} idprod 
- * @param {Array} values Array di parametri creati con 'boxProdottoValues'
+ * @param {Array} values Oggetto di parametri creati con 'boxProdottoValues'
  * @param {Function} success_handler 
  * @param {Function} error_handler 
  */
@@ -311,7 +311,7 @@ export function updateProdottoMagazzino(idprod, values, success_handler, error_h
  * Aggiorna i valori di una entrata con IDENTR.
  * 
  * @param {Number} identr 
- * @param {Array} values Array di parametri creati con 'boxEntrataValues'
+ * @param {Array} values Oggetto di parametri creati con 'boxEntrataValues'
  * @param {Function} success_handler 
  * @param {Function} error_handler 
  */

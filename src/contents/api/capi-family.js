@@ -171,7 +171,7 @@ export function boxFamilyValues(idfam, nome_dichiarante, cognome_dichiarante,
 /**
  * Aggiunge una nuova famiglia.
  * 
- * @param {Array} values Array di parametri creati con 'boxFamilyValues'
+ * @param {Array} values Oggetto di parametri creati con 'boxFamilyValues'
  * @param {Function} success_handler 
  * @param {Function} error_handler 
  */
@@ -202,7 +202,7 @@ export function boxComponentValues(nome, cognome, data_nascita, parentela) {
  * Aggiunge un nuovo componente ad una famiglia con IDFAM.
  * 
  * @param {Number} idfam
- * @param {Array} values Array di parametri creati con 'boxComponentValues'
+ * @param {Array} values Oggetto di parametri creati con 'boxComponentValues'
  * @param {Function} success_handler 
  * @param {Function} error_handler 
  */
@@ -217,7 +217,7 @@ const UPDATE_COMP_FAMILY = 'fam/update/';//+ID_FAM + 'comp' + ID_COMP
  * Aggiorna i valori di una famiglia con IDFAM.
  * 
  * @param {Number} idfam 
- * @param {Array} values Array di parametri creati con 'boxFamilyValues'
+ * @param {Array} values Oggetto di parametri creati con 'boxFamilyValues'
  * @param {Function} success_handler 
  * @param {Function} error_handler 
  */
@@ -230,7 +230,7 @@ export function updateFamily(idfam, values, success_handler, error_handler) {
  * 
  * @param {Number} idfam 
  * @param {Number} idcomp 
- * @param {Array} values Array di parametri creati con 'boxFamilyValues'
+ * @param {Array} values Oggetto di parametri creati con 'boxFamilyValues'
  * @param {Function} success_handler 
  * @param {Function} error_handler 
  */

@@ -10,6 +10,11 @@ import Collapse from "react-bootstrap/Collapse";
 import ListGroup from "react-bootstrap/ListGroup";
 import { getAvailablesMagazzino } from "../../../contents/api/capi-magazzino";
 import { datax } from "../../../contents/data";
+import { fun_BorEditorModal } from "./BagModals";
+import { _AddIcon, _ErrorIcon, _RefreshIcon, _SuccessIcon } from "../../../contents/images";
+import LoadApp from "../../loadApp";
+import { getAllBorse } from "../../../contents/api/capi-borse";
+import { AutoBorseTable } from "../../../contents/functions/TableGenerators";
 
 class ElementoProdotto extends Component {
 
@@ -73,7 +78,6 @@ class ElementoProdotto extends Component {
     }
 }
 
-
 export class ContenitoreElementi extends Component {
 
     state = {
@@ -88,7 +92,7 @@ export class ContenitoreElementi extends Component {
     }
 
     transformToColumn(data) {
-        const cols = datax.DataHandler.dataSettings.cols;
+        const cols = datax.DataHandler.dataSettings.cols || 4;
         const cls = [];
         for (let i = 0; i < cols; i++) {
             const rows = Math.ceil(data.length / cols);
@@ -139,7 +143,9 @@ export class ContenitoreElementi extends Component {
                             <Col md="auto">
                                 {this.state.create ?
                                     <Container>
-                                        <Button>Procedi</Button>
+                                        <Button onClick={() => {
+                                            fun_BorEditorModal(() => { }, true);
+                                        }}>Procedi</Button>
                                     </Container>
                                     :
                                     <Container>
@@ -173,4 +179,76 @@ export class ContenitoreElementi extends Component {
         </>
     }
 
+}
+
+export class BorseNavbar extends Component {
+
+    state = {
+        content: <></>
+    };
+
+    handleShow = (e, id) => {
+        e.preventDefault();
+        fun_BorEditorModal(() => { }, false, id, () => { }, () => { });
+    }
+
+    handleEdit = (e, id) => {
+        e.preventDefault();
+        fun_BorEditorModal(() => {
+            this.refresh();
+        }, true, id, () => {
+            if (!datax.DataHandler.dataSettings.light) {
+                LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa modificata con successo");
+            }
+        }, (dt) => {
+            console.log(dt);
+            if (!datax.DataHandler.dataSettings.light) {
+                LoadApp.addMessage(_ErrorIcon, "Borse", "Impossibile modificare la borsa");
+            }
+        });
+    }
+
+    refresh = () => getAllBorse((dt) => {
+        this.setState({
+            content: AutoBorseTable(
+                this.handleShow, this.handleEdit, null, dt.query)
+        });
+    }, () => {
+        if (!datax.DataHandler.dataSettings.light) {
+            LoadApp.addMessage(_ErrorIcon, "Borse", "Impossibile caricare le borse");
+        }
+    });
+
+    componentDidMount() {
+        this.refresh();
+    }
+
+    addBorsa = () => {
+        fun_BorEditorModal(() => { }, true, null, () => { }, () => { });
+    }
+
+    render() {
+        return <>
+            <Container fluid className="mt-1">
+                <Row>
+                    <Col>
+                        <Button onClick={this.addBorsa}>
+                            <span><img src={_AddIcon} alt="Aggiungi borsa" /> Crea Borsa</span>
+                        </Button>
+                    </Col>
+                    <Col>
+                        <Button onClick={this.refresh}>
+                            <span><img src={_RefreshIcon} alt="Aggiorna" /> Aggiorna</span>
+                        </Button>
+                    </Col>
+                </Row>
+                <Row className="mt-2">
+                    <hr />
+                </Row>
+                <Row>
+                    {this.state.content}
+                </Row>
+            </Container>
+        </>;
+    }
 }

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Container from "react-bootstrap/Container";
-import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -10,6 +9,8 @@ import wrenchicon from "../../resources/images/wrench.png";
 import deleteicon from "../../resources/images/trash.png";
 import eyeicon from "../../resources/images/open-eye.png";
 import { datax } from "../data";
+import LoadApp from "../../components/loadApp";
+import generateModal from "./ModalGenerators";
 
 
 export function AutoFamilyTable(handleShow, handleEdit, handleDelete, query) {
@@ -82,7 +83,7 @@ export function AutoFamFullTable(query, handleDelete, handleEdit) {
 export function AutoMagazzinoTable(handleShow, handleEdit, handleDelete, handleEditQuantity, handleRegEntry, query) {
   const searchText = "Esegui ricerca: (Nome prodotto)";
   const filter = (item, value) => (
-    (item['Nome']).toLocaleLowerCase().includes(value));
+    (item['Nome']).toLowerCase().includes(value));
   const heads = {
     'Nome': 'Nome Prodotto',
     'Totale': 'Quantità Magazzino'
@@ -104,7 +105,7 @@ export function AutoMagazzinoTable(handleShow, handleEdit, handleDelete, handleE
 export function AutoProdottiTable(handleShow, handleEdit, handleDelete, query) {
   const searchText = "Esegui ricerca: (Nome prodotto, Igiene, Fresco, Extra, A magazzino)";
   const filter = (item, value) => (
-    (item['Nome']).toLocaleLowerCase().includes(value)
+    (item['Nome']).toLowerCase().includes(value)
     || (('' + value).toLowerCase() === 'extra' ? item['IsExtra'] === '1' : false)
     || (('' + value).toLowerCase() === 'igiene' ? item['IsIgiene'] === '1' : false));
 
@@ -136,8 +137,8 @@ export function AutoProdottiTable(handleShow, handleEdit, handleDelete, query) {
 export function AutoEntrateTable(handleShow, handleEdit, handleDelete, query) {
   const searchText = "Esegui ricerca: (Nome prodotto, Nome Donatore)";
   const filter = (item, value) => (
-    (item['Prodotto']).toLocaleLowerCase().includes(value)
-    || (item['Donatore']).toLocaleLowerCase().includes(value));
+    (item['Prodotto']).toLowerCase().includes(value)
+    || (item['Donatore']).toLowerCase().includes(value));
 
   const heads = {
     'Prodotto': 'Nome Prodotto',
@@ -159,8 +160,8 @@ export function AutoEntrateTable(handleShow, handleEdit, handleDelete, query) {
 export function AutoModificheTable(handleShow, handleEdit, handleDelete, query) {
   const searchText = "Esegui ricerca: (Nome prodotto, Nome Motivo)";
   const filter = (item, value) => (
-    (item['Prodotto']).toLocaleLowerCase().includes(value)
-    || (item['Motivo']).toLocaleLowerCase().includes(value));
+    (item['Prodotto']).toLowerCase().includes(value)
+    || (item['Motivo']).toLowerCase().includes(value));
 
   const heads = {
     'Prodotto': 'Nome Prodotto',
@@ -179,6 +180,39 @@ export function AutoModificheTable(handleShow, handleEdit, handleDelete, query) 
     dataFormatter={(column, data, row) => {
       if (column === "IsSottrai") {
         return row[column] ? "Sottratto" : "Aggiunto";
+      }
+      return data;
+    }}
+    heads={heads}
+    handleParam={'ID'}
+    datafilter={filter} />;
+}
+
+export function AutoBorseTable(handleShow, handleEdit, handleDelete, query) {
+  const searchText = "Esegui ricerca: (ID e Nome Famiglia, Data)";
+  const filter = (item, value) => (
+    ('' + item['IDFAM']).toLowerCase().includes(value)
+    || (item['Famiglia']).toLowerCase().includes(value)
+    || (item['DataConsegna']).toLowerCase().includes(value));
+
+  const heads = {
+    'IDFAM': 'ID Fam.',
+    'Famiglia': 'Famiglia',
+    'DataConsegna': 'Data di Consegna',
+    'Note': 'Note',
+    'Consegnata': 'Consegnata',
+    'NumeroElementi': 'n° Elementi'
+  };
+
+  return <AutoSearchTable
+    query={query}
+    searchText={searchText}
+    handleShow={handleShow}
+    handleEdit={handleEdit}
+    handleDelete={handleDelete}
+    dataFormatter={(column, data, row) => {
+      if (column === "Consegnata") {
+        return row[column] ? "Sì" : "No";
       }
       return data;
     }}
@@ -251,7 +285,24 @@ export class AutoSearchTable extends Component {
   }
 
   popover_gen = (index, row) => {
-    this.setState({
+    const popover = generateModal(
+      -100, "Opzioni", null, null, () => {
+        return <Container fluid>
+          {
+            this.props.handleExtra ?
+              Object.values(this.props.handleExtra).map((element) => {
+                return <Button key={"extra" + index + element.icon} className="center-text" variant="transparent" onClick={(e) => element.onClick(e, row)}><img src={element.icon} alt={element.alt} style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title={element.alt}></img></Button>
+              })
+              : <></>
+          }
+          {this.props.handleShow ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleShow(e, row[this.props.handleParam])}><img src={eyeicon} alt="Mostra" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Mostra"></img></Button> : <></>}
+          {this.props.handleEdit ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleEdit(e, row[this.props.handleParam])}><img src={editicon} alt="Modifica" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Modifica"></img></Button> : <></>}
+          {this.props.handleDelete ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleDelete(e, row[this.props.handleParam])}><img src={deleteicon} alt="Elimina" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Elimina"></img></Button> : <></>}
+        </Container>;
+      },()=>{return <></>},()=>{return <></>},'sm'
+    );
+    LoadApp.addModal(popover);
+    /*this.setState({
       show: true,
       modal:
         <>
@@ -273,7 +324,7 @@ export class AutoSearchTable extends Component {
             </Modal.Body>
           </Modal>
         </>
-    });
+    });*/
   }
 
 

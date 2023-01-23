@@ -1,18 +1,21 @@
 import React, { Component } from "react";
+import axios from "axios";
+
+import Container from "react-bootstrap/Container";
+import Toast from "react-bootstrap/Toast";
+import ToastContainer from "react-bootstrap/ToastContainer";
+
+import { handleUserAction } from "./user/UserHandlers";
+import { datax, handleDisconnect } from "../contents/data.js";
+import accessApp from "./extra/access";
+
 import ProgrammNavbar from './extra/navbar';
 import Home from './body/home';
 import LoginModule from "./user/login";
-import { datax, handleDisconnect } from "../contents/data.js";
-import axios from "axios";
-import accessApp from "./extra/access";
-
-import { handleUserAction } from "./user/UserHandlers";
-
-import { Container, ToastContainer, Toast } from "react-bootstrap";
+import SettingsPage from "./extra/settings";
 import { FamNavbar } from "./body/famiglia/FamNavbar";
 import { MagNavbar } from "./body/magazzino/MagNavbar";
-import { BagEditor } from "./body/borse/BagHandlers";
-import SettingsPage from "./extra/settings";
+import { BorseNavbar } from "./body/borse/BagNavbar";
 import { ModalTemplate } from "../contents/functions/ModalGenerators";
 
 const API_PATH = process.env.REACT_APP_API_PATH; //"http://localhost:80/caritas-api/index.php";//+process.env.REACT_APP_WEB_API_REF;
@@ -153,7 +156,7 @@ class LoadApp extends Component {
     }
 
     setBag = () => {
-        this.setState({ body: <BagEditor></BagEditor> });
+        this.setState({ body: <BorseNavbar></BorseNavbar> });
     }
 
     setupPage = (username) => {
@@ -178,7 +181,6 @@ class LoadApp extends Component {
     }
 
     componentDidMount() {
-        //
         this.setState({
             body: datax.DataHandler.hasLogged(this.handleOnSubmitAccess, accessApp(this.handleOnSubmitAccess))
         });
