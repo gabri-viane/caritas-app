@@ -85,6 +85,9 @@ class BagEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
+        if (this.state.IDFAM != null || this.state.IDFAM > -1 || this.state.Consegna != null) {
+            return;
+        }
         const bor_values = boxBorsaValues(this.state.IDFAM, new Date(this.state.Consegna), this.state.Note, this.state.Consegnata);
         if (this.state.edit) {
             updateBorsa(this.state.ID, bor_values,
@@ -128,7 +131,9 @@ class BagEditorModal extends Component {
                         </FloatingLabel>
                         {
                             !this.state.create ?
-                                <Form.Check className="mt-1" autoComplete="off" autoCorrect="off" checked={this.state.Consegnata} onChange={this.handleConsegnataChange} disabled={!this.state.editable} />
+                                <Form.Check className="mt-1" autoComplete="off" autoCorrect="off"
+                                    label="Consegnata"
+                                    checked={this.state.Consegnata} onChange={this.handleConsegnataChange} disabled={!this.state.editable} />
                                 : <></>
                         }
                     </Form.Group>

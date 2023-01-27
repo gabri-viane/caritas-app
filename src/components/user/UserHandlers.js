@@ -18,18 +18,13 @@ export function handleModify(params, success_handler, error_handler) {
 };
 
 
-export function handleUserAction(instance) {
+export function handleUserAction(generateLoginModule,el) {
     datax.DataHandler.isLogged(() => {
-        instance.setState({
-            showLogin: false,
-            body: <User
-                handleDisconnect={() => { handleDisconnect(instance) }}
-                handleModify={(params) => handleModify(instance, params, (err) => { alert(err) })} />
-        });
+        el(<User
+            handleDisconnect={() => { handleDisconnect() }}
+            handleModify={(params) => handleModify(params, (err) => { alert(err) })} />
+        );
     }, (error) => {
-        instance.setState({
-            showLogin: true,
-            body: instance.generateLoginModule(error.res.msg)
-        });
+        el(generateLoginModule(error.res.msg));
     });
 };

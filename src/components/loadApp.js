@@ -5,7 +5,6 @@ import Container from "react-bootstrap/Container";
 import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
 
-import { handleUserAction } from "./user/UserHandlers";
 import { datax, handleDisconnect } from "../contents/data.js";
 import accessApp from "./extra/access";
 
@@ -17,6 +16,7 @@ import { FamNavbar } from "./body/famiglia/FamNavbar";
 import { MagNavbar } from "./body/magazzino/MagNavbar";
 import { BorseNavbar } from "./body/borse/BagNavbar";
 import { ModalTemplate } from "../contents/functions/ModalGenerators";
+import { handleUserAction } from "./user/UserHandlers.js";
 
 const API_PATH = process.env.REACT_APP_API_PATH; //"http://localhost:80/caritas-api/index.php";//+process.env.REACT_APP_WEB_API_REF;
 
@@ -159,11 +159,19 @@ class LoadApp extends Component {
         this.setState({ body: <BorseNavbar></BorseNavbar> });
     }
 
+    setUser = () => {
+        handleUserAction(this.generateLoginModule,(el)=>{
+            this.setState({
+                body: el
+            })
+        })
+    }
+
     setupPage = (username) => {
         this.setState({
             navbar: <ProgrammNavbar
                 username={username}
-                handleUser={() => { handleUserAction(this); }}
+                handleUser={this.setUser}
                 home={this.setHome}
                 fams={this.setFams}
                 mag={this.setMag}

@@ -3,10 +3,14 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
-import Form from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { getParenteleExtra } from '../../../contents/api/capi-extra';
-import { boxFamilyValues, addFamily, updateFamily, getIDFAMFamilies, getIDFAMFamiliesComplete, getIDFamiliesComplete, deleteComponentFamily, updateComponentFamily, addComponentFamily, getCompIDFAMFamily, boxComponentValues } from '../../../contents/api/capi-family';
+import {
+    boxFamilyValues, addFamily, updateFamily, getIDFAMFamilies, getIDFAMFamiliesComplete,
+    getIDFamiliesComplete, deleteComponentFamily, updateComponentFamily,
+    addComponentFamily, getCompIDFAMFamily, boxComponentValues
+} from '../../../contents/api/capi-family';
 import { datax } from '../../../contents/data';
 import DataExchange from '../../../contents/DataExchange';
 import { ConfirmDialog, OkDialog } from '../../../contents/functions/DialogGenerators';
@@ -81,6 +85,9 @@ export class FamEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
+        if (this.state.IDFAM < 0 || this.state.NDic.trim().length === 0 || this.state.CDic.trim().length === 0) {
+            return;
+        }
         //A quanto pare quando ho scritto questo codice non ho aggiunto la parte per il coniuge oppure l'ho lasciata a metà
         const fam_values = boxFamilyValues(this.state.IDFAM, this.state.NDic, this.state.CDic,
             this.state.Indirizzo, this.state.Telefono, this.state.CodiceF, this.state.NCon, this.state.CCon);
@@ -103,6 +110,9 @@ export class FamEditorModal extends Component {
     handleEdit = (e) => {
         if (e) {
             e.preventDefault();
+        }
+        if (this.state.NDic.trim().length === 0 || this.state.CDic.trim().length === 0) {
+            return;
         }
         const fam_values = boxFamilyValues(this.state.IDFAM, this.state.NDic, this.state.CDic,
             this.state.Indirizzo, this.state.Telefono, this.state.CodiceF);
@@ -472,6 +482,9 @@ export class CompEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
+        if (this.state.Nome.trim().length === 0 || this.state.Cognome.trim().length === 0) {
+            return;
+        }
         const comp_values = boxComponentValues(this.state.Nome, this.state.Cognome, new Date(this.state.Nascita), this.state.Parentela);
         if (this.state.edit) {
             updateComponentFamily(this.props.IDFAM, this.props.ID, comp_values,
@@ -479,8 +492,6 @@ export class CompEditorModal extends Component {
                     if (!datax.DataHandler.dataSettings.light) {
                         LoadApp.addMessage(_SuccessIcon, "Componenti", "Componente aggiornato con successo");
                     }
-                    //Non conviene chiudere dentro il modale ma dal footer
-                    //this.props.handleClose();
                 },
                 this.errorModifyComp
             );
@@ -490,7 +501,6 @@ export class CompEditorModal extends Component {
                     if (!datax.DataHandler.dataSettings.light) {
                         LoadApp.addMessage(_SuccessIcon, "Componenti", "Componente creato con successo");
                     }
-                    //this.props.handleClose();
                 },
                 this.errorCreateComp,
             );
@@ -508,6 +518,7 @@ export class CompEditorModal extends Component {
     }
 
     errorCreateComp = (dt) => {
+        console.log(dt);
         if (datax.DataHandler.dataSettings.light) {
             LoadApp.addModal(
                 OkDialog("Errore creazione componente", "Non è stato possibile creare un nuovo componente.",

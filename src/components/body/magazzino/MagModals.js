@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import  Button from "react-bootstrap/Button";
-import  Col from "react-bootstrap/Col";
-import  Container from "react-bootstrap/Container";
-import  FloatingLabel from "react-bootstrap/FloatingLabel";
-import  Form from "react-bootstrap/Button";
-import  Row from "react-bootstrap/Row";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
 import { getConfezioniExtra, getDonatoriExtra, getMotiviExtra } from "../../../contents/api/capi-extra";
 import { addEntrataMagazzino, addModificaMagazzino, addProdottoMagazzino, boxEntrataValues, boxModificaValues, boxProdottoValues, getAllProdottiMagazzino, getIDEntrateMagazzino, getIDModificheMagazzino, getIDProdottiMagazzino, updateEntrataMagazzino, updateProdottoMagazzino } from "../../../contents/api/capi-magazzino";
 import DataExchange from "../../../contents/DataExchange";
@@ -52,7 +52,7 @@ export class MagEditorModal extends Component {
 
     handleConfezioneChange = (e) => {
         e.preventDefault();
-        this.setState({ IDConfezioni: e.target.value });
+        this.setState({ IDConfezione: e.target.value });
     }
 
     handleIsMagazzinoChange = (e) => {
@@ -75,7 +75,10 @@ export class MagEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
-        const prod_values = boxProdottoValues(this.state.Nome, this.state.IDConfezioni, this.state.IsMagazzino,
+        if (this.state.IDConfezione < 0 || this.state.Nome.trim().length === 0) {
+            return;
+        }
+        const prod_values = boxProdottoValues(this.state.Nome, this.state.IDConfezione, this.state.IsMagazzino,
             this.state.IsFresco, this.state.IsIgiene, this.state.IsExtra);
         updateProdottoMagazzino(this.state.ID, prod_values,
             (dt) => {
@@ -94,7 +97,10 @@ export class MagEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
-        const prod_values = boxProdottoValues(this.state.nome, this.state.IDConfezioni, this.state.IsMagazzino,
+        if (this.state.IDConfezione < 0 || this.state.Nome.trim().length === 0) {
+            return;
+        }
+        const prod_values = boxProdottoValues(this.state.Nome, this.state.IDConfezione, this.state.IsMagazzino,
             this.state.IsFresco, this.state.IsIgiene, this.state.IsExtra);
         addProdottoMagazzino(prod_values,
             (dt) => { //Devo aggiungere un prodotto
@@ -154,7 +160,7 @@ export class MagEditorModal extends Component {
                                     <Form.Control type="text" autoComplete="off" autoCorrect="off" disabled={!this.state.editable} value={this.state.Nome} onChange={this.handleNameChange} />
                                 </FloatingLabel>
                                 <FloatingLabel controlId="floatingConfezione" label="Confezione" className="mt-1">
-                                    <Form.Select aria-label="Dimensione confezione" disabled={!this.state.editable} value={this.state.IDConfezioni} onChange={this.handleConfezioneChange}>
+                                    <Form.Select aria-label="Dimensione confezione" disabled={!this.state.editable} value={this.state.IDConfezione} onChange={this.handleConfezioneChange}>
                                         {this.state.query.map((row, index) => {
                                             return <option key={index} value={row['ID']}>{row['Confezione']}</option>
                                         })}
@@ -318,7 +324,10 @@ export class EntryEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
-        const entr_values = boxEntrataValues(null, null, this.state.Totale, new Date(this.state.Arrivo));
+        if(this.state.IDProdotti < 0 || this.state.IDDonatori <0 || this.state.Arrivo === null){
+            return;
+        }
+        const entr_values = boxEntrataValues(this.state.IDProdotti, this.state.IDDonatori, this.state.Totale, new Date(this.state.Arrivo));
         updateEntrataMagazzino(this.state.ID, entr_values,
             (dt) => {
                 if (!!this.props.success_handler) {
@@ -336,6 +345,9 @@ export class EntryEditorModal extends Component {
     handleCreate = (e) => {
         if (e) {
             e.preventDefault();
+        }
+        if(this.state.IDProdotti < 0 || this.state.IDDonatori <0 || this.state.Arrivo === null){
+            return;
         }
         const entr_values = boxEntrataValues(this.state.IDProdotti, this.state.IDDonatori, this.state.Totale, new Date(this.state.Arrivo));
         addEntrataMagazzino(entr_values,
@@ -546,6 +558,9 @@ export class ModificheEditorModal extends Component {
     handleCreate = (e) => {
         if (e) {
             e.preventDefault();
+        }
+        if(this.state.IDProdotti < 0 || this.state.IDMotivi <0 ){
+            return;
         }
         const mod_values = boxModificaValues(this.state.IDProdotti, this.state.IDMotivi, Math.abs(this.state.Totale), this.state.Totale < 0);
         addModificaMagazzino(mod_values,

@@ -10,6 +10,7 @@ const GET_IDFAM_FAMILES = 'fam/get/idfam/';//+ID_FAM
 const GET_FULL_ID_FAMILES = 'fam/get/id/data/';//+ID
 const GET_FULL_IDFAM_FAMILES = 'fam/get/idfam/data/';//+ID_FAM
 const GET_COMP_ID_FAMILES = 'fam/get/id/';//+ID + 'comp' + ID_COMP
+const GET_COMPS_IDFAM_FAMILES = 'fam/get/comps/';//+ID_FAM
 const GET_COMP_IDFAM_FAMILES = 'fam/get/idfam/';//+ID_FAM + 'comp' + ID_COMP
 
 /**
@@ -107,6 +108,17 @@ export function getIDFamiliesComplete(id, success_handler, error_handler) {
  */
 export function getIDFAMFamiliesComplete(idfam, success_handler, error_handler) {
     _get(GET_FULL_IDFAM_FAMILES + idfam, {}, success_handler, error_handler);
+}
+
+/**
+ * Restituisce la liste di componenti di una famiglia tramite l'IDFAM della famiglia.
+ * 
+ * @param {Number} idfam IDFAM della famiglia
+ * @param {Function} success_handler 
+ * @param {Function} error_handler 
+ */
+export function getComponentiIDFAMFamily(idfam, success_handler, error_handler) {
+    _get(GET_COMPS_IDFAM_FAMILES + idfam, {}, success_handler, error_handler);
 }
 
 /**
@@ -239,7 +251,7 @@ export function updateComponentFamily(idfam, idcomp, values, success_handler, er
 }
 
 const DELETE_FAMILY = 'fam/delete/';//+ID_FAM
-const DELETE_COMP_FAMILY = 'fam/update/';//+ID_FAM + 'comp' + ID_COMP
+const DELETE_COMP_FAMILY = 'fam/delete/';//+ID_FAM + 'comp' + ID_COMP
 
 /**
  * Elimina una famiglia con IDFAM.

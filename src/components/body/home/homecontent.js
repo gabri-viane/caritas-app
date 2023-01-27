@@ -1,7 +1,8 @@
 import { fun_CompEditorModal, fun_FamEditorModal, fun_FamShowerModal } from "../famiglia/FamModals";
-import { InputIntegerDialog } from "../../../contents/functions/DialogGenerators";
+import { ConfirmDialog, InputChoiceDialog } from "../../../contents/functions/DialogGenerators";
 import LoadApp from "../../loadApp";
-import { _AddIcon, _AddUserIcon, _DeleteIcon, _EditIcon, _ShowIcon } from "../../../contents/images";
+import { _AddIcon, _AddUserIcon, _DeleteIcon, _EditIcon, _ErrorIcon, _ShowIcon, _SuccessIcon, _WarningIcon } from "../../../contents/images";
+import { deleteComponentFamily, getComponentiIDFAMFamily, getDichiarantiFamilies } from "../../../contents/api/capi-family";
 
 export const families_data = [
     {
@@ -16,9 +17,13 @@ export const families_data = [
         btn: "Gestisci",
         link: "handlefam",
         action: () => {
-            LoadApp.addModal(InputIntegerDialog("Seleziona famiglia", "Inserisci l'ID Famiglia corrispondente", (idfam) => {
-                fun_FamEditorModal(() => { }, idfam);
-            }, () => { }, () => { }, 0));
+            getDichiarantiFamilies((dt) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona famiglia", "Inserisci l'ID Famiglia corrispondente", (idfam) => {
+                    fun_FamEditorModal(() => { }, idfam);
+                }, () => { }, () => { }, dt.query, "Dichiarante", "IDFAM"));
+            }, () => {
+                LoadApp.addMessage(_WarningIcon, "Seleziona Famiglia", "Non è stato possibile caricare le famiglie");
+            });
         },
         icon: _EditIcon,
         text: "Modifica i dati del dichiarante e della famiglia."
@@ -27,9 +32,13 @@ export const families_data = [
         btn: "Mostra",
         link: "showfam",
         action: () => {
-            LoadApp.addModal(InputIntegerDialog("Seleziona famiglia", "Inserisci l'ID Famiglia corrispondente", (idfam) => {
-                fun_FamShowerModal(() => { }, idfam);
-            }, () => { }, () => { }, 0));
+            getDichiarantiFamilies((dt) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona famiglia", "Inserisci l'ID Famiglia corrispondente", (idfam) => {
+                    fun_FamShowerModal(() => { }, idfam);
+                }, () => { }, () => { }, dt.query, "Dichiarante", "IDFAM"));
+            }, () => {
+                LoadApp.addMessage(_WarningIcon, "Seleziona Famiglia", "Non è stato possibile caricare le famiglie");
+            });
         },
         icon: _ShowIcon,
         text: "Mostra i dati del dichiarante e della famiglia."
@@ -38,9 +47,13 @@ export const families_data = [
         btn: "Aggiungi Componente",
         link: "addcomp",
         action: () => {
-            LoadApp.addModal(InputIntegerDialog("Seleziona famiglia", "Inserisci l'ID Famiglia a cui aggiungere il componente", (idfam) => {
-                fun_CompEditorModal(() => { }, idfam, null, false);
-            }, () => { }, () => { }, 0));
+            getDichiarantiFamilies((dt) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona famiglia", "Inserisci l'ID Famiglia a cui aggiungere il componente", (idfam) => {
+                    fun_CompEditorModal(() => { }, idfam, null, false);
+                }, () => { }, () => { }, dt.query, "Dichiarante", "IDFAM"));
+            }, () => {
+                LoadApp.addMessage(_WarningIcon, "Seleziona Famiglia", "Non è stato possibile caricare le famiglie");
+            });
         },
         icon: _AddUserIcon,
         text: "Aggiungi un nuovo componente alla famiglia."
@@ -48,14 +61,50 @@ export const families_data = [
         id: 5,
         btn: "Rimuovi Componente",
         link: "delcomp",
-        action: () => { },
+        action: () => {
+            getDichiarantiFamilies((dt) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona famiglia", "Seleziona la Famiglia corrispondente", (idfam) => {
+                    //Se confermata la selezione della famiglia
+                    getComponentiIDFAMFamily(idfam, (dt2) => {
+                        //Se viene caricata l query dei componenti
+                        LoadApp.addModal(InputChoiceDialog("Seleziona Componente", "Seleziona il componente da rimuovere", (idcomp) => {
+                            //Se viene selezionato il componente da rimuovere chiedere se rimuoverlo
+                            LoadApp.addModal(ConfirmDialog("Eliminazione Componente", "Vuoi davvero eliminare il componente?", () => {
+                                //Se viene confermata l'eliminazione
+                                deleteComponentFamily(idfam, idcomp, () => {
+                                    LoadApp.addMessage(_SuccessIcon, "Componenti", "Componente eliminato con successo");
+                                }, (dt) => {
+                                    LoadApp.addMessage(_ErrorIcon, "Componenti", "Non è stato possibile eliminare il componente");
+                                })
+                            }))
+                        }, () => {
+                            //Gestione del no della selezione del componente
+                        }, () => {
+                            //Gestione all'uscita della selezione del componente
+                        }, dt2.query, "Nome", "ID"));
+                    }, () => {
+                        //Errore caricamento dati
+                    });
+                }, () => { }, () => { }, dt.query, "Dichiarante", "IDFAM"));
+            }, () => {
+                LoadApp.addMessage(_WarningIcon, "Seleziona Famiglia", "Non è stato possibile caricare le famiglie");
+            });
+        },
         icon: _DeleteIcon,
         text: "Rimuovi un componente da una famiglia."
     }, {
         id: 6,
         btn: "Gestisci Componente",
         link: "handlecomp",
-        action: () => { },
+        action: () => {
+            getDichiarantiFamilies((dt) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona famiglia", "Inserisci l'ID Famiglia corrispondente", (idfam) => {
+                    fun_FamShowerModal(() => { }, idfam);
+                }, () => { }, () => { }, dt.query, "Dichiarante", "IDFAM"));
+            }, () => {
+                LoadApp.addMessage(_WarningIcon, "Seleziona Famiglia", "Non è stato possibile caricare le famiglie");
+            });
+        },
         icon: _EditIcon,
         text: "Rimuovi un componente da una famiglia."
     }
