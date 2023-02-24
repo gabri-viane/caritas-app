@@ -16,11 +16,13 @@ export default class DataExchange {
         return this.data;
     }
 
-    setData(data) {
+    setData(data, fire = true) {
         this.data = data;
-        this.functions.forEach((f) => {
-            f(this.data);
-        });
+        if (fire) {
+            this.functions.forEach((f) => {
+                f(this.data);
+            });
+        }
     }
 
 }

@@ -9,9 +9,11 @@ import Nav from "react-bootstrap/esm/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Collapse from "react-bootstrap/Collapse";
 import Button from "react-bootstrap/Button"
-import { ConfirmDialog, InputIntegerDialog, OkDialog } from "../../../contents/functions/DialogGenerators";
+import { ConfirmDialog, InputChoiceDialog, OkDialog } from "../../../contents/functions/DialogGenerators";
 import { fun_EntryEditorModal, fun_MagEditorModal, fun_ModificheEditorModal } from "./MagModals";
 import LoadApp from "../../loadApp";
+import { getDonatoriExtra } from "../../../contents/api/capi-extra";
+import { _WarningIcon } from "../../../contents/images";
 
 export class MagNavbar extends Component {
 
@@ -34,14 +36,6 @@ export class MagNavbar extends Component {
     handleEdit = (e, idprod, render) => {
         e.preventDefault();
         fun_MagEditorModal(this.resetModal, true, idprod, (resp) => getAllProdottiMagazzino(render, (dt) => { console.log(dt) }), this.errorReloadMag);
-        /*this.setState({
-            modal: <MagEditor
-                ID={idprod}
-                handleClose={this.resetModal}
-                edit={true}
-                success_handler={(resp) => getAllProdottiMagazzino(render, (dt) => { console.log(dt) })}
-                error_handler={this.errorReloadMag} />
-        });*/
     }
 
     handleShow = (e, idprod) => {
@@ -257,9 +251,13 @@ export class MagNavbar extends Component {
                                         <NavDropdown.Item
                                             href="#mag/entr/from"
                                             onClick={() => {
-                                                LoadApp.addModal(InputIntegerDialog("Cerca per donatore", "Inserisci ID donatore", (value) => {
-                                                    getFromEntrateMagazzino(value, this.renderEntrate, this.errorReloadEntrate)
-                                                }, () => { }, () => { }));
+                                                getDonatoriExtra((dt) => {
+                                                    LoadApp.addModal(InputChoiceDialog("Cerca per donatore", "Seleziona il donatore", (id) => {
+                                                        getFromEntrateMagazzino(id, this.renderEntrate, this.errorReloadEntrate);
+                                                    }, () => { }, () => { }, dt.query, "Nome", "ID"));
+                                                }, (dt) => {
+                                                    LoadApp.addMessage(_WarningIcon, "Donatori", "Impossibile caricare la lista donatori");
+                                                });
                                             }}>Dal Dontatore</NavDropdown.Item>
                                         <NavDropdown.Item
                                             href="#mag/entr/after"

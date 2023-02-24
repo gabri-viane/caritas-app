@@ -19,7 +19,7 @@ export default class SettingsPage extends Component {
         if (e.target.value > 0) {
             this.setState({ cols: e.target.value });
         } else {
-            this.setState({ cols: 1 });
+            this.setState({ cols: 3 });
         }
     }
 
@@ -41,10 +41,15 @@ export default class SettingsPage extends Component {
                                         <Form.Label className="font-weight-light">Numero di colonne di elementi borse</Form.Label>
                                     </Col>
                                     <Col md="auto">
-                                        <Form.Control type="number" aria-label="Numero colonne creazione borse"
-                                            style={{ maxWidth: '60px' }}
-                                            value={this.state.cols}
-                                            onChange={this.handleChangeSettingCols} />
+                                        <Form.Select style={{ maxWidth: '60px' }} aria-label="Numero colonne creazione borse"
+                                            value={this.state.cols} onChange={this.handleChangeSettingCols}>
+                                            <option value={1}>1</option>
+                                            <option value={2}>2</option>
+                                            <option value={3}>3</option>
+                                            <option value={4}>4</option>
+                                            <option value={6}>6</option>
+                                            <option value={12}>12</option>
+                                        </Form.Select>
                                     </Col>
                                 </Row>
                             </Container>

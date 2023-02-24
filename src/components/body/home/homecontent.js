@@ -3,6 +3,7 @@ import { ConfirmDialog, InputChoiceDialog } from "../../../contents/functions/Di
 import LoadApp from "../../loadApp";
 import { _AddIcon, _AddUserIcon, _DeleteIcon, _EditIcon, _ErrorIcon, _ShowIcon, _SuccessIcon, _WarningIcon } from "../../../contents/images";
 import { deleteComponentFamily, getComponentiIDFAMFamily, getDichiarantiFamilies } from "../../../contents/api/capi-family";
+import { fun_BorEditorModal } from "../borse/BagModals";
 
 export const families_data = [
     {
@@ -115,14 +116,22 @@ export const bags_data = [
         id: 1,
         link: "addborsa",
         btn: "Aggiungi",
-        action: () => { },
+        action: () => {
+            fun_BorEditorModal(() => { }, true, null, () => {
+                LoadApp.addMessage(_SuccessIcon, "Borse", "La borsa è stata aggiunta");
+            }, () => {
+                LoadApp.addMessage(_ErrorIcon, "Borse", "La borsa non è stata creata");
+            });
+        },
         icon: _AddIcon,
         text: "Permette di registrare una nuova borsa da assegnare a una famiglia."
     }, {
         id: 2,
         btn: "Gestisci",
         link: "handleborse",
-        action: () => { },
+        action: () => {
+            
+        },
         icon: _EditIcon,
         text: "Modifica i dati delle borse."
     }, {

@@ -11,6 +11,7 @@ import eyeicon from "../../resources/images/open-eye.png";
 import { datax } from "../data";
 import LoadApp from "../../components/loadApp";
 import generateModal from "./ModalGenerators";
+import { _ElementsIcon } from "../images";
 
 
 export function AutoFamilyTable(handleShow, handleEdit, handleDelete, query) {
@@ -188,7 +189,7 @@ export function AutoModificheTable(handleShow, handleEdit, handleDelete, query) 
     datafilter={filter} />;
 }
 
-export function AutoBorseTable(handleShow, handleEdit, handleDelete, query) {
+export function AutoBorseTable(handleShow, handleEdit, handleDelete, handleElements, query) {
   const searchText = "Esegui ricerca: (ID e Nome Famiglia, Data)";
   const filter = (item, value) => (
     ('' + item['IDFAM']).toLowerCase().includes(value)
@@ -210,6 +211,7 @@ export function AutoBorseTable(handleShow, handleEdit, handleDelete, query) {
     handleShow={handleShow}
     handleEdit={handleEdit}
     handleDelete={handleDelete}
+    handleExtra={[{ onClick: (e, row) => handleElements(e, row), icon: _ElementsIcon, alt: "Lista elementi" }]}
     dataFormatter={(column, data, row) => {
       if (column === "Consegnata") {
         return row[column] ? "Sì" : "No";
@@ -291,7 +293,9 @@ export class AutoSearchTable extends Component {
           {
             this.props.handleExtra ?
               Object.values(this.props.handleExtra).map((element) => {
-                return <Button key={"extra" + index + element.icon} className="center-text" variant="transparent" onClick={(e) => element.onClick(e, row)}><img src={element.icon} alt={element.alt} style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title={element.alt}></img></Button>
+                return <Button key={"extra" + index + element.icon} className="center-text" variant="transparent"
+                  onClick={(e) => element.onClick(e, row)}><img src={element.icon} alt={element.alt}
+                    style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title={element.alt}></img></Button>
               })
               : <></>
           }
@@ -299,34 +303,10 @@ export class AutoSearchTable extends Component {
           {this.props.handleEdit ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleEdit(e, row[this.props.handleParam])}><img src={editicon} alt="Modifica" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Modifica"></img></Button> : <></>}
           {this.props.handleDelete ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleDelete(e, row[this.props.handleParam])}><img src={deleteicon} alt="Elimina" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Elimina"></img></Button> : <></>}
         </Container>;
-      },()=>{return <></>},()=>{return <></>},'sm'
+      }, () => { return <></> }, () => { return <></> }, 'sm'
     );
     LoadApp.addModal(popover);
-    /*this.setState({
-      show: true,
-      modal:
-        <>
-          <Modal centered size="sm" show={this.state.show} onHide={() => this.setState({ show: false, modal: <></> })}>
-            <Modal.Header closeButton>Opzioni:</Modal.Header>
-            <Modal.Body>
-              <Container fluid>
-                {
-                  this.props.handleExtra ?
-                    Object.values(this.props.handleExtra).map((element) => {
-                      return <Button key={"extra" + index + element.icon} className="center-text" variant="transparent" onClick={(e) => element.onClick(e, row)}><img src={element.icon} alt={element.alt} style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title={element.alt}></img></Button>
-                    })
-                    : <></>
-                }
-                {this.props.handleShow ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleShow(e, row[this.props.handleParam])}><img src={eyeicon} alt="Mostra" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Mostra"></img></Button> : <></>}
-                {this.props.handleEdit ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleEdit(e, row[this.props.handleParam])}><img src={editicon} alt="Modifica" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Modifica"></img></Button> : <></>}
-                {this.props.handleDelete ? <Button className="center-text" variant="transparent" onClick={(e) => this.props.handleDelete(e, row[this.props.handleParam])}><img src={deleteicon} alt="Elimina" style={{ width: 16, height: 16 }} data-bs-toggle="tooltip" title="Elimina"></img></Button> : <></>}
-              </Container>
-            </Modal.Body>
-          </Modal>
-        </>
-    });*/
   }
-
 
   render() {
     return <Container fluid>

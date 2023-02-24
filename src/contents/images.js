@@ -9,6 +9,7 @@ import AddIcon from "../resources/images/add.png";
 import ShowIcon from "../resources/images/list.png";
 import AddUserIcon from "../resources/images/user-add.png";
 import DeleteIcon from "../resources/images/trash.png";
+import ElementsIcon from "../resources/images/list-option.png";
 
 export const _ErrorIcon = ErrorIcon;
 export const _EditIcon = EditIcon;
@@ -21,3 +22,4 @@ export const _AddIcon = AddIcon;
 export const _AddUserIcon = AddUserIcon;
 export const _ShowIcon = ShowIcon;
 export const _DeleteIcon = DeleteIcon;
+export const _ElementsIcon = ElementsIcon;

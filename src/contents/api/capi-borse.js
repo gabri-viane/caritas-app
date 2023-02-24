@@ -11,7 +11,9 @@ const GET_IDFAM_LAST_BOR = 'bor/get/last/idfam/';//+ID_FAM
 const GET_BORSA_BOR = 'bor/get/borsa/';//+ID_BORSA
 const GET_INFO_BORSA_BOR = 'bor/get/borsa/info/';//+ID_BORSA
 const GET_ALIMENTI_BORSA_BOR = 'bor/get/borsa/alim/';//+ID_BORSA
+const GET_ALIMENTI_BORSA_BOR_F = 'bor/get/borsa/alimf/';//+ID_BORSA
 const GET_IGIENE_BORSA_BOR = 'bor/get/borsa/igiene/';//+ID_BORSA
+const GET_IGIENE_BORSA_BOR_F = 'bor/get/borsa/igienef/';//+ID_BORSA
 
 /**
  * Restituisce una lista di tutte le borse.
@@ -93,6 +95,17 @@ export function getAlimentiBorsa(idborsa, success_handler, error_handler) {
 }
 
 /**
+ * Restituisce gli alimenti in formato IDBorse-IDFAM-IDProdotti-Nome-Totale di una borsa tramite IDBorse.
+ * 
+ * @param {Number} idborsa ID della borsa
+ * @param {Function} success_handler 
+ * @param {Function} error_handler 
+ */
+export function getAlimentiBorsaF(idborsa, success_handler, error_handler) {
+    _get(GET_ALIMENTI_BORSA_BOR_F + idborsa, {}, success_handler, error_handler);
+}
+
+/**
  * Restituisce gli elementi di igiene di una borsa tramite IDBorse.
  * 
  * @param {Number} idborsa ID della borsa
@@ -101,6 +114,34 @@ export function getAlimentiBorsa(idborsa, success_handler, error_handler) {
  */
 export function getIgieneBorsa(idborsa, success_handler, error_handler) {
     _get(GET_IGIENE_BORSA_BOR + idborsa, {}, success_handler, error_handler);
+}
+
+/**
+ * Restituisce gli elementi di igiene  in formato IDBorse-IDFAM-IDProdotti-Nome-Totale-IsIgiene di una borsa tramite IDBorse.
+ * 
+ * @param {Number} idborsa ID della borsa
+ * @param {Function} success_handler 
+ * @param {Function} error_handler 
+ */
+export function getIgieneBorsaF(idborsa, success_handler, error_handler) {
+    _get(GET_IGIENE_BORSA_BOR_F + idborsa, {}, success_handler, error_handler);
+}
+
+/**
+ * Restituisce gli elementi di una borsa tramite IDBorse 
+ * (funzioni getAlimentiBorsaF e getIgieneBorsaF composte).
+ * 
+ * @param {Number} idborsa ID della borsa
+ * @param {Function} success_handler 
+ * @param {Function} error_handler 
+ */
+export function getElementiBorsa(idborsa, success_handler, error_handler) {
+    getAlimentiBorsa(idborsa, (dt_a) => {
+        getIgieneBorsa(idborsa, (dt_i) => {
+            dt_i.query = [...dt_a.query, ...dt_i.query];
+            success_handler(dt_i);
+        }, error_handler);
+    }, error_handler);
 }
 
 /********************************
@@ -209,4 +250,20 @@ export function updateBorsa(idborsa, values, success_handler, error_handler) {
  */
 export function updateElementoBorsa(idborsa, values, success_handler, error_handler) {
     _put(UPDATE_ELEMENTO_BORSA_BOR + idborsa, values, success_handler, error_handler);
+}
+
+/********************************
+ *            DELETE
+ *******************************/
+const DELETE_BORSA_BOR = 'bor/delete/borsa/';//+ID_BORSA
+
+/**
+ * Elimina una borsa tramite ID.
+ * 
+ * @param {Number} idborsa ID della borsa da modificare
+ * @param {Function} success_handler 
+ * @param {Function} error_handler 
+ */
+export function deleteBorsa(idborsa, success_handler, error_handler) {
+    _delete(DELETE_BORSA_BOR + idborsa, {}, success_handler, error_handler);
 }
