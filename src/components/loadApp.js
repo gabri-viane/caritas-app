@@ -12,11 +12,12 @@ import ProgrammNavbar from './extra/navbar';
 import Home from './body/home';
 import LoginModule from "./user/login";
 import SettingsPage from "./extra/settings";
+import User from "./user/user";
 import { FamNavbar } from "./body/famiglia/FamNavbar";
 import { MagNavbar } from "./body/magazzino/MagNavbar";
 import { BorseNavbar } from "./body/borse/BagNavbar";
 import { ModalTemplate } from "../contents/functions/ModalGenerators";
-import { handleUserAction } from "./user/UserHandlers.js";
+import { _WarningIcon } from "../contents/images.js";
 
 const API_PATH = process.env.REACT_APP_API_PATH; //"http://localhost:80/caritas-api/index.php";//+process.env.REACT_APP_WEB_API_REF;
 
@@ -52,7 +53,6 @@ class LoadApp extends Component {
         }
         super(props);
         LoadApp.app = this;
-        this.state.footer = <></>;
         const empty_modal = {
             ID: 0,
             title: <></>,
@@ -68,7 +68,7 @@ class LoadApp extends Component {
             size: 'md'
         };
         this.state.modal = empty_modal;
-        this.state.modal[0] = { modal: empty_modal };
+        this.state.modals[0] = { modal: empty_modal };
     }
 
     /**
@@ -79,15 +79,19 @@ class LoadApp extends Component {
      * @param {String} sender 
      * @param {String} message 
      */
-    static addMessage(icon, sender, message) {
+    static addMessage(icon, sender, message, handler = () => { }) {
         const msg = LoadApp.app.state.messages;
-        msg.unshift({ icon: icon, sender: sender, time: new Date().toLocaleDateString(), text: message });
+        msg.unshift({ icon: icon, sender: sender, time: new Date().toLocaleDateString(), text: message, handler: handler });
         LoadApp.app.setState({ messages: msg });
     }
 
     removeMessage = (i) => {
         const msg = this.state.messages;
-        msg.splice(i, 1);
+        if (i) {
+            msg.slice(i, 1);
+        } else {
+            msg.shift();
+        }
         this.setState({ messages: msg });
     }
 
@@ -138,6 +142,11 @@ class LoadApp extends Component {
         datax.DataHandler.isLogged(() => {
             this.setupPage(datax.DataHandler.access.username);
             this.setState({ showLogin: false });
+            if (datax.DataHandler.dataSettings.light) {
+                LoadApp.addMessage(_WarningIcon, "Impostazioni",
+                    "Per il tuo dispositivo viene attivata la modalità ridotta in automatico.",
+                    () => this.setState({ body: <SettingsPage /> }));
+            }
         }, (error) => {
             this.setState({ showLogin: true, body: this.generateLoginModule(error.msg) });
         });
@@ -156,15 +165,15 @@ class LoadApp extends Component {
     }
 
     setBag = () => {
-        this.setState({ body: <BorseNavbar></BorseNavbar> });
+        this.setState({ body: <BorseNavbar handleHome={this.setHome} /> });
     }
 
     setUser = () => {
-        handleUserAction(this.generateLoginModule,(el)=>{
-            this.setState({
-                body: el
-            })
-        })
+        datax.DataHandler.isLogged(() => {
+            this.setState({ body: <User handleDisconnect={handleDisconnect} /> });
+        }, (error) => {
+            this.setState({ body: this.generateLoginModule(error.res.msg) });
+        });
     }
 
     setupPage = (username) => {
@@ -196,29 +205,31 @@ class LoadApp extends Component {
 
     render() {
         return <>
-            {this.state.navbar}
-            <Container fluid role="main" md="auto">
-                {this.state.body}
-                <ToastContainer position="bottom-end" className="p-2">
-                    {
-                        this.state.messages.map((v, i) => {
-                            return <Toast key={i} onClose={() => this.removeMessage(i)} delay={10000} autohide>
-                                <Toast.Header>
-                                    <img src={v.icon} className="rounded me-2" alt="" />
-                                    <strong className="me-auto">{v.sender}</strong>
-                                    <small className="text-muted">{v.time}</small>
-                                </Toast.Header>
-                                <Toast.Body>{v.text}</Toast.Body>
-                            </Toast>
-                        })
-                    }
-                </ToastContainer>
-                {this.state.footer}
-            </Container>
-            <ModalTemplate ID={this.state.modal.ID} show={this.state.show} title={this.state.modal.title} body={this.state.modal.body} body_params={this.state.modal.body_params}
-                footer={this.state.modal.footer} footer_params={this.state.modal.footer_params}
-                icon_src={this.state.modal.icon.icon_src} alt={this.state.modal.icon.alt} on_close_action={this.state.modal.exit_action}
-                on_exit={this.removeModal} size={this.state.modal.size} />
+            <div style={{ height: '100vh' }}>
+                {this.state.navbar}
+                <Container fluid role="main" md="auto">
+                    {this.state.body}
+                    <ToastContainer position="bottom-end" className="p-2">
+                        {
+                            this.state.messages.map((v, i) => {
+                                const fun = v.handler ? () => { v.handler(); this.removeMessage(i) } : () => this.removeMessage(i);
+                                return <Toast key={i} onClose={() => this.removeMessage()} delay={10000} autohide>
+                                    <Toast.Header>
+                                        <img src={v.icon} onClick={fun} className="rounded me-2" alt="" />
+                                        <strong className="me-auto" onClick={fun}>{v.sender}</strong>
+                                        <small className="text-muted" onClick={fun}>{v.time}</small>
+                                    </Toast.Header>
+                                    <Toast.Body onClick={fun}>{v.text}</Toast.Body>
+                                </Toast>
+                            })
+                        }
+                    </ToastContainer>
+                </Container>
+                <ModalTemplate ID={this.state.modal.ID} show={this.state.show} title={this.state.modal.title} body={this.state.modal.body} body_params={this.state.modal.body_params}
+                    footer={this.state.modal.footer} footer_params={this.state.modal.footer_params}
+                    icon_src={this.state.modal.icon.icon_src} alt={this.state.modal.icon.alt} on_close_action={this.state.modal.exit_action}
+                    on_exit={this.removeModal} size={this.state.modal.size} />
+            </div>
         </>
 
     };

@@ -1,5 +1,4 @@
 import Cookies from 'js-cookie';
-import { verify } from './database/Connection';
 import React, { Component } from 'react';
 
 import Container from "react-bootstrap/Container";
@@ -9,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import LoadApp from '../components/loadApp';
 import generateModal from './functions/ModalGenerators';
 import { _DisconnectIcon } from './images';
+import { verifyUser } from './api/capi-user';
 
 export class Data extends Component {
 
@@ -42,6 +42,11 @@ export class Data extends Component {
         } else {
             this.setDataSettings(this.dataSettings);
         }
+        var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        if (width < 920) {//Se il dispositivo è piccolo
+            this.dataSettings.light = true;
+            this.dataSettings.cols = 2;
+        }
     }
 
     setDataSettings(data) {
@@ -69,7 +74,7 @@ export class Data extends Component {
 
     isLogged(onCheck, onCheckFail) {
         if ((!!this.access.token) && (!!this.access.username)) {
-            verify(this.access, onCheck, onCheckFail)
+            verifyUser(this.access, onCheck, onCheckFail)
         } else {
             onCheckFail({ msg: "Inserisci le credenziali per procedere:" });
         }
@@ -87,7 +92,7 @@ export class Data extends Component {
 
 export const datax = { DataHandler: new Data() };
 
-export function handleDisconnect(instance) {
+export function handleDisconnect() {
     LoadApp.addModal(
         generateModal(2, "Disconnettersi?", _DisconnectIcon, "Disconnessione", () => {
             return <>

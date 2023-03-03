@@ -13,7 +13,7 @@ import { ConfirmDialog, InputChoiceDialog, OkDialog } from "../../../contents/fu
 import { fun_EntryEditorModal, fun_MagEditorModal, fun_ModificheEditorModal } from "./MagModals";
 import LoadApp from "../../loadApp";
 import { getDonatoriExtra } from "../../../contents/api/capi-extra";
-import { _WarningIcon } from "../../../contents/images";
+import { _AddIcon, _WarningIcon } from "../../../contents/images";
 
 export class MagNavbar extends Component {
 
@@ -213,10 +213,10 @@ export class MagNavbar extends Component {
                     <Collapse in={this.state.open}>
                         <Nav id="collapse-nav-content">
                             <Nav.Item>
-                                <Nav.Link href="#/mag/add" onClick={this.handleCreate}>Registra Prodotto</Nav.Link>
+                                <Nav.Link href="#/mag/add" onClick={this.handleCreate}><img src={_AddIcon} alt="Aggiungi prodotto" /> Nuovo Prodotto</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link href="#/mag/reg" onClick={this.handleRegisterEntrate}>Registra Entrata</Nav.Link>
+                                <Nav.Link href="#/mag/reg" onClick={this.handleRegisterEntrate}><img src={_AddIcon} alt="Aggiungi entrata" /> Registra Entrata</Nav.Link>
                             </Nav.Item>
                             {datax.DataHandler.dataSettings.light ?  //Controllo se voglio mostrare i dati in modo light o no
                                 <Nav.Item>
@@ -274,7 +274,7 @@ export class MagNavbar extends Component {
                         </Nav>
                     </Collapse>
                     <Nav.Item className="ml-auto text-center">
-                        <Nav.Link href="#/" onClick={() => this.componentDidMount()}><img src={refreshicon} alt="Ricarica" data-bs-toggle="tooltip" title="Ricarica dati" /></Nav.Link>
+                        <Nav.Link href="#/" onClick={() => this.componentDidMount()}><img src={refreshicon} alt="Ricarica" data-bs-toggle="tooltip" title="Ricarica dati" /> Aggiorna</Nav.Link>
                     </Nav.Item>
                 </Nav>
                 <hr />

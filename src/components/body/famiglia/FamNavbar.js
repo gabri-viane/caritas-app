@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { AutoDichTable, AutoFamilyTable } from "../../../contents/functions/TableGenerators";
 import { deleteFamily, getAddressAndCodiceFamilies, getAddressFamilies, getAllFamilies, getCodiceFiscaleFamilies, getDichiarantiFamilies } from '../../../contents/api/capi-family';
 import { datax } from "../../../contents/data";
-import { _BackIcon, _ErrorIcon, _RefreshIcon } from "../../../contents/images";
+import { _AddIcon, _BackIcon, _ErrorIcon, _RefreshIcon } from "../../../contents/images";
 import { Container, Nav, NavDropdown } from "react-bootstrap";
 import { ConfirmDialog, OkDialog } from "../../../contents/functions/DialogGenerators";
 import LoadApp from "../../loadApp";
@@ -119,7 +119,7 @@ export class FamNavbar extends Component {
                         <Nav.Link href="#/" onClick={this.props.handleHome}><img src={_BackIcon} style={{ width: 16, height: 16 }} alt="Indietro" /> Home</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link href="#/fam/add" onClick={this.handleCreate}>Aggiungi Famiglia</Nav.Link>
+                        <Nav.Link href="#/fam/add" onClick={this.handleCreate}><img src={_AddIcon} alt="Aggiungi famiglia" /> Aggiungi Famiglia</Nav.Link>
                     </Nav.Item>
                     {datax.DataHandler.dataSettings.light ?  //Controllo se voglio mostrare i dati in modo light o no
                         <Nav.Item>
@@ -144,7 +144,7 @@ export class FamNavbar extends Component {
                         </>
                     }
                     <Nav.Item className="ml-auto text-center">
-                        <Nav.Link href="#/" onClick={() => this.componentDidMount()}><img src={_RefreshIcon} alt="Ricarica" data-bs-toggle="tooltip" title="Ricarica dati" /></Nav.Link>
+                        <Nav.Link href="#/" onClick={() => this.componentDidMount()}><img src={_RefreshIcon} alt="Ricarica" data-bs-toggle="tooltip" title="Ricarica dati" /> Aggiorna</Nav.Link>
                     </Nav.Item>
                 </Nav>
                 <hr />

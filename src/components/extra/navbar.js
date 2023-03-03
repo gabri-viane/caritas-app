@@ -17,7 +17,7 @@ export default class ProgrammNavbar extends Component {
     render() {
         return (
             <>
-                <Navbar bg="dark" expand="lg" variant="dark" sticky="top">
+                <Navbar collapseOnSelect bg="dark" expand="lg" variant="dark" sticky="top">
                     <Container fluid>
                         <Navbar.Brand href="#">
                             <Logo />
@@ -31,7 +31,7 @@ export default class ProgrammNavbar extends Component {
                                 <Nav.Link href="#magazzino" onClick={() => this.props.mag()}>Magazzino</Nav.Link>
                                 <Nav.Link href="#borse" onClick={() => this.props.bag()}>Borse</Nav.Link>
                             </Nav>
-                            <Nav>
+                            <Nav className="me-auto">
                                 <Navbar.Text>Collegato come:{' '}</Navbar.Text>
                                 <NavDropdown title={<><img alt="User" src={usericon} />{this.props.username} </>} id="basic-nav-dropdown" menuVariant="dark">
                                     <NavDropdown.Item onClick={() => this.props.handleUser()} href="#user/handle" id="handBtnNav">Gestisci</NavDropdown.Item>

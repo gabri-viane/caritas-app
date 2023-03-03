@@ -196,15 +196,24 @@ export function AutoBorseTable(handleShow, handleEdit, handleDelete, handleEleme
     || (item['Famiglia']).toLowerCase().includes(value)
     || (item['DataConsegna']).toLowerCase().includes(value));
 
-  const heads = {
-    'IDFAM': 'ID Fam.',
-    'Famiglia': 'Famiglia',
-    'DataConsegna': 'Data di Consegna',
-    'Note': 'Note',
-    'Consegnata': 'Consegnata',
-    'NumeroElementi': 'n° Elementi'
-  };
+  let heads = {};
 
+  if (datax.DataHandler.dataSettings.light) {
+    heads = {
+      'IDFAM': 'ID Fam.',
+      'DataConsegna': 'Data di Consegna',
+      'Note': 'Note',
+    };
+  } else {
+    heads = {
+      'IDFAM': 'ID Fam.',
+      'Famiglia': 'Famiglia',
+      'DataConsegna': 'Data di Consegna',
+      'Note': 'Note',
+      'Consegnata': 'Consegnata',
+      'NumeroElementi': 'n° Elementi'
+    };
+  }
   return <AutoSearchTable
     query={query}
     searchText={searchText}

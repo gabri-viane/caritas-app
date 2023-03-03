@@ -7,8 +7,8 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Collapse from "react-bootstrap/Collapse";
 import ListGroup from "react-bootstrap/ListGroup";
+import Badge from "react-bootstrap/Badge";
 import { addBorsa, addElementiBorsa, boxBorsaValues, boxElementoBorsaValues, getElementiBorsa, getInformazioniBorsa, updateBorsa } from "../../../contents/api/capi-borse";
 import { getAvailablesMagazzino } from "../../../contents/api/capi-magazzino";
 import { getDichiarantiFamilies } from "../../../contents/api/capi-family";
@@ -42,6 +42,7 @@ class BagEditorModal extends Component {
         this.state.create = props.ID == null;
         this.state.edit = props.edit;
         this.state.editable = props.edit || this.state.create;
+        this.state.success_handler = props.success_handler;
         props.dtx.subscribeFunctions(() => {
             this.handleSubmit();
         })
@@ -87,6 +88,10 @@ class BagEditorModal extends Component {
         this.setState({ Consegnata: !this.state.Consegnata });
     }
 
+    handleNoteChange = (e) => {
+        this.setState({ Note: e.target.value });
+    }
+
     handleSubmit = (e) => {
         if (e) {
             e.preventDefault();
@@ -98,6 +103,9 @@ class BagEditorModal extends Component {
         if (this.state.edit && !this.state.create) {
             updateBorsa(this.state.ID, bor_values,
                 (dt) => {
+                    if (this.state.success_handler) {
+                        this.state.success_handler();
+                    }
                     LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa modificata con successo");
                 },
                 this.props.error_handler
@@ -105,6 +113,9 @@ class BagEditorModal extends Component {
         } else if (this.state.create) {
             addBorsa(bor_values,
                 (dt) => {
+                    if (this.state.success_handler) {
+                        this.state.success_handler();
+                    }
                     LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa aggiunta con successo");
                 },
                 (dt) => {
@@ -130,6 +141,9 @@ class BagEditorModal extends Component {
                         </FloatingLabel>
                         <FloatingLabel controlId="floatingConsegna" label="Data di consegna" className="mt-1">
                             <Form.Control type="date" autoComplete="off" autoCorrect="off" value={this.state.Consegna} onChange={this.handleDateChange} disabled={!this.state.editable} />
+                        </FloatingLabel>
+                        <FloatingLabel controlId="floatingNote" label="note" className="mt-1">
+                            <Form.Control as="textarea" autoComplete="off" autoCorrect="off" value={this.state.Note} onChange={this.handleNoteChange} disabled={!this.state.editable} rows={3} />
                         </FloatingLabel>
                         {
                             !this.state.create ?
@@ -232,7 +246,7 @@ class ElementoProdotto extends Component {
 
     render() {
         return <>
-            <Card style={{ maxWidth: "400px", boxShadow: "10px 10px 5px lightblue" }}>
+            <Card style={{ minWidth: "auto", maxWidth: "400px", boxShadow: "10px 10px 5px lightblue" }}>
                 <Card.Header>
                     <Form.Group className="mb-2" controlId={"form_sel_prod_" + this.state.IDProdotti}>
                         <Form.Check checked={this.state.selected} disabled={!this.state.editable} onChange={this.onSelectionChange} label={this.state.Nome} />
@@ -291,10 +305,10 @@ export class ContenitoreElementi extends Component {
             const val = this.state.prodotti[id];
             vals[vals.length] = boxElementoBorsaValues(val.IDProdotti, val.Totale, val.edit, true);
         });
-        const remove = this.state.prodotti.filter((prod)=>{
+        const remove = this.state.prodotti.filter((prod) => {
             return prod.edit && prod.Totale === 0;
         });
-        remove.forEach((prd)=>{
+        remove.forEach((prd) => {
             vals[vals.length] = boxElementoBorsaValues(prd.IDProdotti, 0, true, true);
         });
         if (vals.length > 0) {
@@ -302,7 +316,7 @@ export class ContenitoreElementi extends Component {
                 LoadApp.addMessage(_SuccessIcon, "Elementi Borse", "Gli elementi sono stati aggiornati");
             }, (dt) => {
                 LoadApp.addMessage(_WarningIcon, "Elementi Borse", "Uno o più elementi non sono stati aggiunti");
-             });
+            });
         }
     }
 
@@ -392,10 +406,11 @@ export class ContenitoreElementi extends Component {
      * @returns 
      */
     showSelection = () => {
+        const cols = datax.DataHandler.dataSettings.cols || 4;
         return <Row> {
             this.state.IDs_selection.map((id_prod) => {
                 const item = this.state.prodotti[id_prod];
-                return <Col sm className="mt-2" key={item.IDProdotti}>
+                return <Col sm={Math.ceil(12 / cols)} className="mt-2" key={item.IDProdotti}>
                     <ElementoProdotto Nome={item.Nome} IDProdotti={item.IDProdotti} Selected={true}
                         Totale={item.Totale}
                         onSelectionEvent={this.onSelected} onValueEvent={this.onValueChange} editable={this.state.editable} />
@@ -448,13 +463,23 @@ export class ContenitoreElementi extends Component {
                 old_filter: this.state.filtered,
                 filtered: prods
             });
-        }else{
+        } else {
             this.setState({
                 show_selection: !this.state.show_selection,
                 filtered: this.state.old_filter,
                 old_filter: []
             });
         }
+    }
+
+    /**
+     * 
+     * @param {String} str 
+     * @returns 
+     */
+    splitProdName = (str) => {
+        const indx = str.lastIndexOf(" ");
+        return [str.slice(0, indx), str.slice(indx + 1)];
     }
 
     render() {
@@ -472,35 +497,38 @@ export class ContenitoreElementi extends Component {
                                 <Form.Control type="search" placeholder="Filtra" onChange={this.filter} />
                             </Col>
                             <Col md="auto">
-                                <Form.Check type="switch" label="Solo sekezionati" checked={this.state.show_selection} onChange={this.filter_selection} />
+                                <Form.Check type="switch" label="Solo selezionati" checked={this.state.show_selection} onChange={this.filter_selection} />
                             </Col>
                         </Row>
                     </Container>
                 </Row>
-                <Collapse in={this.state.show_res}>
-                    <Row className="mt-2">
-                        <Col style={{ maxWidth: '30vw' }}>
-                            <ListGroup>
-                                {
-                                    this.state.IDs_selection.map((id_prod, index) => {
-                                        return <ListGroup.Item key={index}>
-                                            <span className="primary">{this.state.prodotti[id_prod].Totale}
-                                                {'   '}
-                                            </span><span>{this.state.prodotti[id_prod].Nome}</span>
-                                        </ListGroup.Item>
-                                    })
-                                }
-                            </ListGroup>
-                        </Col>
-                    </Row>
-                </Collapse>
                 {!this.state.show_res ?
                     <Row className="overflow-auto">
                         <Container fluid >
                             {this.state.editable ? this.transformToColumnSecond(this.state.filtered) : this.showSelection()}
                         </Container>
                     </Row>
-                    : <></>
+                    : <Row className="mt-2">
+                        <Col style={{ maxWidth: '30hw' }}>
+                            <ListGroup as="ol" numbered>
+                                {
+                                    this.state.IDs_selection.map((id_prod, index) => {
+                                        const prod = this.state.prodotti[id_prod];
+                                        const nm = this.splitProdName(prod.Nome);
+                                        return <ListGroup.Item key={index} as="li" className="d-flex justify-content-between align-items-start">
+                                            <div className="ms-2 me-auto">
+                                                <div className="fw-bold">{nm[0]}</div>
+                                                {nm[1]}
+                                            </div>
+                                            <Badge bg="primary" pill>
+                                                {prod.Totale}
+                                            </Badge>
+                                        </ListGroup.Item>
+                                    })
+                                }
+                            </ListGroup>
+                        </Col>
+                    </Row>
                 }
             </Container>
         </>

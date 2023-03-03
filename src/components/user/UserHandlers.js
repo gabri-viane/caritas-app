@@ -18,7 +18,7 @@ export function handleModify(params, success_handler, error_handler) {
 };
 
 
-export function handleUserAction(generateLoginModule,el) {
+export function handleUserAction(generateLoginModule, el) {
     datax.DataHandler.isLogged(() => {
         el(<User
             handleDisconnect={() => { handleDisconnect() }}

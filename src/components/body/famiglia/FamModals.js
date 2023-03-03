@@ -361,9 +361,15 @@ export class FamShowerModal extends Component {
                 </Row>
                 <Row className="mt-2" >
                     <Col>
-                        <span className="lead text-center">Componenti: </span>
                         <Container fluid className="justify-content-end">
-                            <Button size="sm" className="text-center" onClick={this.handleAdd}><img src={_AddIcon} style={{ width: 16, height: 16 }} alt="Aggiungi" /> Aggiungi</Button>
+                            <Row>
+                                <Col md="auto">
+                                    <span className="lead text-center">Componenti: </span>
+                                </Col>
+                                <Col md="auto">
+                                    <Button size="sm" className="text-center" onClick={this.handleAdd}><img src={_AddIcon} style={{ width: 16, height: 16 }} alt="Aggiungi" /> Aggiungi</Button>
+                                </Col>
+                            </Row>
                         </Container>
                     </Col>
                 </Row>

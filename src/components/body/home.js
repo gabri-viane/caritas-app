@@ -3,31 +3,32 @@ import HomeCard from "./home/homecard";
 import { families_data, bags_data } from "./home/homecontent";
 
 import Row from "react-bootstrap/Row";
-import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/esm/Container";
+import Container from "react-bootstrap/Container";
+import Tabs from "react-bootstrap/Tabs";
+import Tab from "react-bootstrap/Tab";
 
 
 class Home extends Component {
     render() {
         return <>
-            <Container fluid className="p-3" md="auto">
-                <Container fluid md="auto">
-                    <Card className="mt-1" md="auto">
-                        <Card.Title className="m-1" id="famiglie">Famiglie</Card.Title>
+            <Tabs defaultActiveKey="fams"
+                id="tabbed-home"
+                fill>
+                <Tab eventKey="fams" title="Famiglie">
+                    <Container fluid md="auto">
                         <Row >
                             {families_data.map(item => <HomeCard link={"fam/" + item.link} key={item.id} btntitle={item.btn} icon={item.icon} text={item.text} action={item.action} />)}
                         </Row>
-                    </Card>
-                </Container>
-                <Container fluid md="auto" mx="auto" my="auto">
-                    <Card className="mt-2 p-1">
-                        <Card.Title className="mt-1" id="borse">Borse</Card.Title>
+                    </Container>
+                </Tab>
+                <Tab eventKey="borse" title="Borse">
+                    <Container fluid md="auto">
                         <Row>
                             {bags_data.map(item => <HomeCard link={"borse/" + item.link} key={item.id} btntitle={item.btn} icon={item.icon} text={item.text} action={item.action} />)}
                         </Row>
-                    </Card>
-                </Container>
-            </Container>
+                    </Container>
+                </Tab>
+            </Tabs>
         </>;
     }
 }

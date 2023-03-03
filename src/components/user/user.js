@@ -5,9 +5,11 @@ import Container from "react-bootstrap/esm/Container";
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/esm/Col";
 import Form from "react-bootstrap/esm/Form";
-import { user } from "../../contents/database/Connection";
 import Button from "react-bootstrap/esm/Button";
 import Modal from "react-bootstrap/esm/Modal";
+import { getUser, modifyUser } from "../../contents/api/capi-user";
+import LoadApp from "../loadApp";
+import { OkDialog } from "../../contents/functions/DialogGenerators";
 
 class User extends Component {
 
@@ -40,15 +42,14 @@ class User extends Component {
      * Nel caso di errore mostra il messaggio
      */
     reloadComp() {
-        user({ ...{ method: 'get', k: 'get' }, ...datax.DataHandler.access },
-            (dt) => {
-                this.setState({
-                    username: dt.username,
-                    email: dt.email,
-                    expire: dt.expire,
-                    auth: dt.auth
-                });
-            },
+        getUser((dt) => {
+            this.setState({
+                username: dt.username,
+                email: dt.email,
+                expire: dt.expire,
+                auth: dt.auth
+            });
+        },
             (dt) => {
                 //Se c'è un'errore imposta l'intero corpo con il messaggio.
                 this.setState({ body: this.onErrorHandle(dt.msg) });
@@ -68,7 +69,7 @@ class User extends Component {
         this.setState({
             modify_btn: editing ? 'Scarta' : 'Modifica',
             editing: editing,
-            save_btn: editing ? <Col md="auto" >
+            save_btn: editing ? <Col>
                 <Button variant="success" onClick={this.handleShow}>Salva</Button>
             </Col> : <></>
         });
@@ -128,10 +129,10 @@ class User extends Component {
                 </Row>
                 <Row className="mt-2" mx="auto">
                     {this.state.save_btn}
-                    <Col >
+                    <Col>
                         <Button variant="primary" onClick={this.edit}>{this.state.modify_btn}</Button>
                     </Col>
-                    <Col >
+                    <Col>
                         <Button variant="secondary" onClick={this.props.handleDisconnect} disabled={this.state.editing}>Disconnetti</Button>
                     </Col>
                     <Col >
@@ -159,8 +160,13 @@ class User extends Component {
                         <Button variant="primary" onClick={() => {
                             this.handleClose();//Chiudi il modale
                             //aggiorna le credenziali inviandole all'handler corretto
-                            this.props.handleModify({ newuser: this.state.username, password: this.state.password, newemail: this.state.email });
-                            this.edit();//switch della modalità da edit a non-edit
+                            modifyUser(this.state.username, this.state.email, this.state.password, (dt) => {
+                                this.edit();//switch della modalità da edit a non-edit
+                                datax.DataHandler.releaseAccess();
+                            }, (dt) => {
+                                LoadApp.addModal(OkDialog("Errore salvataggio", "Non è stato possibile modificare i dati utente", this.edit, false, false));
+                            });
+                            //this.props.handleModify({ newuser: this.state.username, password: this.state.password, newemail: this.state.email });
                         }}>
                             Salva modifiche
                         </Button>

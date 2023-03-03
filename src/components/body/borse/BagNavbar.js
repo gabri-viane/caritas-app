@@ -23,39 +23,37 @@ export class BorseNavbar extends Component {
 
     handleEdit = (e, id) => {
         e.preventDefault();
-        fun_BorEditorModal(() => {
-            this.refresh();
-        }, true, id, () => {
-            if (!datax.DataHandler.dataSettings.light) {
-                LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa modificata con successo");
-            }
-        }, (dt) => {
-            console.log(dt);
-            if (!datax.DataHandler.dataSettings.light) {
-                LoadApp.addMessage(_ErrorIcon, "Borse", "Impossibile modificare la borsa");
-            }
-        });
+        fun_BorEditorModal(
+            this.refresh, true, id, () => {
+                if (!datax.DataHandler.dataSettings.light) {
+                    LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa modificata con successo");
+                }
+            }, (dt) => {
+                console.log(dt);
+                if (!datax.DataHandler.dataSettings.light) {
+                    LoadApp.addMessage(_ErrorIcon, "Borse", "Impossibile modificare la borsa");
+                }
+            });
     }
 
     handleElements = (e, borsa) => {
         e.preventDefault();
-        fun_BorElementsEditorModal(this.refresh,true,borsa.ID,this.refresh,()=>{
-            LoadApp.addMessage(_ErrorIcon,"Elementi Borse","Impossibile visualizzare/modificare gli elementi");
+        fun_BorElementsEditorModal(this.refresh, true, borsa.ID, this.refresh, () => {
+            LoadApp.addMessage(_ErrorIcon, "Elementi Borse", "Impossibile visualizzare/modificare gli elementi");
         });
     }
 
-    handleDelete = (e,id)=>{
+    handleDelete = (e, id) => {
         e.preventDefault();
-        LoadApp.addModal(ConfirmDialog("Eliminazione Borsa","Eliminare la borsa definitivamente?",
-            ()=>{
-                deleteBorsa(id,(dt)=>{
-                    console.log(dt);
-                    LoadApp.addMessage(_SuccessIcon,"Borse","Borsa eliminata correttamente");
-                },(dt)=>{
-                    console.log(dt);
-                    LoadApp.addMessage(_WarningIcon,"Borse","Non è stato possibile eliminare la borsa")
+        LoadApp.addModal(ConfirmDialog("Eliminazione Borsa", "Eliminare la borsa definitivamente?",
+            () => {
+                deleteBorsa(id, (dt) => {
+                    LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa eliminata correttamente");
+                    this.refresh();
+                }, (dt) => {
+                    LoadApp.addMessage(_WarningIcon, "Borse", "Non è stato possibile eliminare la borsa")
                 })
-            },()=>{}
+            }, () => { }
         ))
     }
 
@@ -75,7 +73,7 @@ export class BorseNavbar extends Component {
     }
 
     addBorsa = () => {
-        fun_BorEditorModal(() => { }, true, null, () => { }, () => { });
+        fun_BorEditorModal(() => { }, true, null, this.refresh, () => { });
     }
 
     render() {

@@ -32,10 +32,17 @@ export default class SettingsPage extends Component {
                 <Col>
                     <Form>
                         <Form.Group className="mb-3 p-2" controlId="settingsgroup">
-                            <Form.Check className="font-weight-light" type="switch" label="Tabelle dati ridotte"
-                                checked={this.state.light === 'true' || this.state.light}
-                                onChange={this.handleChangeSettingLight} />
                             <Container className="mt-2">
+                                <Row className="align-items-left" md="auto">
+                                    <Col md="auto">
+                                        <Form.Label className="font-weight-light">Tabelle dati ridotte</Form.Label>
+                                    </Col>
+                                    <Col md="auto">
+                                        <Form.Check className="font-weight-light" type="switch" aria-label="Tabelle dati ridotte"
+                                            checked={this.state.light === 'true' || this.state.light}
+                                            onChange={this.handleChangeSettingLight} />
+                                    </Col>
+                                </Row>
                                 <Row className="align-items-left" md="auto">
                                     <Col md="auto">
                                         <Form.Label className="font-weight-light">Numero di colonne di elementi borse</Form.Label>
