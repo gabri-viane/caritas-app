@@ -35,44 +35,60 @@ export class MagNavbar extends Component {
 
     handleEdit = (e, idprod, render) => {
         e.preventDefault();
-        fun_MagEditorModal(this.resetModal, true, idprod, (resp) => getAllProdottiMagazzino(render, (dt) => { console.log(dt) }), this.errorReloadMag);
+        fun_MagEditorModal(this.resetModal, true, idprod, (resp) => getAllProdottiMagazzino(render, (dt) => {
+            LoadApp.addMessage(_WarningIcon, "Prodotti", "Impossibile caricare i prodotti");
+        }), this.errorReloadMag);
     }
 
     handleShow = (e, idprod) => {
         e.preventDefault();
-        fun_MagEditorModal(this.resetModal, false, idprod, (resp) => getAllProdottiMagazzino(this.renderProds, (dt) => { console.log(dt) }), this.errorReloadMag);
+        fun_MagEditorModal(this.resetModal, false, idprod, (resp) => getAllProdottiMagazzino(this.renderProds, (dt) => {
+            LoadApp.addMessage(_WarningIcon, "Prodotti", "Impossibile caricare i prodotti");
+        }), this.errorReloadMag);
     }
 
     handleShowEntrate = (e, identr) => {
         e.preventDefault();
         fun_EntryEditorModal(this.resetModal, false, identr, null, null,
-            (resp) => getAllProdottiMagazzino(this.renderEntrate, (dt) => { console.log(dt) }), this.errorReloadEntrate);
+            (resp) => getAllProdottiMagazzino(this.renderEntrate, (dt) => {
+                LoadApp.addMessage(_WarningIcon, "Prodotti", "Impossibile caricare i prodotti");
+            }), this.errorReloadEntrate);
     }
 
     handleShowModifca = (e, idmod) => {
         e.preventDefault();
-        fun_ModificheEditorModal(this.resetModal, false, idmod, null, null, (resp) => getAllModificheMagazzino(this.renderModficihe, (dt) => { console.log(dt) }), this.errorReloadModifiche);
+        fun_ModificheEditorModal(this.resetModal, false, idmod, null, null, (resp) => getAllModificheMagazzino(this.renderModficihe, (dt) => {
+            LoadApp.addMessage(_WarningIcon, "Modifiche", "Impossibile caricare le modifiche");
+        }), this.errorReloadModifiche);
     }
 
     handleCreate = (e) => {
         e.preventDefault();
-        fun_MagEditorModal(this.resetModal, true, null, (resp) => getAllProdottiMagazzino(this.renderProds, (dt) => { console.log(dt) }), this.errorReloadMag);
+        fun_MagEditorModal(this.resetModal, true, null, (resp) => getAllProdottiMagazzino(this.renderProds, (dt) => {
+            LoadApp.addMessage(_WarningIcon, "Prodotti", "Impossibile caricare i prodotti");
+        }), this.errorReloadMag);
     }
 
     handleRegisterEntrate = (e, prod) => {
         e.preventDefault();
         fun_EntryEditorModal(this.resetModal, true, null, prod ? prod.IDProdotto : null, null,
-            (resp) => getAllProdottiMagazzino(this.renderEntrate, (dt) => { console.log(dt) }), this.errorReloadEntrate);
+            (resp) => getAllProdottiMagazzino(this.renderEntrate, (dt) => {
+                LoadApp.addMessage(_WarningIcon, "Prodotti", "Impossibile caricare i prodotti");
+            }), this.errorReloadEntrate);
     };
 
     handleEditEntrata = (e, identr) => {
         e.preventDefault();
-        fun_EntryEditorModal(this.resetModal, true, identr, null, null, (resp) => getAllEntrateMagazzino(this.renderEntrate, (dt) => { console.log(dt) }), this.errorReloadEntrate);
+        fun_EntryEditorModal(this.resetModal, true, identr, null, null, (resp) => getAllEntrateMagazzino(this.renderEntrate, (dt) => {
+            LoadApp.addMessage(_WarningIcon, "Entrate", "Impossibile caricare le entrate");
+        }), this.errorReloadEntrate);
     }
 
     handleEditQuantity = (e, modifica) => {
         e.preventDefault();
-        fun_ModificheEditorModal(this.resetModal, false, null, modifica.ID, null, (resp) => getAllMagazzino(this.renderMag, (dt) => { console.log(dt) }), this.errorReloadMag);
+        fun_ModificheEditorModal(this.resetModal, true, null, modifica.ID, null, (resp) => getAllMagazzino(this.renderMag, (dt) => {
+            LoadApp.addMessage(_WarningIcon, "Magazzino", "Impossibile caricare il magazzino");
+        }), this.errorReloadMag);
     };
 
     handleDelete = (e, idprod) => {

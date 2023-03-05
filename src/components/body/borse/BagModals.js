@@ -56,7 +56,7 @@ class BagEditorModal extends Component {
                 this.setState({ fam_query: dt.query });
             }
         }, (err) => {
-            console.log(err);
+            LoadApp.addMessage(_ErrorIcon, "Dichiaranti", "Errore di caricamento dei dati");
         });
         if (!this.state.create) {
             getInformazioniBorsa(this.state.ID, (dt) => {
@@ -67,9 +67,7 @@ class BagEditorModal extends Component {
                     Consegnata: dt.query[0].Consegnata
                 })
             }, (dt) => {
-                if (!datax.DataHandler.dataSettings.light) {
-                    LoadApp.addMessage(_ErrorIcon, "Visualizzatore Borse", "Impossibile caricare i dati");
-                }
+                LoadApp.addMessage(_ErrorIcon, "Visualizzatore Borse", "Impossibile caricare i dati");
             });
         }
     }
@@ -119,8 +117,9 @@ class BagEditorModal extends Component {
                     LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa aggiunta con successo");
                 },
                 (dt) => {
-                    console.log(dt);
-                    this.props.error_handler();
+                    if (this.props.error_handler) {
+                        this.props.error_handler();
+                    }
                 }
             );
         }
@@ -357,7 +356,9 @@ export class ContenitoreElementi extends Component {
                     filtered: dt.query
                 });
             }
-        }, (dt) => { console.log("Error"); console.log(dt) });
+        }, (dt) => {
+            LoadApp.addMessage(_ErrorIcon, "Magazzino", "Non è stato possibile caricare i dati del magazzino");
+        });
     }
 
     /**

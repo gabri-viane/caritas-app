@@ -4,6 +4,9 @@ import LoadApp from "../../loadApp";
 import { _AddIcon, _AddUserIcon, _DeleteIcon, _EditIcon, _ErrorIcon, _ShowIcon, _SuccessIcon, _WarningIcon } from "../../../contents/images";
 import { deleteComponentFamily, getComponentiIDFAMFamily, getDichiarantiFamilies } from "../../../contents/api/capi-family";
 import { fun_BorEditorModal } from "../borse/BagModals";
+import { deleteBorsa, getAllBorse } from "../../../contents/api/capi-borse";
+import { fun_EntryEditorModal, fun_MagEditorModal } from "../magazzino/MagModals";
+import { getAllEntrateMagazzino } from "../../../contents/api/capi-magazzino";
 
 export const families_data = [
     {
@@ -19,7 +22,7 @@ export const families_data = [
         link: "handlefam",
         action: () => {
             getDichiarantiFamilies((dt) => {
-                LoadApp.addModal(InputChoiceDialog("Seleziona famiglia", "Inserisci l'ID Famiglia corrispondente", (idfam) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona famiglia", "Seleziona la famiglia corrispondente da modificare", (idfam) => {
                     fun_FamEditorModal(() => { }, idfam);
                 }, () => { }, () => { }, dt.query, "Dichiarante", "IDFAM"));
             }, () => {
@@ -130,7 +133,13 @@ export const bags_data = [
         btn: "Gestisci",
         link: "handleborse",
         action: () => {
-            
+            getAllBorse((dt) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona la borsa", "Seleziona la borsa da modificare", (idborsa) => {
+                    fun_BorEditorModal(() => { }, true, idborsa);
+                }, () => { }, () => { }, dt.query, "Famiglia#DataConsegna", "ID"));
+            }, () => {
+                LoadApp.addMessage(_WarningIcon, "Seleziona Borsa", "Non è stato possibile caricare le borse");
+            });
         },
         icon: _EditIcon,
         text: "Modifica i dati delle borse."
@@ -138,15 +147,87 @@ export const bags_data = [
         id: 3,
         btn: "Mostra",
         link: "showborse",
-        action: () => { },
+        action: () => {
+            getAllBorse((dt) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona la borsa", "Seleziona la borsa da visualizzare", (idborsa) => {
+                    fun_BorEditorModal(() => { }, false, idborsa);
+                }, () => { }, () => { }, dt.query, "Famiglia#DataConsegna", "ID"));
+            }, () => {
+                LoadApp.addMessage(_WarningIcon, "Seleziona Borsa", "Non è stato possibile caricare le borse");
+            });
+        },
         icon: _ShowIcon,
         text: "Mostra le borse registrate."
     }, {
         id: 4,
         btn: "Rimuovi",
         link: "delborsa",
-        action: () => { },
+        action: () => {
+            getAllBorse((dt) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona la borsa", "Seleziona la borsa da eliminare", (idborsa) => {
+                    LoadApp.addModal(ConfirmDialog("Eliminazione borsa", "Vuoi davvero eliminare la borsa?", () => {
+                        //Se viene confermata l'eliminazione
+                        deleteBorsa(idborsa, () => {
+                            LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa eliminata con successo");
+                        }, (dt) => {
+                            LoadApp.addMessage(_ErrorIcon, "Borse", "Non è stato possibile eliminare la borsa");
+                        })
+                    }))
+                }, () => { }, () => { }, dt.query, "Famiglia#DataConsegna", "ID"));
+            }, () => {
+                LoadApp.addMessage(_WarningIcon, "Seleziona Borsa", "Non è stato possibile caricare le borse");
+            });
+        },
         icon: _DeleteIcon,
         text: "Rimuovi una borsa da una famiglia."
+    }
+];
+
+export const mag_data = [
+    {
+        id: 1,
+        link: "addentr",
+        btn: "Aggiungi Entrata",
+        action: () => {
+            fun_EntryEditorModal(() => { }, true, null, null, null, () => {
+                LoadApp.addMessage(_SuccessIcon, "Entrate", "L'entrata è stata registrata");
+            }, () => {
+                LoadApp.addMessage(_ErrorIcon, "Entrate", "L'entrata non è stata creata");
+            });
+        },
+        icon: _AddIcon,
+        text: "Permette di registrare una nuova entrata in magazzino."
+    }, {
+        id: 2,
+        btn: "Gestisci Entrata",
+        link: "handleentr",
+        action: () => {
+            getAllEntrateMagazzino((dt) => {
+                LoadApp.addModal(InputChoiceDialog("Seleziona l'entrata", "Seleziona l'entrata da modificare", (identr) => {
+                    fun_EntryEditorModal(() => { }, true, identr, null, null, () => {
+                        LoadApp.addMessage(_SuccessIcon, "Entrate", "L'entrata è stata modificata");
+                    }, () => {
+                        LoadApp.addMessage(_ErrorIcon, "Entrate", "L'entrata non è stata modificata");
+                    })
+                }, () => { }, () => { }, dt.query, "Prodotto#Arrivo", "ID"));
+            }, () => {
+                LoadApp.addMessage(_WarningIcon, "Seleziona Entrata", "Non è stato possibile caricare le entrate");
+            });
+        },
+        icon: _EditIcon,
+        text: "Modifica un'entrata precedentemente registrata."
+    }, {
+        id: 3,
+        link: "addprod",
+        btn: "Aggiungi Prodotto",
+        action: () => {
+            fun_MagEditorModal(() => { }, true, null, () => {
+                LoadApp.addMessage(_SuccessIcon, "Magazzino", "Il prodotto è stato registrato");
+            }, () => {
+                LoadApp.addMessage(_ErrorIcon, "Magazzino", "Il prodotto non è stato creato");
+            });
+        },
+        icon: _AddIcon,
+        text: "Permette di registrare un nuovo prodotto."
     }
 ];

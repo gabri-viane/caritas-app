@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
-import { datax } from "../../../contents/data";
 import { fun_BorEditorModal, fun_BorElementsEditorModal } from "./BagModals";
 import { _AddIcon, _BackIcon, _ErrorIcon, _RefreshIcon, _SuccessIcon, _WarningIcon } from "../../../contents/images";
 import LoadApp from "../../loadApp";
@@ -25,14 +24,9 @@ export class BorseNavbar extends Component {
         e.preventDefault();
         fun_BorEditorModal(
             this.refresh, true, id, () => {
-                if (!datax.DataHandler.dataSettings.light) {
-                    LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa modificata con successo");
-                }
+                LoadApp.addMessage(_SuccessIcon, "Borse", "Borsa modificata con successo");
             }, (dt) => {
-                console.log(dt);
-                if (!datax.DataHandler.dataSettings.light) {
-                    LoadApp.addMessage(_ErrorIcon, "Borse", "Impossibile modificare la borsa");
-                }
+                LoadApp.addMessage(_ErrorIcon, "Borse", "Impossibile modificare la borsa");
             });
     }
 
@@ -63,9 +57,7 @@ export class BorseNavbar extends Component {
                 this.handleShow, this.handleEdit, this.handleDelete, this.handleElements, dt.query)
         });
     }, () => {
-        if (!datax.DataHandler.dataSettings.light) {
-            LoadApp.addMessage(_ErrorIcon, "Borse", "Impossibile caricare le borse");
-        }
+        LoadApp.addMessage(_ErrorIcon, "Borse", "Impossibile caricare le borse");
     });
 
     componentDidMount() {

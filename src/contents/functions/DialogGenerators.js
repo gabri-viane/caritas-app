@@ -146,7 +146,6 @@ export function InputIntegerDialog(title, text, yes_handler, no_handler, on_exit
     };
 
     const yesEvent = (e) => {
-        //console.log(value);
         e.preventDefault();
         yes_handler(dtx.getData().value);
         on_exit();
@@ -213,6 +212,7 @@ export function InputChoiceDialog(title, text, yes_handler, no_handler, on_exit,
     } else {
 
         const dtx = new DataExchange({ value: choices[0][ID_TEXT] });
+        const rows = LABEL_TEXT.split('#');
 
         const noEvent = (e) => {
             if (e) {
@@ -234,13 +234,24 @@ export function InputChoiceDialog(title, text, yes_handler, no_handler, on_exit,
             on_exit();
         };
 
+        const transformRow = (row) => {
+            if (rows.length > 1) {
+                const arr = rows.map((row_label) => {
+                    return row[row_label];
+                });
+                return arr.join(' - ');
+            } else {
+                return row[LABEL_TEXT];
+            }
+        }
+
         return generateModal(104, title, _ShowIcon, "Seleziona",
             () => {
                 return <>
                     <FloatingLabel controlId={"floating" + title} label={title} className="mt-1">
                         <Form.Select aria-label={text} onChange={onChange}>
                             {choices.map((row, index) => {
-                                return <option key={index} value={row[ID_TEXT]}>{row[LABEL_TEXT]}</option>
+                                return <option key={index} value={row[ID_TEXT]}>{transformRow(row)}</option>
                             })}
                         </Form.Select>
                     </FloatingLabel>

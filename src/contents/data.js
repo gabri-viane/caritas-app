@@ -51,7 +51,6 @@ export class Data extends Component {
 
     setDataSettings(data) {
         this.dataSettings = data;
-        //console.log(this.dataSettings);
         Cookies.set('dataSettings', JSON.stringify(this.dataSettings));
     }
 

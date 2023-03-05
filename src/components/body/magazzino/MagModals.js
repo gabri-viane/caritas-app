@@ -9,7 +9,7 @@ import { getConfezioniExtra, getDonatoriExtra, getMotiviExtra } from "../../../c
 import { addEntrataMagazzino, addModificaMagazzino, addProdottoMagazzino, boxEntrataValues, boxModificaValues, boxProdottoValues, getAllProdottiMagazzino, getIDEntrateMagazzino, getIDModificheMagazzino, getIDProdottiMagazzino, updateEntrataMagazzino, updateProdottoMagazzino } from "../../../contents/api/capi-magazzino";
 import DataExchange from "../../../contents/DataExchange";
 import generateModal from "../../../contents/functions/ModalGenerators";
-import { _AddIcon, _EditIcon, _ShowIcon } from "../../../contents/images";
+import { _AddIcon, _EditIcon, _ErrorIcon, _ShowIcon } from "../../../contents/images";
 import LoadApp from "../../loadApp";
 
 export class MagEditorModal extends Component {
@@ -489,7 +489,6 @@ export class ModificheEditorModal extends Component {
         });
     }
 
-
     componentDidUpdate(prevprops) {
         if (prevprops.ID !== this.props.ID || prevprops.IDProdotti !== this.props.IDProdotti) {
             this.setState({
@@ -504,18 +503,20 @@ export class ModificheEditorModal extends Component {
     componentDidMount() {
         getMotiviExtra((dt) => {
             this.setState({ query_mots: dt.query })
-        }, (dt) => { console.log(dt) });
+        }, (dt) => { 
+            LoadApp.addMessage(_ErrorIcon,"Modifiche magazzino","Impossibile caricare i motivi");
+         });
         getAllProdottiMagazzino((dt) => {
             this.setState({
                 query_prods: dt.query
             });
-            if (!this.state.edit && !this.state.IDProdotti && this.state.create) {
+            if (!this.state.IDProdotti && this.state.create) {
                 this.setState({
                     IDProdotti: dt.query[0].ID
                 })
             }
         }, (dt) => {
-            console.log(dt.msg)
+            LoadApp.addMessage(_ErrorIcon,"Magazzino","Impossibile caricare i prodotti");
         });
         if (!this.state.create) {//Non devo crearlo
             getIDModificheMagazzino(this.state.ID,
@@ -528,7 +529,7 @@ export class ModificheEditorModal extends Component {
                         Data: new Date(dt.query[0].Data).toDateInputValue()
                     });
                 }, (dt) => {
-                    console.log(dt);
+                    LoadApp.addMessage(_ErrorIcon,"Modifiche magazzino","Impossibile caricare i dati della modifica");
                 });
         } else {//Devo crearlo
             this.setState({

@@ -524,17 +524,7 @@ export class CompEditorModal extends Component {
     }
 
     errorCreateComp = (dt) => {
-        console.log(dt);
-        if (datax.DataHandler.dataSettings.light) {
-            LoadApp.addModal(
-                OkDialog("Errore creazione componente", "Non è stato possibile creare un nuovo componente.",
-                    () => {
-                        this.props.handleClose();
-                    }, false)
-            );
-        } else {
-            LoadApp.addMessage(_ErrorIcon, "Componenti", "Non è stato possibile creare un nuovo componente.");
-        }
+        LoadApp.addMessage(_ErrorIcon, "Componenti", "Non è stato possibile creare un nuovo componente.");
     }
 
     errorModifyComp = (dt) => {
