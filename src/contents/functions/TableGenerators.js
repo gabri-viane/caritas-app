@@ -232,6 +232,19 @@ export function AutoBorseTable(handleShow, handleEdit, handleDelete, handleEleme
     datafilter={filter} />;
 }
 
+export function AutoUtentiTable(query){
+  
+  const heads = {
+    'email': 'E-Mail',
+    'username': 'Utente'
+  };
+
+  return <AutoSearchTable
+    query={query}
+    heads={heads}
+    handleParam={'email'} />;
+}
+
 export class AutoSearchTable extends Component {
   state = {
     modal: <></>,

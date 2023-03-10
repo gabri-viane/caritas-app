@@ -84,13 +84,7 @@ export class FamNavbar extends Component {
     }
 
     errorReloadFams = (dt) => {
-        if (datax.DataHandler.dataSettings.light) {
-            this.setState({
-                modal: OkDialog("Errore ricezione dati", "Non è stato possibile leggere la lista famiglie.", this.resetModal)
-            });
-        } else {
-            LoadApp.addMessage(_ErrorIcon, "Aggiornamento dati", "Non è stato possibile leggere la lista famiglie.")
-        }
+        LoadApp.addMessage(_ErrorIcon, "Aggiornamento dati", "Non è stato possibile leggere la lista famiglie.")
     };
     //NON RICORDO A COSA SERVE
     /*handleIdChange = (e) => {

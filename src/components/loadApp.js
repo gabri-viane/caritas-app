@@ -18,6 +18,7 @@ import { MagNavbar } from "./body/magazzino/MagNavbar";
 import { BorseNavbar } from "./body/borse/BagNavbar";
 import { ModalTemplate } from "../contents/functions/ModalGenerators";
 import { _WarningIcon } from "../contents/images.js";
+import { AdminNavbar } from "./body/admin/AdminNavbar.js";
 
 const API_PATH = process.env.REACT_APP_API_PATH; //"http://localhost:80/caritas-api/index.php";//+process.env.REACT_APP_WEB_API_REF;
 
@@ -186,7 +187,8 @@ class LoadApp extends Component {
                 mag={this.setMag}
                 bag={this.setBag}
                 handleSettings={() => this.setState({ body: <SettingsPage /> })}
-                handleDisconnect={() => { handleDisconnect(this) }} />
+                handleDisconnect={() => { handleDisconnect(this) }}
+                handleAdmin={()=>this.setState({ body: <AdminNavbar /> })} />
         });
         this.setHome();
     }

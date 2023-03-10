@@ -36,6 +36,7 @@ export default class ProgrammNavbar extends Component {
                                 <NavDropdown title={<><img alt="User" src={usericon} />{this.props.username} </>} id="basic-nav-dropdown" menuVariant="dark">
                                     <NavDropdown.Item onClick={() => this.props.handleUser()} href="#user/handle" id="handBtnNav">Gestisci</NavDropdown.Item>
                                     <NavDropdown.Item onClick={() => this.props.handleSettings()} href="#user/settings" id="settBtnNav">Impostazioni</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => this.props.handleAdmin()} href="#user/admin" id="adminBtnNav">Amministrazione</NavDropdown.Item>
                                     <NavDropdown.Item onClick={() => this.props.handleDisconnect()} href="#disconnect" id="discBtnNav">Disconnettiti</NavDropdown.Item>
                                 </NavDropdown>
                             </Nav>

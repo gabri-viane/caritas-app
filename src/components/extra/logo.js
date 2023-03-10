@@ -7,7 +7,6 @@ class Logo extends Component {
             <img src={logo} alt="Caritas DB Logo" width={this.props.size} height={this.props.size} className="d-inline-block align-text-top"></img>
         );
     }
-
 }
 
 Logo.defaultProps = {

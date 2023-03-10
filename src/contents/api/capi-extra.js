@@ -4,6 +4,7 @@ const GET_PARENTELE_EXTRA = 'extra/get/parentele';
 const GET_CONFEZIONI_EXTRA = 'extra/get/confezioni';
 const GET_DONATORI_EXTRA = 'extra/get/donatori';
 const GET_MOTIVI_EXTRA = 'extra/get/motivi';
+const GET_UTENTI_EXTRA = 'extra/get/utenti';
 
 /**
  * Restituisce una lista di tutte le parentele.
@@ -43,4 +44,14 @@ export function getDonatoriExtra(success_handler, error_handler) {
  */
 export function getMotiviExtra(success_handler, error_handler) {
     _get(GET_MOTIVI_EXTRA, {}, success_handler, error_handler);
+}
+
+/**
+ * Restituisce una lista di tutti gli utenti registrati.
+ * 
+ * @param {Function} success_handler 
+ * @param {Function} error_handler 
+ */
+export function getUtentiExtra(success_handler, error_handler) {
+    _get(GET_UTENTI_EXTRA, {}, success_handler, error_handler);
 }

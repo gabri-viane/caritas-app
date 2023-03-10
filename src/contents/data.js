@@ -27,7 +27,6 @@ export class Data extends Component {
         this.initData();
     }
 
-
     initData() {
         //Leggo se ho eseguito il login
         let tmp = Cookies.get('access');

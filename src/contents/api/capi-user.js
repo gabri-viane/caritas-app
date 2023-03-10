@@ -5,6 +5,7 @@ const VERIFY_USER = 'user/access/';
 const GET_USER = 'user/get/';
 const LOGIN_USER = 'user/login/';
 const UPDATE_USER = 'user/update/';
+const CREATE_USER = 'user/add/';
 
 /**
  * Verifica tramite username e token se l'utente ha accesso.
@@ -50,4 +51,16 @@ export function loginUser(username, password, success_handler, error_handler) {
  */
 export function modifyUser(new_username, new_email, password, success_handler, error_handler) {
     _put(UPDATE_USER, { newuser: new_username, password: password, newemail: new_email }, success_handler, error_handler)
+}
+
+/**
+ * Crea un nuovo 'spazio' dati per un utente da registrare.
+ * 
+ * @param {String} username Nuovo username per l'account
+ * @param {String} email Nuova email per l'account
+ * @param {Function} success_handler Callback di successo
+ * @param {Function} error_handler Callback di fallimento
+ */
+export function addUser(username, email, success_handler, error_handler) {
+    _post(CREATE_USER, { username: username, email: email }, success_handler, error_handler)
 }

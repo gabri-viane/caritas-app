@@ -165,7 +165,7 @@ export const fun_BorEditorModal = (close_action, edit = false, ID = null, succes
     const create = ID === null;
 
     LoadApp.addModal(
-        generateModal(300, edit ? (create ? "Crea Borsa" : "Modifica Borsa") : "Mostra Borsa",
+        generateModal(400, edit ? (create ? "Crea Borsa" : "Modifica Borsa") : "Mostra Borsa",
             edit ? (create ? _AddIcon : _EditIcon) : _ShowIcon, "Gestione Borsa",
             //handleClose={(e) => { modal_close_action(); close_action(e); }}    
             (modal_close_action) => {
@@ -576,7 +576,7 @@ export const fun_BorElementsEditorModal = (close_action, edit = false, ID = null
     const create = ID == null;
 
     LoadApp.addModal(
-        generateModal(301, edit ? (create ? "Assegna Elementi Borsa" : "Modifica Elementi Borsa") : "Mostra Elementi Borsa",
+        generateModal(401, edit ? (create ? "Assegna Elementi Borsa" : "Modifica Elementi Borsa") : "Mostra Elementi Borsa",
             edit ? (create ? _AddIcon : _EditIcon) : _ShowIcon, "Gestione Elementi Borsa",
             //handleClose={(e) => { modal_close_action(); close_action(e); }}    
             (modal_close_action) => {

@@ -297,11 +297,7 @@ export class FamShowerModal extends Component {
     }
 
     errorFamLoad = (dt) => {
-        if (datax.DataHandler.dataSettings.light) {
-            LoadApp.addModal(OkDialog("Errore caricamento.", "Non è stato possibile caricare i dati della famiglia.", () => { }, false));
-        } else {
-            LoadApp.addMessage(_ErrorIcon, "Famiglie", "Errore caricamento dati della famiglia.");
-        }
+        LoadApp.addMessage(_ErrorIcon, "Famiglie", "Errore caricamento dati della famiglia.");
     }
 
     handleAdd = (e) => {
@@ -495,9 +491,7 @@ export class CompEditorModal extends Component {
         if (this.state.edit) {
             updateComponentFamily(this.props.IDFAM, this.props.ID, comp_values,
                 (dt) => {
-                    if (!datax.DataHandler.dataSettings.light) {
-                        LoadApp.addMessage(_SuccessIcon, "Componenti", "Componente aggiornato con successo");
-                    }
+                    LoadApp.addMessage(_SuccessIcon, "Componenti", "Componente aggiornato con successo");
                 },
                 this.errorModifyComp
             );
@@ -514,13 +508,7 @@ export class CompEditorModal extends Component {
     }
 
     errorLoadComp = (dt) => {
-        if (datax.DataHandler.dataSettings.light) {
-            LoadApp.addModal(
-                OkDialog("Errore caricamento dati", "Non è stato possibile scaricare i dati.", () => { }, false)
-            );
-        } else {
-            LoadApp.addMessage(_ErrorIcon, "Componenti", "Non è stato possibile scaricare i dati.");
-        }
+        LoadApp.addMessage(_ErrorIcon, "Componenti", "Non è stato possibile scaricare i dati.");
     }
 
     errorCreateComp = (dt) => {

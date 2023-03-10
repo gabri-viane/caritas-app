@@ -135,8 +135,6 @@ export function InputIntegerDialog(title, text, yes_handler, no_handler, on_exit
 
     const dtx = new DataExchange({ value: default_value });
 
-    /*const [value, setValue] = useState(default_value);*/
-
     const noEvent = (e) => {
         if (e) {
             e.preventDefault();
@@ -167,27 +165,6 @@ export function InputIntegerDialog(title, text, yes_handler, no_handler, on_exit
                 </Button>
             </>;
         }, noEvent);
-
-
-    /*
-        return <>
-            <Modal show={true} onHide={noEvent} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title><img src={_EditIcon} alt="Editing" /> {title}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-    
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={noEvent}>
-                        No
-                    </Button>
-                    <Button variant="primary" onClick={yesEvent}>
-                        Sì
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </>*/
 }
 
 /**
@@ -200,7 +177,8 @@ export function InputIntegerDialog(title, text, yes_handler, no_handler, on_exit
  * @param {Function} no_handler Callback dell'azione No
  * @param {Function} on_exit Callback all'uscita che viene chiamato indipendentemente dall'opzione scelta.
  * @param {Array} choices Array di chiave e valore
- * @param {String} LABEL_TEXT Nome della colonna nelle scelte per il testo da visualizzare
+ * @param {String} LABEL_TEXT Nome della colonna nelle scelte per il testo da visualizzare (per usare più colonne dividere i nomi con #
+ *                  , ad esempio Nome#Cognome)
  * @param {String} ID_TEXT Nome della colonna nelle scelte per l'ID corrispondente al testo visualizzato
  * @returns {ModalTemplate} Ritorna una Lambda ModalTemplate. Per essere visualizzato bisogna chiamare il
  * metodo show passando true come valore.
