@@ -14,7 +14,9 @@ export default class SettingsPage extends Component {
         this.setState({ light: !this.state.light });
     }
 
-
+    handleChangeSettingDebug = (e) => {
+        this.setState({ debug: !this.state.debug });
+    }
     handleChangeSettingCols = (e) => {
         if (e.target.value > 0) {
             this.setState({ cols: e.target.value });
@@ -57,6 +59,16 @@ export default class SettingsPage extends Component {
                                             <option value={6}>6</option>
                                             <option value={12}>12</option>
                                         </Form.Select>
+                                    </Col>
+                                </Row>
+                                <Row className="align-items-left" md="auto">
+                                    <Col md="auto">
+                                        <Form.Label className="font-weight-light">Debug</Form.Label>
+                                    </Col>
+                                    <Col md="auto">
+                                        <Form.Check className="font-weight-light" type="switch" aria-label="Tabelle dati ridotte"
+                                            checked={this.state.debug === 'true' || this.state.debug}
+                                            onChange={this.handleChangeSettingDebug} />
                                     </Col>
                                 </Row>
                             </Container>

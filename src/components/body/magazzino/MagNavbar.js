@@ -72,7 +72,7 @@ export class MagNavbar extends Component {
     handleRegisterEntrate = (e, prod) => {
         e.preventDefault();
         fun_EntryEditorModal(this.resetModal, true, null, prod ? prod.IDProdotto : null, null,
-            (resp) => getAllProdottiMagazzino(this.renderEntrate, (dt) => {
+            (resp) => getAllEntrateMagazzino(this.renderEntrate, (dt) => {
                 LoadApp.addMessage(_WarningIcon, "Prodotti", "Impossibile caricare i prodotti");
             }), this.errorReloadEntrate);
     };

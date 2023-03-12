@@ -9,7 +9,7 @@ import { getConfezioniExtra, getDonatoriExtra, getMotiviExtra } from "../../../c
 import { addEntrataMagazzino, addModificaMagazzino, addProdottoMagazzino, boxEntrataValues, boxModificaValues, boxProdottoValues, getAllProdottiMagazzino, getIDEntrateMagazzino, getIDModificheMagazzino, getIDProdottiMagazzino, updateEntrataMagazzino, updateProdottoMagazzino } from "../../../contents/api/capi-magazzino";
 import DataExchange from "../../../contents/DataExchange";
 import generateModal from "../../../contents/functions/ModalGenerators";
-import { _AddIcon, _EditIcon, _ErrorIcon, _ShowIcon } from "../../../contents/images";
+import { _AddIcon, _EditIcon, _ErrorIcon, _ShowIcon, _WarningIcon } from "../../../contents/images";
 import LoadApp from "../../loadApp";
 
 export class MagEditorModal extends Component {
@@ -19,7 +19,7 @@ export class MagEditorModal extends Component {
         create: false,
         edit: false,
         Nome: '',
-        IDConfezione: 0,
+        IDConfezione: 1,
         IsMagazzino: true,
         IsExtra: false,
         IsFresco: false,
@@ -37,10 +37,10 @@ export class MagEditorModal extends Component {
         this.state.editable = props.edit || this.state.create;
         this.state.dtx = props.dtx;
         props.dtx.subscribeFunctions(() => {
-            if (this.state.edit) {
-                this.handleEdit();
-            } else if (this.state.create) {
+            if (this.state.create) {
                 this.handleCreate();
+            } else if (this.state.edit) {
+                this.handleEdit();
             }
         });
     }
@@ -94,30 +94,30 @@ export class MagEditorModal extends Component {
     }
 
     handleCreate = (e) => {
-        if (e) {
-            e.preventDefault();
-        }
-        if (this.state.IDConfezione < 0 || this.state.Nome.trim().length === 0) {
+        let nm = this.state.Nome.trim();
+        if (this.state.IDConfezione < 0 || nm.length === 0) {
+            LoadApp.addMessage(_WarningIcon, "Prodotti", "Inserire nome e selezionare confezione");
             return;
+        } else {
+            const prod_values = boxProdottoValues(nm, this.state.IDConfezione, this.state.IsMagazzino,
+                this.state.IsFresco, this.state.IsIgiene, this.state.IsExtra);
+            addProdottoMagazzino(prod_values,
+                (dt) => { //Devo aggiungere un prodotto
+                    if (!!this.props.success_handler) {
+                        this.props.success_handler(dt);
+                    }
+                },
+                (dt) => {
+                    if (!!this.props.error_handler) {
+                        this.props.error_handler(dt);
+                    }
+                });
         }
-        const prod_values = boxProdottoValues(this.state.Nome, this.state.IDConfezione, this.state.IsMagazzino,
-            this.state.IsFresco, this.state.IsIgiene, this.state.IsExtra);
-        addProdottoMagazzino(prod_values,
-            (dt) => { //Devo aggiungere un prodotto
-                if (!!this.props.success_handler) {
-                    this.props.success_handler(dt);
-                }
-            },
-            (dt) => {
-                if (!!this.props.error_handler) {
-                    this.props.error_handler(dt);
-                }
-            });
     }
 
     componentDidMount() {
         getConfezioniExtra((dt) => {
-            this.setState({ query: dt.query })
+            this.setState({ query: dt.query, IDConfezione: dt.query[0].ID })
         }, () => { });
         if (!this.state.create) {//mostra o edita
             getIDProdottiMagazzino(this.state.ID,
@@ -217,7 +217,7 @@ export const fun_MagEditorModal = (close_action, edit = false, ID = null, succes
                     {edit ?
                         <Button variant="primary" onClick={(e) => {
                             modal_close_action();
-                            dt.setData({ close: true });
+                            dt.setData({ close: true }, true, true);
                             close_action(e);
                         }}>
                             {create ? 'Salva prodotto' : 'Salva modifiche'}
@@ -256,48 +256,54 @@ export class EntryEditorModal extends Component {
         this.state.IDDonatori = props.IDDonatori || 1;
         this.state.dtx = props.dtx;
         props.dtx.subscribeFunctions(() => {
-            if (this.state.edit) {
-                this.handleEdit();
-            } else if (this.state.create) {
+            if (this.state.create) {
                 this.handleCreate();
+            } else if (this.state.edit) {
+                this.handleEdit();
             }
         });
     }
 
     componentDidMount() {
-        getDonatoriExtra((dt) => {
-            this.setState({ query_dons: dt.query })
-        }, () => { });
-        getAllProdottiMagazzino((dt) => {
-            this.setState({
-                query_prods: dt.query
-            });
-            if (!this.state.edit && this.state.create) {//Non sono in modifica ma lo sto creando
+        const create_lambda = () => {
+            if (!this.state.create) {//Se non sto creando
+                getIDEntrateMagazzino(this.state.ID,
+                    (dt) => {
+                        this.setState({
+                            ID: dt.query[0].ID || 0,
+                            IDProdotti: dt.query[0].IDProdotti || -1,
+                            IDDonatori: dt.query[0].IDDonatori || -1,
+                            Prodotto: dt.query[0].Prodotto || '',
+                            Donatore: dt.query[0].Donatre || '',
+                            Totale: dt.query[0].Totale || 0,
+                            Arrivo: new Date(dt.query[0].Arrivo).toDateInputValue()
+                        });
+                    }, (dt) => { });
+            } else { //Se sto creando
                 this.setState({
-                    IDProdotti: dt.query[0].ID //quindi prendo il primo ID nella lista dei prodotti
+                    IDDonatori: 1,
+                    Totale: 1,
+                    Arrivo: new Date().toDateInputValue()
                 });
             }
+        };
+
+        getDonatoriExtra((dt) => {
+            this.setState({ query_dons: dt.query }, () => {
+                getAllProdottiMagazzino((dt) => {
+                    if (this.state.create) {//Non sono in modifica ma lo sto creando
+                        this.setState({
+                            query_prods: dt.query,
+                            IDProdotti: dt.query[0].ID //quindi prendo il primo ID nella lista dei prodotti
+                        }, create_lambda);
+                    } else {
+                        this.setState({
+                            query_prods: dt.query
+                        }, create_lambda);
+                    }
+                }, () => { });
+            })
         }, () => { });
-        if (!this.state.create) {//Se non sto creando
-            getIDEntrateMagazzino(this.state.ID,
-                (dt) => {
-                    this.setState({
-                        ID: dt.query[0].ID || 0,
-                        IDProdotti: dt.query[0].IDProdotti || -1,
-                        IDDonatori: dt.query[0].IDDonatori || -1,
-                        Prodotto: dt.query[0].Prodotto || '',
-                        Donatore: dt.query[0].Donatre || '',
-                        Totale: dt.query[0].Totale || 0,
-                        Arrivo: new Date(dt.query[0].Arrivo).toDateInputValue()
-                    });
-                }, (dt) => { });
-        } else { //Se sto creando
-            this.setState({
-                IDDonatori: 1,
-                Totale: 1,
-                Arrivo: new Date().toDateInputValue()
-            });
-        }
     }
 
     handleProdottoChange = (e) => {
@@ -324,7 +330,7 @@ export class EntryEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
-        if(this.state.IDProdotti < 0 || this.state.IDDonatori <0 || this.state.Arrivo === null){
+        if (this.state.IDProdotti < 0 || this.state.IDDonatori < 0 || this.state.Arrivo === null) {
             return;
         }
         const entr_values = boxEntrataValues(this.state.IDProdotti, this.state.IDDonatori, this.state.Totale, new Date(this.state.Arrivo));
@@ -346,22 +352,24 @@ export class EntryEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
-        if(this.state.IDProdotti < 0 || this.state.IDDonatori <0 || this.state.Arrivo === null){
+        if (this.state.IDProdotti < 0 || this.state.IDDonatori < 0 || this.state.Arrivo === null) {
+            LoadApp.addMessage(_WarningIcon, "Entrate", "Completare tutti i dati per registrare");
             return;
+        } else {
+            const entr_values = boxEntrataValues(this.state.IDProdotti, this.state.IDDonatori, this.state.Totale, new Date(this.state.Arrivo));
+            addEntrataMagazzino(entr_values,
+                (dt) => { //Devo aggiungere un prodotto
+                    if (!!this.props.success_handler) {
+                        this.props.success_handler(dt);
+                    }
+                    //this.props.handleClose();
+                },
+                (dt) => {
+                    if (!!this.props.error_handler) {
+                        this.props.error_handler(dt);
+                    }
+                });
         }
-        const entr_values = boxEntrataValues(this.state.IDProdotti, this.state.IDDonatori, this.state.Totale, new Date(this.state.Arrivo));
-        addEntrataMagazzino(entr_values,
-            (dt) => { //Devo aggiungere un prodotto
-                if (!!this.props.success_handler) {
-                    this.props.success_handler(dt);
-                }
-                //this.props.handleClose();
-            },
-            (dt) => {
-                if (!!this.props.error_handler) {
-                    this.props.error_handler(dt);
-                }
-            });
     }
 
     render() {
@@ -503,9 +511,9 @@ export class ModificheEditorModal extends Component {
     componentDidMount() {
         getMotiviExtra((dt) => {
             this.setState({ query_mots: dt.query })
-        }, (dt) => { 
-            LoadApp.addMessage(_ErrorIcon,"Modifiche magazzino","Impossibile caricare i motivi");
-         });
+        }, (dt) => {
+            LoadApp.addMessage(_ErrorIcon, "Modifiche magazzino", "Impossibile caricare i motivi");
+        });
         getAllProdottiMagazzino((dt) => {
             this.setState({
                 query_prods: dt.query
@@ -516,7 +524,7 @@ export class ModificheEditorModal extends Component {
                 })
             }
         }, (dt) => {
-            LoadApp.addMessage(_ErrorIcon,"Magazzino","Impossibile caricare i prodotti");
+            LoadApp.addMessage(_ErrorIcon, "Magazzino", "Impossibile caricare i prodotti");
         });
         if (!this.state.create) {//Non devo crearlo
             getIDModificheMagazzino(this.state.ID,
@@ -529,7 +537,7 @@ export class ModificheEditorModal extends Component {
                         Data: new Date(dt.query[0].Data).toDateInputValue()
                     });
                 }, (dt) => {
-                    LoadApp.addMessage(_ErrorIcon,"Modifiche magazzino","Impossibile caricare i dati della modifica");
+                    LoadApp.addMessage(_ErrorIcon, "Modifiche magazzino", "Impossibile caricare i dati della modifica");
                 });
         } else {//Devo crearlo
             this.setState({
@@ -560,7 +568,7 @@ export class ModificheEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
-        if(this.state.IDProdotti < 0 || this.state.IDMotivi <0 ){
+        if (this.state.IDProdotti < 0 || this.state.IDMotivi < 0) {
             return;
         }
         const mod_values = boxModificaValues(this.state.IDProdotti, this.state.IDMotivi, Math.abs(this.state.Totale), this.state.Totale < 0);

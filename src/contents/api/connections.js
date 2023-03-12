@@ -15,12 +15,14 @@ export function _post(path, values, success_handler, error_handler) {
         }
     ).then(result => {
         let dt = result.data;
-        //console.log("Response Post: " + JSON.stringify(dt));
-        if(dt.error){
+        if (datax.DataHandler.dataSettings.debug) {
+            console.log("Response Post: " + JSON.stringify(dt));
+        }
+        if (dt.e) {
             error_handler(dt);
             return;
         }
-        if (dt.auth && dt.res.exec && !dt.e) {
+        if (dt.auth && dt.res.exec) {
             success_handler(dt);
         } else {
             error_handler(dt);
@@ -43,8 +45,10 @@ export function _get(path, values, success_handler, error_handler) {
         }
     ).then(result => {
         let dt = result.data;
-        //console.log("Response Get: " + JSON.stringify(dt));
-        if(dt.error){
+        if (datax.DataHandler.dataSettings.debug) {
+            console.log("Response Get: " + JSON.stringify(dt));
+        }
+        if (dt.e) {
             error_handler(dt);
             return;
         }
@@ -69,8 +73,10 @@ export function _put(path, values, success_handler, error_handler) {
         }
     ).then(result => {
         let dt = result.data;
-        //console.log("Response Put: " + JSON.stringify(dt));
-        if(dt.error){
+        if (datax.DataHandler.dataSettings.debug) {
+            console.log("Response Put: " + JSON.stringify(dt));
+        }
+        if (dt.e) {
             error_handler(dt);
             return;
         }
@@ -82,7 +88,7 @@ export function _put(path, values, success_handler, error_handler) {
     }).catch(error => error_handler(error.data));
 }
 
-export function _delete(path, values, success_handler, error_handler) {
+export function _delete(path, success_handler, error_handler) {
     axios.delete(
         API_PATH + path,
         {
@@ -94,8 +100,10 @@ export function _delete(path, values, success_handler, error_handler) {
         }
     ).then(result => {
         let dt = result.data;
-        //console.log("Response Delete: " + JSON.stringify(dt));
-        if(dt.error){
+        if (datax.DataHandler.dataSettings.debug) {
+            console.log("Response Delete: " + JSON.stringify(dt));
+        }
+        if (dt.e) {
             error_handler(dt);
             return;
         }

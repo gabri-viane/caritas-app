@@ -19,7 +19,8 @@ export class Data extends Component {
 
     dataSettings = {
         light: false,
-        cols: 4
+        cols: 4,
+        debug: false
     };
 
     constructor(props) {
@@ -41,10 +42,12 @@ export class Data extends Component {
         } else {
             this.setDataSettings(this.dataSettings);
         }
+        this.dataSettings.debug = false;
         var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         if (width < 920) {//Se il dispositivo è piccolo
             this.dataSettings.light = true;
             this.dataSettings.cols = 2;
+            this.dataSettings.debug = false;
         }
     }
 

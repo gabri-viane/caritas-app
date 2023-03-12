@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import axios from "axios";
 
 import Container from "react-bootstrap/Container";
 import Toast from "react-bootstrap/Toast";
@@ -19,8 +18,6 @@ import { BorseNavbar } from "./body/borse/BagNavbar";
 import { ModalTemplate } from "../contents/functions/ModalGenerators";
 import { _WarningIcon } from "../contents/images.js";
 import { AdminNavbar } from "./body/admin/AdminNavbar.js";
-
-const API_PATH = process.env.REACT_APP_API_PATH; //"http://localhost:80/caritas-api/index.php";//+process.env.REACT_APP_WEB_API_REF;
 
 /*eslint no-extend-native: ["error", { "exceptions": ["Date"] }]*/
 Date.prototype.toDateInputValue = (function () {
@@ -82,7 +79,7 @@ class LoadApp extends Component {
      */
     static addMessage(icon, sender, message, handler = () => { }) {
         const msg = LoadApp.app.state.messages;
-        msg.unshift({ icon: icon, sender: sender, time: new Date().toLocaleDateString(), text: message, handler: handler });
+        msg.unshift({ icon: icon, sender: sender, time: new Date().toLocaleTimeString(), text: message, handler: handler });
         LoadApp.app.setState({ messages: msg });
     }
 
@@ -188,7 +185,7 @@ class LoadApp extends Component {
                 bag={this.setBag}
                 handleSettings={() => this.setState({ body: <SettingsPage /> })}
                 handleDisconnect={() => { handleDisconnect(this) }}
-                handleAdmin={()=>this.setState({ body: <AdminNavbar /> })} />
+                handleAdmin={()=>this.setState({ body: <AdminNavbar handleHome={this.setHome}/> })} />
         });
         this.setHome();
     }
@@ -215,7 +212,7 @@ class LoadApp extends Component {
                         {
                             this.state.messages.map((v, i) => {
                                 const fun = v.handler ? () => { v.handler(); this.removeMessage(i) } : () => this.removeMessage(i);
-                                return <Toast key={i} onClose={() => this.removeMessage()} delay={10000} autohide>
+                                return <Toast key={i} onClose={() => this.removeMessage()} delay={5000} autohide>
                                     <Toast.Header>
                                         <img src={v.icon} onClick={fun} className="rounded me-2" alt="" />
                                         <strong className="me-auto" onClick={fun}>{v.sender}</strong>
@@ -235,25 +232,6 @@ class LoadApp extends Component {
         </>
 
     };
-
-    register(event) {
-        event.preventDefault();
-
-        axios({
-            method: 'post',
-            url: API_PATH,
-            headers: {
-                'content-type': 'application/json'
-            },
-            data: { k: 'register', username: 'prova', password: 'password', email: 'prova@prova.prova' }
-        })
-            .then(result => {
-                console.log("Response: " + JSON.stringify(result.data));
-            })
-            .catch(error => this.setState({
-                error: error.message
-            }));
-    }
 }
 
 export default LoadApp;

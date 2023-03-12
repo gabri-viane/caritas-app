@@ -38,7 +38,6 @@ class LoginModule extends Component {
                 }
             });
         }, (dt) => {
-            console.log(dt);
             LoadApp.addModal(OkDialog("Impossibile accedere", "Non è stato possibile accedere", () => {},false,true));
         });
     }

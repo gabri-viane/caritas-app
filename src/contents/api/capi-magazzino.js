@@ -247,7 +247,7 @@ export function boxEntrataValues(idprod, iddon, totale, data_arrivo) {
         IDProdotti: idprod,
         IDDonatori: iddon,
         Totale: totale,
-        Arrivo: data_arrivo
+        Arrivo: data_arrivo.getTime() / 1000
     };
 }
 
@@ -330,7 +330,7 @@ const DELETE_ENTR_MAG = 'mag/delete/entr/';
  * @param {Function} error_handler 
  */
 export function deleteProdottoMagazzino(idprod, success_handler, error_handler) {
-    _put(DELETE_PROD_MAG + idprod, success_handler, error_handler);
+    _delete(DELETE_PROD_MAG + idprod, success_handler, error_handler);
 }
 
 /**
