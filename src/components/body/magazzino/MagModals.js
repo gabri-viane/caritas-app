@@ -19,7 +19,7 @@ export class MagEditorModal extends Component {
         create: false,
         edit: false,
         Nome: '',
-        IDConfezione: 1,
+        IDConfezioni: 1,
         IsMagazzino: true,
         IsExtra: false,
         IsFresco: false,
@@ -52,7 +52,7 @@ export class MagEditorModal extends Component {
 
     handleConfezioneChange = (e) => {
         e.preventDefault();
-        this.setState({ IDConfezione: e.target.value });
+        this.setState({ IDConfezioni: e.target.value });
     }
 
     handleIsMagazzinoChange = (e) => {
@@ -75,10 +75,10 @@ export class MagEditorModal extends Component {
         if (e) {
             e.preventDefault();
         }
-        if (this.state.IDConfezione < 0 || this.state.Nome.trim().length === 0) {
+        if (this.state.IDConfezioni < 0 || this.state.Nome.trim().length === 0) {
             return;
         }
-        const prod_values = boxProdottoValues(this.state.Nome, this.state.IDConfezione, this.state.IsMagazzino,
+        const prod_values = boxProdottoValues(this.state.Nome, this.state.IDConfezioni, this.state.IsMagazzino,
             this.state.IsFresco, this.state.IsIgiene, this.state.IsExtra);
         updateProdottoMagazzino(this.state.ID, prod_values,
             (dt) => {
@@ -95,11 +95,11 @@ export class MagEditorModal extends Component {
 
     handleCreate = (e) => {
         let nm = this.state.Nome.trim();
-        if (this.state.IDConfezione < 0 || nm.length === 0) {
+        if (this.state.IDConfezioni < 0 || nm.length === 0) {
             LoadApp.addMessage(_WarningIcon, "Prodotti", "Inserire nome e selezionare confezione");
             return;
         } else {
-            const prod_values = boxProdottoValues(nm, this.state.IDConfezione, this.state.IsMagazzino,
+            const prod_values = boxProdottoValues(nm, this.state.IDConfezioni, this.state.IsMagazzino,
                 this.state.IsFresco, this.state.IsIgiene, this.state.IsExtra);
             addProdottoMagazzino(prod_values,
                 (dt) => { //Devo aggiungere un prodotto
@@ -117,34 +117,34 @@ export class MagEditorModal extends Component {
 
     componentDidMount() {
         getConfezioniExtra((dt) => {
-            this.setState({ query: dt.query, IDConfezione: dt.query[0].ID })
+            this.setState({ query: dt.query, IDConfezioni: dt.query[0].ID })
+            if (!this.state.create) {//mostra o edita
+                getIDProdottiMagazzino(this.state.ID,
+                    (dt) => {
+                        this.setState({
+                            show: true,
+                            ID: !dt.query[0].ID ? '' : dt.query[0].ID,
+                            Nome: !dt.query[0].Nome ? '' : dt.query[0].Nome,
+                            Confezione: !dt.query[0].Confezione ? '' : dt.query[0].Confezione,
+                            IDConfezioni: !dt.query[0].IDConfezioni ? '' : dt.query[0].IDConfezioni,
+                            IsMagazzino: !dt.query[0].IsMagazzino ? false : dt.query[0].IsMagazzino,
+                            IsFresco: !dt.query[0].IsFresco ? false : dt.query[0].IsFresco,
+                            IsIgiene: !dt.query[0].IsIgiene ? false : dt.query[0].IsIgiene,
+                            IsExtra: !dt.query[0].IsExtra ? false : dt.query[0].IsExtra
+                        });
+                    }, () => { });
+            } else {//crea nuovo
+                this.setState({
+                    Nome: '',
+                    Confezione: '',
+                    IDConfezioni: 1,
+                    IsMagazzino: true,
+                    IsFresco: false,
+                    IsIgiene: false,
+                    IsExtra: false
+                });
+            }
         }, () => { });
-        if (!this.state.create) {//mostra o edita
-            getIDProdottiMagazzino(this.state.ID,
-                (dt) => {
-                    this.setState({
-                        show: true,
-                        ID: !dt.query[0].ID ? '' : dt.query[0].ID,
-                        Nome: !dt.query[0].Nome ? '' : dt.query[0].Nome,
-                        Confezione: !dt.query[0].Confezione ? '' : dt.query[0].Confezione,
-                        IDConfezioni: !dt.query[0].IDConfezioni ? '' : dt.query[0].IDConfezioni,
-                        IsMagazzino: !dt.query[0].IsMagazzino ? false : dt.query[0].IsMagazzino,
-                        IsFresco: !dt.query[0].IsFresco ? false : dt.query[0].IsFresco,
-                        IsIgiene: !dt.query[0].IsIgiene ? false : dt.query[0].IsIgiene,
-                        IsExtra: !dt.query[0].IsExtra ? false : dt.query[0].IsExtra
-                    });
-                }, () => { });
-        } else {//crea nuovo
-            this.setState({
-                Nome: '',
-                Confezione: '',
-                IDConfezioni: 1,
-                IsMagazzino: true,
-                IsFresco: false,
-                IsIgiene: false,
-                IsExtra: false
-            });
-        }
     }
 
     render() {
@@ -160,7 +160,7 @@ export class MagEditorModal extends Component {
                                     <Form.Control type="text" autoComplete="off" autoCorrect="off" disabled={!this.state.editable} value={this.state.Nome} onChange={this.handleNameChange} />
                                 </FloatingLabel>
                                 <FloatingLabel controlId="floatingConfezione" label="Confezione" className="mt-1">
-                                    <Form.Select aria-label="Dimensione confezione" disabled={!this.state.editable} value={this.state.IDConfezione} onChange={this.handleConfezioneChange}>
+                                    <Form.Select aria-label="Dimensione confezione" disabled={!this.state.editable} value={this.state.IDConfezioni} onChange={this.handleConfezioneChange}>
                                         {this.state.query.map((row, index) => {
                                             return <option key={index} value={row['ID']}>{row['Confezione']}</option>
                                         })}
@@ -294,7 +294,7 @@ export class EntryEditorModal extends Component {
                     if (this.state.create) {//Non sono in modifica ma lo sto creando
                         this.setState({
                             query_prods: dt.query,
-                            IDProdotti: dt.query[0].ID //quindi prendo il primo ID nella lista dei prodotti
+                            IDProdotti: this.state.IDProdotti < 0 ? dt.query[0].ID : this.state.IDProdotti //quindi prendo il primo ID nella lista dei prodotti
                         }, create_lambda);
                     } else {
                         this.setState({
@@ -489,10 +489,10 @@ export class ModificheEditorModal extends Component {
         this.state.IDProdotti = props.IDProdotti || -1;
         this.state.IDMotivi = props.IDMotivi || 1;
         props.dtx.subscribeFunctions(() => {
-            if (this.state.edit) {
-
-            } else if (this.state.create) {
+            if (this.state.create) {
                 this.handleCreate();
+            }else  if (this.state.edit) {
+
             }
         });
     }
@@ -616,7 +616,7 @@ export class ModificheEditorModal extends Component {
                                 <FloatingLabel controlId="floatingData" label="Data modifica" className="mt-1">
                                     <Form.Control type="date" autoComplete="off" autoCorrect="off" disabled value={this.state.Data} />
                                 </FloatingLabel>
-                                <FloatingLabel controlId="floatingTotale" label="Quantità" className="mt-1">
+                                <FloatingLabel controlId="floatingTotale" label="Quantità (aggiungi)" className="mt-1">
                                     <Form.Control as="input" type="number" autoComplete="off" autoCorrect="off" disabled={!this.state.editable} value={this.state.Totale} onChange={this.handleTotaleChange} />
                                 </FloatingLabel>
                             </Form.Group>

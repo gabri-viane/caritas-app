@@ -10,7 +10,7 @@ import Col from "react-bootstrap/Col";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 import { addBorsa, addElementiBorsa, boxBorsaValues, boxElementoBorsaValues, getElementiBorsa, getInformazioniBorsa, updateBorsa } from "../../../contents/api/capi-borse";
-import { getAvailablesMagazzino } from "../../../contents/api/capi-magazzino";
+import { getAvailablesASCMagazzino, getAvailablesMagazzino } from "../../../contents/api/capi-magazzino";
 import { getDichiarantiFamilies } from "../../../contents/api/capi-family";
 import { datax } from "../../../contents/data";
 import generateModal from "../../../contents/functions/ModalGenerators";
@@ -63,7 +63,7 @@ class BagEditorModal extends Component {
                 this.setState({
                     IDFAM: dt.query[0].IDFAM,
                     Consegna: new Date(dt.query[0].DataConsegna).toDateInputValue(),
-                    Note: dt.query[0].Note,
+                    Note: dt.query[0].Note ? dt.query[0].Note : '',
                     Consegnata: dt.query[0].Consegnata
                 })
             }, (dt) => {
@@ -281,7 +281,8 @@ export class ContenitoreElementi extends Component {
         old_filter: [],//Tiene memoria del filtraggio
 
         IDs_selection: [],//Lista di IDs di prodotti selezionati
-        prodotti: [],//Lista di tutti i prodotti
+        prodotti: [],//Lista di tutti i prodotti, ordinata per ID
+        list_prods_oredr: [],
         show_selection: false
     };
 
@@ -325,7 +326,20 @@ export class ContenitoreElementi extends Component {
             dt.query.forEach((prod) => {
                 prodotti[prod.IDProdotti] = { IDProdotti: prod.IDProdotti, Nome: prod.Nome, Totale: prod.Totale, edit: false };
             });
-
+            getAvailablesASCMagazzino((dt_order) => {
+                const prods_tmp_order = [];
+                for (let i = 0; i < dt_order.query.length; i++) {
+                    prods_tmp_order[i] = prodotti[dt_order.query[i].IDProdotti];
+                }
+                this.setState({
+                    list_prods_oredr: prods_tmp_order,
+                    filtered: prods_tmp_order
+                }, () => {
+                    console.log(this.state.list_prods_oredr);
+                });
+            }, (dt_order) => {
+                LoadApp.addMessage(_WarningIcon, "Magazzino", "Non è stato possibile scaricare l'ordine dei dati");
+            });
             if (this.state.ID > -1) {
                 //TODO: Devo capire come mi arrivano i dati dal database
                 //di una borsa già create. Devo prendere gli elementi e ricaricarli
@@ -344,7 +358,6 @@ export class ContenitoreElementi extends Component {
                         IDs_selection: id_pre_caricati,
 
                         query_prods: dt.query,
-                        filtered: prodotti
                     });
                 }, (dt2) => {
                     LoadApp.addMessage(_ErrorIcon, "Borse", "Impossibile caricare elementi borse");
@@ -352,8 +365,7 @@ export class ContenitoreElementi extends Component {
             } else {
                 this.setState({
                     prodotti: prodotti,
-                    query_prods: dt.query,
-                    filtered: dt.query
+                    query_prods: dt.query
                 });
             }
         }, (dt) => {
@@ -444,13 +456,13 @@ export class ContenitoreElementi extends Component {
 
     filter = (e) => {
         const search = "".concat(e.target.value).trim().toLowerCase();
-        if (search.length > 0) {
-            const filtered = this.state.prodotti.filter((val) => {
+        if (search.length > 0 && this.state.list_prods_oredr) {
+            const filtered = this.state.list_prods_oredr.filter((val) => {
                 return ("" + val.Nome).toLowerCase().includes(search);
             });
             this.setState({ filtered: filtered });
         } else {
-            this.setState({ filtered: this.state.prodotti });
+            this.setState({ filtered: this.state.list_prods_oredr });
         }
     };
 
